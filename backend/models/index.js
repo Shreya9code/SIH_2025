@@ -1,4 +1,4 @@
-const Mudra = require('./Mudra');
-const User = require('./user');
+import Mudra from "./Mudra.js";
+import User from "./User.js";   
 
-module.exports = { Mudra, User };
+export { Mudra, User };

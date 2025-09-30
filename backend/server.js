@@ -1,35 +1,105 @@
-const express = require('express');
-const cors = require('cors');
-const mongoose = require('mongoose');
-require('dotenv').config();
+import express from "express";
+import cors from "cors";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import { User, Mudra } from "./models/index.js";
+
+dotenv.config();
 
 const app = express();
-
-// Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('uploads'));
 
-// Routes
-// app.use('/api/auth', require('./routes/auth'));
-// app.use('/api/mudras', require('./routes/mudras'));
-// app.use('/api/assistant', require('./routes/assistant'));
-// app.use('/api/assessment', require('./routes/assessment'));
-// app.use('/api/groups', require('./routes/groups'));
+// MongoDB Connection
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch(err => console.log(err));
 
-// MongoDB connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/nrityalens', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`📨 ${req.method} ${req.path}`);
+  next();
 });
 
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', () => {
-  console.log('Connected to MongoDB');
+// Check if user exists
+app.post("/api/users/check", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+
+    const user = await User.findOne({ email });
+    res.json({ exists: !!user });
+  } catch (err) {
+    console.error("Error checking user:", err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// Register user
+app.post("/api/users/register", async (req, res) => {
+  try {
+    const { clerkId, name, email, password, role } = req.body;
+
+    if (!clerkId || !email) {
+      return res.status(400).json({
+        message: 'clerkId and email are required'
+      });
+    }
+
+    // Check if user exists
+    const existingUser = await User.findOne({
+      $or: [{ email }, { clerkId }]
+    });
+
+    if (existingUser) {
+      return res.json({
+        success: true,
+        message: 'User already exists',
+        user: existingUser
+      });
+    }
+
+    const user = await User.create({
+      clerkId,
+      name,
+      email,
+      password,
+      role
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'User registered successfully',
+      user
+    });
+  } catch (err) {
+    console.error("Error registering user:", err);
+
+    // Handle duplicate key errors
+    if (err.code === 11000) {
+      const existingUser = await User.findOne({
+        $or: [{ email: req.body.email }, { clerkId: req.body.clerkId }]
+      });
+      return res.json({
+        success: true,
+        message: 'User already exists',
+        user: existingUser
+      });
+    }
+
+    res.status(500).json({
+      message: 'Server error',
+      error: err.message
+    });
+  }
 });
+
+// Test endpoint
+app.get("/api/test", (req, res) => {
+  res.json({ message: "Backend API is working!" });
+});
+
+app.listen(5000, () => console.log("🚀 Server running on port 5000"));
