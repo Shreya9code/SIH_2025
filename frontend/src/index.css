@@ -1,0 +1,78 @@
+/* Tailwind base directives */
+@import "tailwindcss";
+
+/* ------------------------------
+   Global styles (non-Tailwind)
+--------------------------------*/
+body {
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  background-color: #FFF9E6; /* light yellow background */
+  color: #8B4513; /* brown text */
+  margin: 0;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+}
+
+/* Links */
+a {
+  font-weight: 500;
+  color: #D94F3D; /* red theme */
+  text-decoration: none;
+}
+a:hover {
+  color: #8B0000; /* dark red on hover */
+}
+
+/* Buttons */
+button {
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+  padding: 0.5em 1em;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.25s;
+  background-color: #FFD34E; /* yellow */
+  color: #8B4513; /* brown text */
+}
+button:hover {
+  background-color: #FFC107; /* darker yellow on hover */
+  border-color: #D94F3D; /* red border on hover */
+}
+
+/* Responsive adjustments */
+@media (prefers-color-scheme: light) {
+  body {
+    background-color: #FFF9E6;
+    color: #8B4513;
+  }
+  a:hover {
+    color: #D94F3D;
+  }
+  button {
+    background-color: #FFD34E;
+    color: #8B4513;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #2C1A00; /* dark brown background */
+    color: #FFD34E; /* yellow text */
+  }
+  a {
+    color: #FFC107;
+  }
+  a:hover {
+    color: #FFD34E;
+  }
+  button {
+    background-color: #D94F3D; /* red buttons in dark mode */
+    color: #FFF9E6; /* light text */
+  }
+}
