@@ -1,45 +1,95 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, Target, Calendar, Award, AlertTriangle, Clock, BarChart3, ChevronRight } from 'lucide-react';
+import { useUser } from "@clerk/clerk-react";
+import axios from 'axios';
 
 const ProgressAnalytics = () => {
+  const { user } = useUser();
   const [selectedTimeframe, setSelectedTimeframe] = useState('week');
   const [progressData, setProgressData] = useState(null);
+  const [sessions, setSessions] = useState([]);
 
   useEffect(() => {
-    // Simulate loading progress data
-    const loadProgressData = () => {
-      setTimeout(() => {
-        setProgressData({
-          overallProgress: 78,
-          sessionsCompleted: 24,
-          totalPracticeTime: '12h 45m',
-          currentStreak: 7,
-          mudrasMastered: 8,
-          accuracyTrend: [65, 72, 68, 75, 78, 82, 78],
-          mudraBreakdown: [
-            { name: 'Pataka', accuracy: 92, practiceCount: 15, improvement: 15 },
-            { name: 'Tripataka', accuracy: 85, practiceCount: 12, improvement: 8 },
-            { name: 'Ardhachandra', accuracy: 78, practiceCount: 10, improvement: 12 },
-            { name: 'Mushti', accuracy: 65, practiceCount: 8, improvement: 5 },
-            { name: 'Shikhara', accuracy: 58, practiceCount: 6, improvement: -2 }
-          ],
-          improvementAreas: [
-            { mudra: 'Shikhara', issue: 'Thumb positioning', priority: 'high' },
-            { mudra: 'Mushti', issue: 'Finger alignment', priority: 'medium' },
-            { mudra: 'Ardhachandra', issue: 'Wrist flexibility', priority: 'low' }
-          ],
-          weeklyGoals: [
-            { goal: 'Practice 5 sessions', completed: true },
-            { goal: 'Master Tripataka mudra', completed: true },
-            { goal: 'Improve overall accuracy to 80%', completed: false },
-            { goal: 'Learn 2 new mudras', completed: false }
-          ]
-        });
-      }, 1000);
-    };
+    const load = async () => {
+      if (!user?.id) return;
+      try {
+        const { data } = await axios.get(`http://localhost:5000/api/users/${user.id}/sessions`);
+        const sess = Array.isArray(data?.sessions) ? data.sessions : [];
+        setSessions(sess);
 
-    loadProgressData();
-  }, [selectedTimeframe]);
+        const totalPoints = sess.reduce((sum, s) => sum + (Number(s.points) || 0), 0);
+        const totalDurationSec = sess.reduce((sum, s) => sum + (Number(s.durationSec) || 0), 0);
+        const streak = computeStreak(sess);
+
+        setProgressData({
+          overallProgress: sess.length ? Math.min(100, Math.round(totalPoints / (sess.length * 100) * 100)) : 0,
+          sessionsCompleted: sess.length,
+          totalPracticeTime: formatDuration(totalDurationSec),
+          currentStreak: streak,
+          mudrasMastered: estimateMastered(sess),
+          accuracyTrend: sess.map(s => Math.min(100, Math.round((Number(s.points) || 0) * 10))),
+          mudraBreakdown: exampleMudraBreakdown(sess),
+          improvementAreas: exampleImprovementAreas(sess),
+          weeklyGoals: exampleWeeklyGoals(sess),
+        });
+      } catch (e) {
+        console.error('Failed to load sessions', e);
+        setSessions([]);
+        setProgressData(null);
+      }
+    };
+    load();
+  }, [user?.id, selectedTimeframe]);
+
+  const computeStreak = (sess) => {
+    const days = new Set(sess.map(s => new Date(s.startedAt).toDateString()));
+    let streak = 0;
+    let d = new Date();
+    for (;;) {
+      const key = d.toDateString();
+      if (days.has(key)) {
+        streak += 1;
+        d.setDate(d.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+    return streak;
+  };
+
+  const formatDuration = (sec) => {
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    return `${h}h ${m}m`;
+  };
+
+  const estimateMastered = (sess) => {
+    return sess.filter(s => (Number(s.points) || 0) >= 80).length;
+  };
+
+  const exampleMudraBreakdown = (sess) => {
+    const avg = sess.length ? Math.round(sess.reduce((sum, s) => sum + (Number(s.points) || 0), 0) / sess.length) : 0;
+    return [
+      { name: 'Pataka', accuracy: Math.min(100, avg + 10), practiceCount: 5, improvement: 5 },
+      { name: 'Tripataka', accuracy: Math.max(0, avg - 5), practiceCount: 4, improvement: 2 },
+      { name: 'Ardhachandra', accuracy: avg, practiceCount: 3, improvement: 3 },
+    ];
+  };
+
+  const exampleImprovementAreas = () => (
+    [
+      { mudra: 'Shikhara', issue: 'Thumb positioning', priority: 'high' },
+      { mudra: 'Mushti', issue: 'Finger alignment', priority: 'medium' },
+    ]
+  );
+
+  const exampleWeeklyGoals = (sess) => (
+    [
+      { goal: 'Practice 3 sessions', completed: sess.length >= 3 },
+      { goal: 'Reach 80+ points in a session', completed: sess.some(s => (Number(s.points) || 0) >= 80) },
+      { goal: 'Practice 60+ minutes total', completed: sess.reduce((a, s) => a + (Number(s.durationSec) || 0), 0) >= 3600 },
+    ]
+  );
 
   if (!progressData) {
     return (
@@ -126,16 +176,20 @@ const ProgressAnalytics = () => {
               <BarChart3 className="w-5 h-5 text-[#D94F3D]" />
             </div>
             <div className="h-64 flex items-end justify-between space-x-2">
-              {progressData.accuracyTrend.map((value, index) => (
-                <div key={index} className="flex flex-col items-center flex-1">
-                  <div className="text-xs text-[#8C3B26] mb-1">{value}%</div>
-                  <div
-                    className="w-full bg-gradient-to-t from-[#D94F3D] to-[#FFD34E] rounded-t-lg transition-all duration-500"
-                    style={{ height: `${(value / 100) * 180}px` }}
-                  ></div>
-                  <div className="text-xs text-[#8C3B26] mt-1">Day {index + 1}</div>
-                </div>
-              ))}
+              {sessions.map((s, index) => {
+                const value = Math.min(100, Math.round((Number(s.points) || 0) * 1));
+                const label = new Date(s.startedAt).toLocaleDateString();
+                return (
+                  <div key={index} className="flex flex-col items-center flex-1">
+                    <div className="text-xs text-[#8C3B26] mb-1">{value}</div>
+                    <div
+                      className="w-full bg-gradient-to-t from-[#D94F3D] to-[#FFD34E] rounded-t-lg transition-all duration-500"
+                      style={{ height: `${(value / 100) * 180}px` }}
+                    ></div>
+                    <div className="text-xs text-[#8C3B26] mt-1">{label}</div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 

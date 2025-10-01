@@ -20,21 +20,29 @@ const MudraAssessment = () => {
     const videoRef = useRef(null);
     const streamRef = useRef(null);
     const timerRef = useRef(null);
+    const sessionStartRef = useRef(null);
 
     const getRandomMudra = () => {
-        let remainingMudras = mudraData.mudras.filter(m => !mudrasAttempted.includes(m.name_english));
+        let remainingMudras = mudraData.mudras.filter(m => !mudrasAttempted.includes(m.name_sanskrit));
         if (remainingMudras.length === 0) remainingMudras = mudraData.mudras;
         const randomIndex = Math.floor(Math.random() * remainingMudras.length);
         return remainingMudras[randomIndex];
     };
 
     const startAssessment = async () => {
+        // Starting a fresh session: reset score if no mudras attempted yet
+        if ((mudrasAttempted?.length || 0) === 0) {
+            setScore(0);
+        }
         const randomMudra = getRandomMudra();
         setCurrentMudra(randomMudra);
         setIsAssessing(true);
         setAssessmentResult(null);
         setShowAnalysis(false);
         setTimeLeft(30);
+        if (!sessionStartRef.current) {
+            sessionStartRef.current = Date.now();
+        }
 
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } });
@@ -49,7 +57,7 @@ const MudraAssessment = () => {
         timerRef.current = setInterval(() => {
             setTimeLeft(prev => {
                 if (prev <= 1) {
-                    endMudra(false);
+                    endMudra(true);
                     return 0;
                 }
                 return prev - 1;
@@ -75,15 +83,21 @@ const MudraAssessment = () => {
         return { accuracy, isCorrect, fingerAnalysis, commonMistakes, points: isCorrect ? Math.floor(accuracy / 10) : 0 };
     };
 
-    const endMudra = (manual = false) => {
+    const endMudra = (timedOut = false) => {
         if (timerRef.current) clearInterval(timerRef.current);
         if (streamRef.current) streamRef.current.getTracks().forEach(track => track.stop());
 
         if (currentMudra && !assessmentResult) {
-            const result = simulateMLAssessment(currentMudra);
-            setAssessmentResult(result);
-            setScore(prev => prev + result.points);
-            setMudrasAttempted(prev => [...prev, currentMudra.name_english]);
+            if (timedOut) {
+                const result = { accuracy: 0, isCorrect: false, fingerAnalysis: [], commonMistakes: ['Time up'], points: 0 };
+                setAssessmentResult(result);
+                setScore(prev => prev + 0);
+            } else {
+                const result = simulateMLAssessment(currentMudra);
+                setAssessmentResult(result);
+                setScore(prev => prev + result.points);
+            }
+            setMudrasAttempted(prev => [...prev, currentMudra.name_sanskrit]);
             setShowAnalysis(true);
         }
         setIsAssessing(false);
@@ -97,6 +111,8 @@ const MudraAssessment = () => {
         await startAssessment();
     };
 
+    // In MudraAssessment.jsx
+
     const endAssessment = async () => {
         if (timerRef.current) clearInterval(timerRef.current);
         if (streamRef.current) streamRef.current.getTracks().forEach(track => track.stop());
@@ -107,21 +123,38 @@ const MudraAssessment = () => {
             setAssessmentResult(result);
             setScore(prev => prev + result.points);
             addedPoints = result.points;
-            setMudrasAttempted(prev => [...mudrasAttempted, currentMudra.name_english]);
+            setMudrasAttempted(prev => [...mudrasAttempted, currentMudra.name_sanskrit]);
             setShowAnalysis(true);
         }
 
-        // Save total points to DB
+        // Save session as a record instead of overwriting total points
         if (user?.id) {
             try {
                 const finalScore = Number(score) + Number(addedPoints || 0);
-                await axios.put(`http://localhost:5000/api/users/${user.id}/points`, { points: finalScore });
-                console.log("Points saved to DB:", finalScore);
+                const durationSec = sessionStartRef.current ? Math.round((Date.now() - sessionStartRef.current) / 1000) : 0;
+                await axios.post(`http://localhost:5000/api/users/${user.id}/sessions`, {
+                    points: finalScore,
+                    mudrasAttempted: (mudrasAttempted?.length || 0) + (currentMudra && !assessmentResult ? 1 : 0),
+                    durationSec,
+                    startedAt: sessionStartRef.current ? new Date(sessionStartRef.current).toISOString() : undefined,
+                });
+                console.log("Session saved to DB:", finalScore);
             } catch (err) {
                 console.error("Error saving points:", err);
             }
         }
+
+        // ✅ Reset for fresh start
+        setCurrentMudra(null);
+        setIsAssessing(false);
+        setAssessmentResult(null);
+        setShowAnalysis(false);
+        setMudrasAttempted([]);
+        setTimeLeft(30);
+        sessionStartRef.current = null;
+        setScore(0);
     };
+
 
     useEffect(() => {
         return () => {
@@ -162,12 +195,17 @@ const MudraAssessment = () => {
                             <>
                                 <div>
                                     <h2 className="text-xl font-semibold text-[#8B4513] mb-1">Mudra {mudrasAttempted.length}/{TOTAL_MUDRAS}</h2>
-                                    <h3 className="text-2xl font-bold text-[#8B4513]">{currentMudra.name_english}</h3>
-                                    <p className="text-lg text-[#8C3B26] font-sanskrit">{currentMudra.name_sanskrit}</p>
+                                    <h3 className="text-2xl font-bold text-[#8B4513]">{currentMudra.name_sanskrit}</h3>
+                                    <p className="text-lg text-[#8C3B26] font-sanskrit">hint: {currentMudra.type}</p>
                                 </div>
-                                <div className="mt-2">
-                                    <p className="text-[#8C3B26] font-semibold">Current Points: {assessmentResult?.points || 0}</p>
-                                    <p className="text-[#8C3B26] font-semibold">Total Points: {score}</p>
+                                <div className="mt-2 flex items-center justify-between">
+                                    <div>
+                                        <p className="text-[#8C3B26] font-semibold">Current Points: {assessmentResult?.points || 0}</p>
+                                        <p className="text-[#8C3B26] font-semibold">Total Points: {score}</p>
+                                    </div>
+                                    {isAssessing && (
+                                        <p className="text-[#8C3B26] font-semibold">Time Left: {timeLeft}s</p>
+                                    )}
                                 </div>
 
                                 {showAnalysis && assessmentResult && (
@@ -193,22 +231,7 @@ const MudraAssessment = () => {
                                     </div>
                                 )}
 
-                                <div className="mt-4 flex space-x-4">
-                                    {showAnalysis && mudrasAttempted.length < TOTAL_MUDRAS && (
-                                        <button
-                                            onClick={nextMudra}
-                                            className="px-4 py-2 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700"
-                                        >
-                                            Next Mudra
-                                        </button>
-                                    )}
-                                    <button
-                                        onClick={endAssessment}
-                                        className="px-4 py-2 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700"
-                                    >
-                                        End Assessment
-                                    </button>
-                                </div>
+
                             </>
                         )}
                     </div>
@@ -225,6 +248,14 @@ const MudraAssessment = () => {
                                     <li>Get instant feedback and earn points based on accuracy</li>
                                     <li>You will be assessed on 10 mudras per session</li>
                                 </ul>
+
+                                {/* Start Button (appears after reset too) */}
+                                <button
+                                    onClick={startAssessment}
+                                    className="mt-6 w-full px-6 py-4 bg-gradient-to-r from-[#D94F3D] to-[#8B0000] text-white rounded-xl font-semibold text-lg hover:from-[#B33C2D] hover:to-[#660000] transition-all duration-300 shadow-lg hover:shadow-xl"
+                                >
+                                    Start New Assessment
+                                </button>
                             </div>
                         )}
 
@@ -232,17 +263,39 @@ const MudraAssessment = () => {
                             <div className="bg-white rounded-2xl shadow-lg border border-[#FFD34E]/30 p-6">
                                 <h3 className="text-xl font-semibold text-[#8B4513] mb-4">Live Camera</h3>
                                 <video ref={videoRef} autoPlay playsInline className="w-full h-80 rounded-lg object-cover" />
-                                {!showAnalysis && (
-                                    <button
-                                        onClick={() => endMudra(true)}
-                                        className="mt-4 w-full px-6 py-3 bg-gradient-to-r from-[#8B0000] to-[#660000] text-white rounded-xl font-semibold hover:from-[#660000] hover:to-[#400000] transition-all duration-300 shadow-lg hover:shadow-xl"
-                                    >
-                                        End Mudra
-                                    </button>
-                                )}
+
+                                {/* Buttons under camera */}
+                                <div className="mt-4 flex flex-col space-y-3">
+                                    <div className="flex space-x-3">
+                                        {!showAnalysis && (
+                                            <button
+                                                onClick={() => endMudra(false)}
+                                                className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700"
+                                            >
+                                                End Mudra
+                                            </button>
+                                        )}
+                                        {showAnalysis && mudrasAttempted.length < TOTAL_MUDRAS && (
+                                            <button
+                                                onClick={nextMudra}
+                                                className="flex-1 px-6 py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700"
+                                            >
+                                                Next Mudra
+                                            </button>
+                                        )}
+                                        <button
+                                            onClick={endAssessment}
+                                            className="flex-1 px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700"
+                                        >
+                                            End Assessment
+                                        </button>
+                                    </div>
+                                </div>
+
                             </div>
                         )}
                     </div>
+
                 </div>
             </div>
         </div>
