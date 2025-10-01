@@ -1,9 +1,10 @@
 import React, { useRef, useCallback, useState } from "react";
 import { Link } from "react-router-dom";
-import { Camera, Book, Trophy, Users, ArrowRight, Star, PlayCircle, Sparkles, HelpCircle, Video, Search, Zap, Lock, School, MessageCircle, BarChart } from "lucide-react";
+import { Camera, Book, Trophy, Users, ArrowRight, Star, PlayCircle, Sparkles, HelpCircle, Video, Search, Zap, Lock, School, MessageCircle, BarChart, Sparkle } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import Navbar from "../components/Navbar.jsx";
 import background from "../assets/background.png";
+import icon from "../assets/icon.png";
 
 const Home = () => {
   const featuresRef = useRef(null);
@@ -12,54 +13,55 @@ const Home = () => {
   const [activeTab, setActiveTab] = useState('free');
 
   const features = [
-    { 
-      icon: Camera, 
-      title: "Mudra Detection", 
-      description: "Upload images or use camera to identify mudras with advanced AI technology", 
+    {
+      icon: Camera,
+      title: "Mudra Detection",
+      description: "Upload images or use camera to identify mudras with advanced AI technology",
       path: "/detect",
       gradient: "from-amber-500 to-orange-500",
       free: true
     },
-    { 
-      icon: Book, 
-      title: "Digital Library", 
-      description: "Explore our comprehensive collection of Bharatanatyam mudras and meanings", 
+    {
+      icon: Book,
+      title: "Digital Library",
+      description: "Explore our comprehensive collection of Bharatanatyam mudras and meanings",
       path: "/library",
       gradient: "from-red-500 to-rose-500",
       free: true
     },
-    { 
-      icon: Zap, 
-      title: "AI Assistant", 
-      description: "Get instant answers to all your Bharatanatyam-related questions", 
+    {
+      icon: Zap,
+      title: "AI Assistant",
+      description: "Get instant answers to all your Bharatanatyam-related questions",
       path: "/assistant",
       gradient: "from-orange-500 to-amber-500",
       free: true
     },
-    { 
-      icon: Trophy, 
-      title: "Mudra Assessment", 
-      description: "Practice and get instant feedback on your mudra accuracy and form", 
+    {
+      icon: Trophy,
+      title: "Mudra Assessment",
+      description: "Practice and get instant feedback on your mudra accuracy and form",
       path: "/assessment",
       gradient: "from-brown-600 to-red-600",
       free: false
     },
-    { 
-      icon: Users, 
-      title: "Group Learning", 
-      description: "Create virtual classrooms and track progress with fellow learners", 
-      path: "/groups",
-      gradient: "from-amber-600 to-orange-600",
-      free: false
-    },
-    { 
-      icon: BarChart, 
-      title: "Progress Analytics", 
-      description: "Detailed insights into your learning journey and improvement areas", 
+    {
+      icon: BarChart,
+      title: "Progress Analytics",
+      description: "Detailed insights into your learning journey and improvement areas",
       path: "/progress",
       gradient: "from-red-600 to-rose-600",
       free: false
     },
+    {
+      icon: Users,
+      title: "Group Learning",
+      description: "Create virtual classrooms and track progress with fellow learners",
+      path: "/groups",
+      gradient: "from-amber-600 to-orange-600",
+      free: false
+    },
+
   ];
 
   const freeFeatures = [
@@ -135,14 +137,14 @@ const Home = () => {
   ];
 
   const scrollToFeatures = useCallback(() => {
-    featuresRef.current?.scrollIntoView({ 
+    featuresRef.current?.scrollIntoView({
       behavior: "smooth",
       block: "start"
     });
   }, []);
 
   const scrollToQnA = useCallback(() => {
-    qnaRef.current?.scrollIntoView({ 
+    qnaRef.current?.scrollIntoView({
       behavior: "smooth",
       block: "start"
     });
@@ -154,9 +156,9 @@ const Home = () => {
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
       <Helmet>
         <title>NrityaLens - AI-Powered Bharatanatyam Mudra Detection & Learning Platform</title>
-        <meta 
-          name="description" 
-          content="Experience the future of Bharatanatyam learning with NrityaLens. AI-powered mudra detection, comprehensive library, and interactive learning tools." 
+        <meta
+          name="description"
+          content="Experience the future of Bharatanatyam learning with NrityaLens. AI-powered mudra detection, comprehensive library, and interactive learning tools."
         />
       </Helmet>
 
@@ -169,17 +171,16 @@ const Home = () => {
           <img
             src={background}
             alt="Bharatanatyam dancer performing traditional mudras with elegant hand gestures"
-            className={`w-full h-full object-cover transition-all duration-1000 ${
-              imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-110'
-            }`}
+            className={`w-full h-full object-cover transition-all duration-1000 ${imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-110'
+              }`}
             onLoad={() => setImageLoaded(true)}
           />
-          
+
           {/* Multi-layer Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-amber-900/40 via-orange-800/30 to-red-900/50"></div>
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/40"></div>
           <div className="absolute inset-0 bg-gradient-to-r from-amber-900/20 to-red-900/20"></div>
-          
+
           {/* Animated Background Elements */}
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute top-1/4 left-1/4 w-4 h-4 bg-amber-300 rounded-full opacity-30 animate-pulse"></div>
@@ -222,7 +223,7 @@ const Home = () => {
 
           {/* Description */}
           <p className="text-xl md:text-2xl text-amber-100 max-w-3xl mx-auto mb-12 leading-relaxed font-light">
-            Discover, learn, and perfect Bharatanatyam mudras with AI-powered technology. 
+            Discover, learn, and perfect Bharatanatyam mudras with AI-powered technology.
             From beginners to masters, NrityaLens transforms your dance journey.
           </p>
 
@@ -275,7 +276,7 @@ const Home = () => {
       </section>
 
       {/* Features Section - MOVED BEFORE Q&A */}
-      <section 
+      <section
         ref={featuresRef}
         className="py-24 px-4 bg-gradient-to-b from-white to-amber-50"
       >
@@ -293,7 +294,7 @@ const Home = () => {
               </span>
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              From AI-powered mudra detection to comprehensive learning tools, 
+              From AI-powered mudra detection to comprehensive learning tools,
               NrityaLens offers everything you need for your Bharatanatyam journey.
             </p>
           </div>
@@ -308,11 +309,10 @@ const Home = () => {
                   className="group relative bg-white rounded-3xl p-6 shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2 border border-amber-100 overflow-hidden"
                 >
                   {/* Free/Premium Badge */}
-                  <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-semibold ${
-                    feature.free 
-                      ? 'bg-amber-100 text-amber-700' 
-                      : 'bg-red-100 text-red-700'
-                  }`}>
+                  <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-semibold ${feature.free
+                    ? 'bg-amber-100 text-amber-700'
+                    : 'bg-red-100 text-red-700'
+                    }`}>
                     {feature.free ? 'FREE' : 'PREMIUM'}
                   </div>
 
@@ -323,7 +323,7 @@ const Home = () => {
 
                   {/* Content */}
                   <h3 className="text-2xl font-bold text-gray-900 mb-3">{feature.title}</h3>
-                  
+
                   <p className="text-gray-600 mb-4 leading-relaxed">
                     {feature.description}
                   </p>
@@ -353,7 +353,7 @@ const Home = () => {
                 Start with Free Features Today!
               </h3>
               <p className="text-amber-700 mb-6 max-w-2xl mx-auto">
-                No registration required to access our powerful AI mudra detection, digital library, and AI assistant. 
+                No registration required to access our powerful AI mudra detection, digital library, and AI assistant.
                 Premium features available for enhanced learning experience.
               </p>
               <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
@@ -378,7 +378,7 @@ const Home = () => {
       </section>
 
       {/* Q&A Section - MOVED AFTER FEATURES */}
-      <section 
+      <section
         ref={qnaRef}
         className="py-24 px-4 bg-gradient-to-b from-amber-50 to-orange-50"
       >
@@ -396,7 +396,7 @@ const Home = () => {
               </span>
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              Discover how NrityaLens combines ancient Bharatanatyam traditions with modern AI technology 
+              Discover how NrityaLens combines ancient Bharatanatyam traditions with modern AI technology
               to enhance your learning experience.
             </p>
           </div>
@@ -406,11 +406,10 @@ const Home = () => {
             <div className="bg-amber-100 rounded-2xl p-2 flex space-x-2">
               <button
                 onClick={() => setActiveTab('free')}
-                className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 ${
-                  activeTab === 'free'
-                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg'
-                    : 'text-amber-700 hover:text-amber-900'
-                }`}
+                className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === 'free'
+                  ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg'
+                  : 'text-amber-700 hover:text-amber-900'
+                  }`}
               >
                 <div className="flex items-center space-x-2">
                   <Zap size={20} />
@@ -419,11 +418,10 @@ const Home = () => {
               </button>
               <button
                 onClick={() => setActiveTab('premium')}
-                className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 ${
-                  activeTab === 'premium'
-                    ? 'bg-gradient-to-r from-red-500 to-rose-500 text-white shadow-lg'
-                    : 'text-amber-700 hover:text-amber-900'
-                }`}
+                className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === 'premium'
+                  ? 'bg-gradient-to-r from-red-500 to-rose-500 text-white shadow-lg'
+                  : 'text-amber-700 hover:text-amber-900'
+                  }`}
               >
                 <div className="flex items-center space-x-2">
                   <Lock size={20} />
@@ -442,9 +440,8 @@ const Home = () => {
               >
                 {/* Header */}
                 <div className="flex items-center space-x-4 mb-6">
-                  <div className={`p-3 rounded-2xl bg-gradient-to-r ${
-                    activeTab === 'free' ? 'from-amber-500 to-orange-500' : 'from-red-500 to-rose-500'
-                  } text-white shadow-lg`}>
+                  <div className={`p-3 rounded-2xl bg-gradient-to-r ${activeTab === 'free' ? 'from-amber-500 to-orange-500' : 'from-red-500 to-rose-500'
+                    } text-white shadow-lg`}>
                     <feature.icon size={28} />
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900">{feature.title}</h3>
@@ -456,9 +453,8 @@ const Home = () => {
                   <div className="space-y-2">
                     {feature.questions.map((question, qIndex) => (
                       <div key={qIndex} className="flex items-start space-x-2">
-                        <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
-                          activeTab === 'free' ? 'bg-amber-400' : 'bg-red-400'
-                        }`}></div>
+                        <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${activeTab === 'free' ? 'bg-amber-400' : 'bg-red-400'
+                          }`}></div>
                         <span className="text-gray-700 text-sm">{question}</span>
                       </div>
                     ))}
@@ -471,9 +467,8 @@ const Home = () => {
                   <div className="space-y-3">
                     {feature.process.map((step, stepIndex) => (
                       <div key={stepIndex} className="flex items-start space-x-3">
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0 ${
-                          activeTab === 'free' ? 'bg-amber-500' : 'bg-red-500'
-                        }`}>
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0 ${activeTab === 'free' ? 'bg-amber-500' : 'bg-red-500'
+                          }`}>
                           {stepIndex + 1}
                         </div>
                         <span className="text-gray-700 text-sm leading-relaxed">{step}</span>
@@ -491,9 +486,8 @@ const Home = () => {
                 </div>
 
                 {/* Hover Effect */}
-                <div className={`absolute inset-0 border-2 border-transparent bg-gradient-to-r ${
-                  activeTab === 'free' ? 'from-amber-500 to-orange-500' : 'from-red-500 to-rose-500'
-                } rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10`}>
+                <div className={`absolute inset-0 border-2 border-transparent bg-gradient-to-r ${activeTab === 'free' ? 'from-amber-500 to-orange-500' : 'from-red-500 to-rose-500'
+                  } rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10`}>
                   <div className="w-full h-full bg-white rounded-3xl m-0.5"></div>
                 </div>
               </div>
@@ -579,7 +573,7 @@ const Home = () => {
             {" "}Today
           </h2>
           <p className="text-xl text-amber-700 mb-12 max-w-2xl mx-auto leading-relaxed">
-            Join thousands of dance enthusiasts who are already transforming their practice with NrityaLens. 
+            Join thousands of dance enthusiasts who are already transforming their practice with NrityaLens.
             Free features available for everyone, premium tools for dedicated learners.
           </p>
           <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
@@ -599,23 +593,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gradient-to-r from-amber-900 to-orange-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <div className="flex justify-center items-center space-x-2 mb-4">
-            <Sparkles className="text-amber-300" size={20} />
-            <h3 className="text-2xl font-bold bg-gradient-to-r from-amber-300 to-orange-300 bg-clip-text text-transparent">
-              NrityaLens
-            </h3>
-          </div>
-          <p className="text-amber-200 mb-6 max-w-md mx-auto">
-            Bridging ancient Indian dance traditions with cutting-edge AI technology for modern learners.
-          </p>
-          <p className="text-amber-300 text-sm">
-            &copy; {currentYear} NrityaLens. All rights reserved. Crafted with ❤️ for dance enthusiasts.
-          </p>
-        </div>
-      </footer>
     </div>
   );
 };

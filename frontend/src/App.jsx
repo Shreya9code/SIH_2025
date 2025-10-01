@@ -7,6 +7,7 @@ import MudraDetection from "./pages/MudraDetection.jsx";
 import DigitalLibrary from "./pages/DigitalLibrary.jsx";
 import AIChatWidget from "./components/AIChatWidget.jsx";
 import Navbar from "./components/Navbar.jsx";
+import Footer from "./components/footer.jsx";
 import { HelmetProvider } from "react-helmet-async";
 import { SignIn, SignUp, SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
 import sideImage from "./assets/image.png";
@@ -14,53 +15,61 @@ import GroupLearning from "./pages/GroupLearning.jsx";
 import ProgressAnalytics from "./pages/ProgressAnalytics.jsx";
 import MudraAssessment from "./pages/MudraAssessment.jsx";
 
+// Layout wrapper ensures Navbar, Footer, and AIChatWidget on every page
+const Layout = ({ children }) => {
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <main className="flex-1">{children}</main>
+      <AIChatWidget />
+      <Footer />
+    </div>
+  );
+};
+
 const AppWrapper = () => {
   return (
-    <>
-      {/* Navbar always visible */}
-      <Navbar />
+    <Routes>
+      {/* Public landing page */}
+      <Route path="/" element={<Layout><Home /></Layout>} />
 
-      <Routes>
-        {/* Public landing page */}
-        <Route path="/" element={<Home />} />
+      {/* Public pages */}
+      <Route path="/detect" element={<Layout><MudraDetection /></Layout>} />
+      <Route path="/library" element={<Layout><DigitalLibrary /></Layout>} />
+      <Route path="/assistant" element={<Layout><AIChatWidget /></Layout>} />
 
-        {/* Public pages (accessible without login) */}
-        <Route path="/detect" element={<MudraDetection />} />
-        <Route path="/library" element={<DigitalLibrary />} />
-        <Route path="/assistant" element={<AIChatWidget />} />
+      {/* Protected routes */}
+      <Route
+        path="/groups"
+        element={
+          <SignedIn>
+            <Layout><GroupLearning currentUser={null} /></Layout>
+          </SignedIn>
+        }
+      />
+      <Route
+        path="/progress"
+        element={
+          <SignedIn>
+            <Layout><ProgressAnalytics currentUser={null} /></Layout>
+          </SignedIn>
+        }
+      />
+      <Route
+        path="/assessment"
+        element={
+          <SignedIn>
+            <Layout><MudraAssessment currentUser={null} /></Layout>
+          </SignedIn>
+        }
+      />
 
-        {/* Protected routes */}
-        <Route
-          path="/groups"
-          element={
-            <SignedIn>
-              <GroupLearning currentUser={null} />
-            </SignedIn>
-          }
-        />
-        <Route
-          path="/progress"
-          element={
-            <SignedIn>
-              <ProgressAnalytics currentUser={null} />
-            </SignedIn>
-          }
-        />
-        <Route
-          path="/assessment"
-          element={
-            <SignedIn>
-              <MudraAssessment currentUser={null} />
-            </SignedIn>
-          }
-        />
-
-        {/* Clerk Sign In */}
-        <Route
-          path="/sign-in/*"
-          element={
+      {/* Clerk Sign In */}
+      <Route
+        path="/sign-in/*"
+        element={
+          <Layout>
             <div className="flex min-h-screen w-full">
-              {/* Left: Sign In form */}
               <div className="flex-1 flex justify-center items-center bg-black">
                 <div className="w-full max-w-md px-8 py-10">
                   <SignIn
@@ -76,7 +85,6 @@ const AppWrapper = () => {
                   />
                 </div>
               </div>
-              {/* Right: Side image */}
               <div className="flex-1 flex items-center justify-center bg-black">
                 <img
                   src={sideImage}
@@ -86,15 +94,16 @@ const AppWrapper = () => {
                 />
               </div>
             </div>
-          }
-        />
+          </Layout>
+        }
+      />
 
-        {/* Clerk Sign Up */}
-        <Route
-          path="/sign-up/*"
-          element={
+      {/* Clerk Sign Up */}
+      <Route
+        path="/sign-up/*"
+        element={
+          <Layout>
             <div className="flex min-h-screen h-screen w-full">
-              {/* Left: Centered Sign Up form */}
               <div className="flex-1 flex items-center justify-center">
                 <div className="w-full" style={{ maxWidth: 420 }}>
                   <SignUp
@@ -110,7 +119,6 @@ const AppWrapper = () => {
                   />
                 </div>
               </div>
-              {/* Right: Full-height image */}
               <div className="flex-1 h-full">
                 <img
                   src={sideImage}
@@ -120,33 +128,30 @@ const AppWrapper = () => {
                 />
               </div>
             </div>
-          }
-        />
+          </Layout>
+        }
+      />
 
-        {/* Protected Dashboard */}
-        <Route
-          path="/dashboard"
-          element={
-            <SignedIn>
-              <Dashboard />
-            </SignedIn>
-          }
-        />
+      {/* Protected Dashboard */}
+      <Route
+        path="/dashboard"
+        element={
+          <SignedIn>
+            <Layout><Dashboard /></Layout>
+          </SignedIn>
+        }
+      />
 
-        {/* Redirect unknown routes for signed-out users */}
-        <Route
-          path="*"
-          element={
-            <SignedOut>
-              <RedirectToSignIn />
-            </SignedOut>
-          }
-        />
-      </Routes>
-
-      {/* Floating AI Chat Widget on all pages */}
-      <AIChatWidget />
-    </>
+      {/* Redirect unknown routes for signed-out users */}
+      <Route
+        path="*"
+        element={
+          <SignedOut>
+            <RedirectToSignIn />
+          </SignedOut>
+        }
+      />
+    </Routes>
   );
 };
 

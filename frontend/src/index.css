@@ -76,3 +76,16 @@ button:hover {
     color: #FFF9E6; /* light text */
   }
 }
+
+@keyframes icon-move {
+  0% { left: -10%; }
+  25% { left: 50%; transform: translateX(-50%) rotate(0deg); }
+  50% { left: 110%; transform: translateX(-100%) rotate(180deg); }
+  75% { left: 50%; transform: translateX(-50%) rotate(360deg); }
+  100% { left: -10%; }
+}
+
+.animate-icon-move {
+  animation: icon-move 24s linear infinite;
+}
+

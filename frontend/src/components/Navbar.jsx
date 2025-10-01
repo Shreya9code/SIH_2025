@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
+import { useUser, UserButton } from "@clerk/clerk-react";
 import logo from "../assets/icon.png";
 
 const Navbar = ({ showAuthButtons }) => {
   const [open, setOpen] = useState(false);
+  const { user, isSignedIn } = useUser();
 
   return (
     <nav className="fixed w-full bg-white/70 backdrop-blur-md shadow-md z-50">
@@ -17,37 +19,36 @@ const Navbar = ({ showAuthButtons }) => {
 
         {/* Desktop Menu */}
         <div className="hidden md:flex space-x-6 font-medium text-[#8C3B26] items-center">
-          <Link to="/detect" className="hover:text-[#5C261A]">
-            Detect
-          </Link>
-          <Link to="/library" className="hover:text-[#5C261A]">
-            Library
-          </Link>
-          <Link to="/assistant" className="hover:text-[#5C261A]">
-            Assistant
-          </Link>
-          <Link to="/assessment" className="hover:text-[#5C261A]">
-            Assessment
-          </Link>
-          <Link to="/groups" className="hover:text-[#5C261A]">
-            Groups
-          </Link>
+          <Link to="/" className="hover:text-[#5C261A]">Home</Link>
+          <Link to="/detect" className="hover:text-[#5C261A]">Detect</Link>
+          <Link to="/library" className="hover:text-[#5C261A]">Library</Link>
+          <Link to="/assistant" className="hover:text-[#5C261A]">Assistant</Link>
+          <Link to="/assessment" className="hover:text-[#5C261A]">Assessment</Link>
+          <Link to="/progress" className="hover:text-[#5C261A]">Progress</Link>
+          <Link to="/groups" className="hover:text-[#5C261A]">Group</Link>
 
-          {showAuthButtons && (
-            <>
-              <Link
-                to="/sign-in"
-                className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-2xl font-semibold transition-all duration-300"
-              >
-                Sign In
-              </Link>
-              <Link
-                to="/sign-up"
-                className="px-4 py-2 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white rounded-2xl font-semibold transition-all duration-300"
-              >
-                Sign Up
-              </Link>
-            </>
+          {isSignedIn && user ? (
+            <UserButton
+              afterSignOutUrl="/"
+              appearance={{ userProfile: { elements: { userButtonAvatar: "w-10 h-10 rounded-full" } } }}
+            />
+          ) : (
+            showAuthButtons && (
+              <>
+                <Link
+                  to="/sign-in"
+                  className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-2xl font-semibold transition-all duration-300"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/sign-up"
+                  className="px-4 py-2 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white rounded-2xl font-semibold transition-all duration-300"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )
           )}
         </div>
 
@@ -67,59 +68,38 @@ const Navbar = ({ showAuthButtons }) => {
       {/* Mobile Menu */}
       {open && (
         <div className="md:hidden bg-white/90 shadow-lg px-4 py-4 space-y-3">
-          <Link
-            to="/detect"
-            onClick={() => setOpen(false)}
-            className="block text-[#8C3B26] hover:text-[#5C261A]"
-          >
-            Detect
-          </Link>
-          <Link
-            to="/library"
-            onClick={() => setOpen(false)}
-            className="block text-[#8C3B26] hover:text-[#5C261A]"
-          >
-            Library
-          </Link>
-          <Link
-            to="/assistant"
-            onClick={() => setOpen(false)}
-            className="block text-[#8C3B26] hover:text-[#5C261A]"
-          >
-            Assistant
-          </Link>
-          <Link
-            to="/assessment"
-            onClick={() => setOpen(false)}
-            className="block text-[#8C3B26] hover:text-[#5C261A]"
-          >
-            Assessment
-          </Link>
-          <Link
-            to="/groups"
-            onClick={() => setOpen(false)}
-            className="block text-[#8C3B26] hover:text-[#5C261A]"
-          >
-            Groups
-          </Link>
+          <Link to="/" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Home</Link>
+          <Link to="/detect" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Detect</Link>
+          <Link to="/library" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Library</Link>
+          <Link to="/assistant" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Assistant</Link>
+          <Link to="/assessment" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Assessment</Link>
+          <Link to="/progress" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Progress</Link>
+          <Link to="/groups" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Group</Link>
 
-          {showAuthButtons && (
-            <>
-              <Link
-                to="/sign-in"
-                onClick={() => setOpen(false)}
-                className="block px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-2xl font-semibold transition-all duration-300"
-              >
-                Sign In
-              </Link>
-              <Link
-                to="/sign-up"
-                onClick={() => setOpen(false)}
-                className="block px-4 py-2 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white rounded-2xl font-semibold transition-all duration-300"
-              >
-                Sign Up
-              </Link>
-            </>
+          {isSignedIn && user ? (
+            <UserButton
+              afterSignOutUrl="/"
+              appearance={{ userProfile: { elements: { userButtonAvatar: "w-10 h-10 rounded-full" } } }}
+            />
+          ) : (
+            showAuthButtons && (
+              <>
+                <Link
+                  to="/sign-in"
+                  onClick={() => setOpen(false)}
+                  className="block px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-2xl font-semibold transition-all duration-300"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/sign-up"
+                  onClick={() => setOpen(false)}
+                  className="block px-4 py-2 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white rounded-2xl font-semibold transition-all duration-300"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )
           )}
         </div>
       )}
