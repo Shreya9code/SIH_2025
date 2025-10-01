@@ -1,0 +1,514 @@
+{
+  "mudras": [
+    {
+      "sl_no": 1,
+      "type": "Single Handed",
+      "name_sanskrit": "Pataka",
+      "name_english": "Flag",
+      "keywords": "beginning a dance, forest, river, sprinkling water, cloud, night, forbidding things, horse,flag",
+      "about": "It literally means a ‘Flag’. Pataka is the most basic hand gesture and the first to be taught to absolute beginners. The hand is upright (with a slight arch), the fingers are straight, and the thumb is slightly bent. There are no gaps between the fingers. The simple gesture depicts the action of blessing, to depict the sky, air, or water, and also to indicate to stop.",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 2,
+      "type": "Single Handed",
+      "name_sanskrit": "Tripataka",
+      "name_english": "three parts of the flag",
+      "keywords": "tree, arrow, vajra weapon, Indra, crown, light rising, union,flag",
+      "about": "Same as in the Pataka Mudra the hand is held upright, but the third finger is bent in this mudra. As the name suggests the Tripataka, is a variation of the Pataka mudra using three fingers. It portrays the action of applying Tilak and is also used to depict the king or crown.",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 3,
+      "type": "Single Handed",
+      "name_sanskrit": "Ardhapataka",
+      "name_english": "half flag",
+      "keywords": "flag, temple tower, horn, riverbank, tender shoots, writing panel, knife",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 4,
+      "type": "Single Handed",
+      "name_sanskrit": "Kartarimukha",
+      "name_english": "scissors face or arrow shaft face",
+      "keywords": "separation of women and men, opposition, stealing, corner of the eye, death, disagreement, lightning",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 5,
+      "type": "Single Handed",
+      "name_sanskrit": "Mayura",
+      "name_english": "peacock or peacock's beak",
+      "keywords": "bird of omen, forehead, stroking the hair, wiping tears, argument",
+      "about": "The term Mayura literally translates to a peacock. When the ring finger touches the thumb, the mudra portrays a peacock. The index, the middle, and the little finger remain extended. Besides portraying peacocks, this gesture is also used to portray a bird’s neck, Krishna’s feathers, and even creepers. This mudra usually goes along with intricate footwork!",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 6,
+      "type": "Single Handed",
+      "name_sanskrit": "Ardhachandra",
+      "name_english": "half moon",
+      "keywords": "spear, platter, anxiety, meditation, prayer, greeting",
+      "about": "The literal meaning of Ardha Chandra is the half moon. Very similar to the Pataka mudra, the main variation between the two gestures is that in Ardha Chandra, the thumb is held straight in line with the fingers. The gesture is complete when the hand is at a horizontal angle. Besides depicting a half moon, the mudra can also portray a spear, throat, etc.",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 7,
+      "type": "Single Handed",
+      "name_sanskrit": "Arala",
+      "name_english": "bent",
+      "keywords": "drinking poison",
+      "about": "The mudra is achieved when following the Pataka mudra, the index finger and the thumb is bent. The Arala mudra portrays the action of drinking an elixir or poison and can also portray a violent wind.",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 8,
+      "type": "Single Handed",
+      "name_sanskrit": "Shukatunda",
+      "name_english": "parrot head",
+      "keywords": "shooting an arrow, throwing a spear, mystery",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 9,
+      "type": "Single Handed",
+      "name_sanskrit": "Mushthi",
+      "name_english": "closed fist",
+      "keywords": "steadiness, holding things, grasping the hair, wrestling",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 10,
+      "type": "Single Handed",
+      "name_sanskrit": "Shikhara",
+      "name_english": "mountain top or spire",
+      "keywords": "God of Love, bow, pillar, sound of a bell, silence, questioning, husband, lover, embrace",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 11,
+      "type": "Single Handed",
+      "name_sanskrit": "Kapitta",
+      "name_english": "wood apple",
+      "keywords": "Goddess Lakshmi, Saraswati, holding cymbals, holding flowers at the time of flirting, milking cows",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 12,
+      "type": "Single Handed",
+      "name_sanskrit": "Katakamukha",
+      "name_english": "opening of a bracelet",
+      "keywords": "picking flowers, holding a pearl necklace or garland of flowers, drawing a bow slowly, speech, glancing",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 13,
+      "type": "Single Handed",
+      "name_sanskrit": "Suchi",
+      "name_english": "needle",
+      "keywords": "Parabrahma, one, one hundred, sun, city, world, fan, threatening, astonishment, umbrella, beating the drum",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 14,
+      "type": "Single Handed",
+      "name_sanskrit": "Chandrakala",
+      "name_english": "crescent moon",
+      "keywords": "digit of the moon",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 15,
+      "type": "Single Handed",
+      "name_sanskrit": "Padmakosha",
+      "name_english": "lotus bud",
+      "keywords": "water lily, fruit, apple, mango, breast",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 16,
+      "type": "Single Handed",
+      "name_sanskrit": "Sarpashirsha",
+      "name_english": "snake head",
+      "keywords": "giving water to Gods and sages, the flapping of elephant's ears, slowness",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 17,
+      "type": "Single Handed",
+      "name_sanskrit": "Mrigashirsha",
+      "name_english": "deer head",
+      "keywords": "women, calling the beloved, cheek, holding an umbrella, actor's costume, house, fear, discussion",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 18,
+      "type": "Single Handed",
+      "name_sanskrit": "Simhamukha",
+      "name_english": "lion face",
+      "keywords": "elephant, lotus, coral, pearl, garland, fragrance, drop of water, salvation when placed on the heart",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 19,
+      "type": "Single Handed",
+      "name_sanskrit": "Kangulashya",
+      "name_english": "tail",
+      "keywords": "Lakuce fruit, water lily, breast",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 20,
+      "type": "Single Handed",
+      "name_sanskrit": "Alapadma or Solapadma",
+      "name_english": "lotus in full bloom",
+      "keywords": "yearning for the beloved, mirror, moon pavilion, full moon, village, murmuring sound, praise",
+      "about": "The lotus mudra depicts the glory of a blooming lotus. The thumb and the fingers are stretched and curled in a way to form the petals of the lotus. The mudra depicts the productive energies that flow within the spiritual and the physical realms. It represents creation, romance, and wisdom.",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 21,
+      "type": "Single Handed",
+      "name_sanskrit": "Chatura",
+      "name_english": "square",
+      "keywords": "eyes, musk, a little, breaking to pieces",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 22,
+      "type": "Single Handed",
+      "name_sanskrit": "Bhramara",
+      "name_english": "bee",
+      "keywords": "parrot, crane, cuckoo, union",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 23,
+      "type": "Single Handed",
+      "name_sanskrit": "Hamsasya",
+      "name_english": "swan beak",
+      "keywords": "tying the marriage thread, initiation, painting, drop of water",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 24,
+      "type": "Single Handed",
+      "name_sanskrit": "Hamsapaksha",
+      "name_english": "swan wing",
+      "keywords": "arranging, constructing a bridge, making marks with the nails, number six",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 25,
+      "type": "Single Handed",
+      "name_sanskrit": "Sandamsha",
+      "name_english": "Padmakosha mudra repeatedly opened and closed",
+      "keywords": "generosity, worship, offering, number five",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 26,
+      "type": "Single Handed",
+      "name_sanskrit": "Mukula",
+      "name_english": "flower bud",
+      "keywords": "water lily, the God of love, eating",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 27,
+      "type": "Single Handed",
+      "name_sanskrit": "Tamrachuda",
+      "name_english": "rooster",
+      "keywords": "crane, camel, calf, writing or drawing",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 28,
+      "type": "Single Handed",
+      "name_sanskrit": "Trishula",
+      "name_english": "trident",
+      "keywords": "three together, wood apple leaf",
+      "about": "‘Tri’ means ‘three’ and ‘Shula’ means ‘spear’. Trishula is the most common ‘Astra’ or ‘weapon’, of the deities, as mentioned in the Indian scriptures. The mudra is achieved when the little finger meets the thumb, and the remaining three fingers are held upright. The Trishula mudra is a depiction of power, that exhibits the triumph of good over evil. It also represents Lord Shiva, the bearer of the Astra.",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 29,
+      "type": "Double Handed",
+      "name_sanskrit": "Anjali",
+      "name_english": "offering",
+      "keywords": "",
+      "about": "In this very basic mudra you need to join both your palms to get the Anjali Mudra. In Indian culture, people often use this familiar gesture to greet individuals and welcome them.",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 30,
+      "type": "Double Handed",
+      "name_sanskrit": "Kapotam",
+      "name_english": "dove",
+      "keywords": "",
+      "about": "When you slightly bulge your Anjali mudra at the knuckles, you will be performing the Kapota mudra. Here, the centre is cupped! This mudra is a mark of obedience and acceptance and exhibits respectful salutations. The mudra is held while initiating a conversation with a Guru or teacher.",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 31,
+      "type": "Double Handed",
+      "name_sanskrit": "Karkatam",
+      "name_english": "crab",
+      "keywords": "",
+      "about": "To hold a Karkata mudra, you will have to interlock both hands' fingers with one another. It portrays blowing the Shankh or the conch. It can also be used to depict the bending of a branch, stretching and twisting of the limbs, and the arrival of people.",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 32,
+      "type": "Double Handed",
+      "name_sanskrit": "Swastikam",
+      "name_english": "auspicious sign",
+      "keywords": "",
+      "about": "This mudra is another important double-hand Bharatanatyam mudra used extensively in this particular dance style. It depicts denial, imprisonment, a blocked passage or road, and also a crocodile.",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 33,
+      "type": "Double Handed",
+      "name_sanskrit": "Dola-Hastam",
+      "name_english": "drummer's hands",
+      "keywords": "",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 34,
+      "type": "Double Handed",
+      "name_sanskrit": "Pushpaputam",
+      "name_english": "bag of flowers",
+      "keywords": "",
+      "about": "In order to form a Pushpaputa mudra, you need to join your hands by bringing the little fingers together. The palms are slightly hollow. The mudra exhibits an open mind and soul. It also portrays the action of making an offering, usually to the almighty. Indicate waving of lights to Gods. The mudra also depicts giving away a floral tribute during a Puja, especially during the recital of Mantras.",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 35,
+      "type": "Double Handed",
+      "name_sanskrit": "Utsangam",
+      "name_english": "embrace",
+      "keywords": "",
+      "about": "It is another graceful mudra where your right palm will touch your left shoulder, and your left palm will be placed on your right shoulder. You need to hold Mrigashirsha mudra on each of your hands to hit top-notch perfection. The mudra reflects shyness and modesty or an embrace. It also displays ornaments and armlets.",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 36,
+      "type": "Double Handed",
+      "name_sanskrit": "Shivalingam",
+      "name_english": "sign of Lord Shiva",
+      "keywords": "",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 37,
+      "type": "Double Handed",
+      "name_sanskrit": "Kataka-vardhanam",
+      "name_english": "chain",
+      "keywords": "",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 38,
+      "type": "Double Handed",
+      "name_sanskrit": "Kartari-swastikam",
+      "name_english": "",
+      "keywords": "",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 39,
+      "type": "Double Handed",
+      "name_sanskrit": "Shakatam",
+      "name_english": "carriage",
+      "keywords": "",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 40,
+      "type": "Double Handed",
+      "name_sanskrit": "Shankha",
+      "name_english": "conch shell",
+      "keywords": "",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 41,
+      "type": "Double Handed",
+      "name_sanskrit": "Chakram",
+      "name_english": "rotating disc",
+      "keywords": "",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 42,
+      "type": "Double Handed",
+      "name_sanskrit": "Pasha",
+      "name_english": "ropes",
+      "keywords": "",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 43,
+      "type": "Double Handed",
+      "name_sanskrit": "Kilaka",
+      "name_english": "bond",
+      "keywords": "",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 44,
+      "type": "Double Handed",
+      "name_sanskrit": "Samputa",
+      "name_english": "round shaped casket",
+      "keywords": "",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 45,
+      "type": "Double Handed",
+      "name_sanskrit": "Matsya",
+      "name_english": "fish",
+      "keywords": "",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 46,
+      "type": "Double Handed",
+      "name_sanskrit": "Kurma",
+      "name_english": "tortoise",
+      "keywords": "",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 47,
+      "type": "Double Handed",
+      "name_sanskrit": "Varaha",
+      "name_english": "boar",
+      "keywords": "",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 48,
+      "type": "Double Handed",
+      "name_sanskrit": "Garuda",
+      "name_english": "half-eagle, half-human mount of Lord Vishnu",
+      "keywords": "bird(s) flying",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 49,
+      "type": "Double Handed",
+      "name_sanskrit": "Nagabandham",
+      "name_english": "snakes entwined",
+      "keywords": "",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 50,
+      "type": "Double Handed",
+      "name_sanskrit": "Khattva",
+      "name_english": "cot",
+      "keywords": "",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    },
+    {
+      "sl_no": 51,
+      "type": "Double Handed",
+      "name_sanskrit": "Bherunda",
+      "name_english": "pair of birds",
+      "keywords": "",
+      "about": "",
+      "images": "",
+      "slokas": ""
+    }
+  ]
+}
