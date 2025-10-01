@@ -3,6 +3,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { User, Mudra } from "./models/index.js";
+import pointsRouter from './routes/points.js';
 
 dotenv.config();
 
@@ -21,14 +22,15 @@ app.use((req, res, next) => {
   next();
 });
 
+// Mount points router
+app.use('/api/users', pointsRouter);
+
 // Check if user exists
 app.post("/api/users/check", async (req, res) => {
   try {
     const { email } = req.body;
 
-    if (!email) {
-      return res.status(400).json({ message: 'Email is required' });
-    }
+    if (!email) return res.status(400).json({ message: 'Email is required' });
 
     const user = await User.findOne({ email });
     res.json({ exists: !!user });
@@ -44,12 +46,9 @@ app.post("/api/users/register", async (req, res) => {
     const { clerkId, name, email, password, role } = req.body;
 
     if (!clerkId || !email) {
-      return res.status(400).json({
-        message: 'clerkId and email are required'
-      });
+      return res.status(400).json({ message: 'clerkId and email are required' });
     }
 
-    // Check if user exists
     const existingUser = await User.findOne({
       $or: [{ email }, { clerkId }]
     });
@@ -78,7 +77,6 @@ app.post("/api/users/register", async (req, res) => {
   } catch (err) {
     console.error("Error registering user:", err);
 
-    // Handle duplicate key errors
     if (err.code === 11000) {
       const existingUser = await User.findOne({
         $or: [{ email: req.body.email }, { clerkId: req.body.clerkId }]
@@ -102,4 +100,6 @@ app.get("/api/test", (req, res) => {
   res.json({ message: "Backend API is working!" });
 });
 
-app.listen(5000, () => console.log("🚀 Server running on port 5000"));
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

@@ -1,6 +1,6 @@
 // App.jsx
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import MudraDetection from "./pages/MudraDetection.jsx";
@@ -11,16 +11,15 @@ import { HelmetProvider } from "react-helmet-async";
 import { SignIn, SignUp, SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
 import sideImage from "./assets/image.png";
 import GroupLearning from "./pages/GroupLearning.jsx";
+import ProgressAnalytics from "./pages/ProgressAnalytics.jsx";
+import MudraAssessment from "./pages/MudraAssessment.jsx";
 
-// Wrapper component to handle Navbar visibility
 const AppWrapper = () => {
-  const location = useLocation();
-  const hideNavbar = location.pathname.startsWith("/sign-in") || location.pathname.startsWith("/sign-up");
-
   return (
     <>
-      {!hideNavbar && <Navbar />} {/* Navbar shown only on non-auth pages */}
-      
+      {/* Navbar always visible */}
+      <Navbar />
+
       <Routes>
         {/* Public landing page */}
         <Route path="/" element={<Home />} />
@@ -29,7 +28,32 @@ const AppWrapper = () => {
         <Route path="/detect" element={<MudraDetection />} />
         <Route path="/library" element={<DigitalLibrary />} />
         <Route path="/assistant" element={<AIChatWidget />} />
-        <Route path="/groups" element={<GroupLearning currentUser={null} />} />
+
+        {/* Protected routes */}
+        <Route
+          path="/groups"
+          element={
+            <SignedIn>
+              <GroupLearning currentUser={null} />
+            </SignedIn>
+          }
+        />
+        <Route
+          path="/progress"
+          element={
+            <SignedIn>
+              <ProgressAnalytics currentUser={null} />
+            </SignedIn>
+          }
+        />
+        <Route
+          path="/assessment"
+          element={
+            <SignedIn>
+              <MudraAssessment currentUser={null} />
+            </SignedIn>
+          }
+        />
 
         {/* Clerk Sign In */}
         <Route
@@ -65,6 +89,7 @@ const AppWrapper = () => {
           }
         />
 
+        {/* Clerk Sign Up */}
         <Route
           path="/sign-up/*"
           element={
