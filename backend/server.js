@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { User, Mudra } from "./models/index.js";
 import pointsRouter from './routes/points.js';
+import groupsRouter from './routes/groups.js';
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use((req, res, next) => {
 
 // Mount points router
 app.use('/api/users', pointsRouter);
+app.use('/api/groups', groupsRouter);
 
 // Check if user exists
 app.post("/api/users/check", async (req, res) => {

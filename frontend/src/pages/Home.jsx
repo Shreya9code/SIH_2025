@@ -26,7 +26,7 @@ const Home = () => {
       title: "Digital Library",
       description: "Explore our comprehensive collection of Bharatanatyam mudras and meanings",
       path: "/library",
-      gradient: "from-red-500 to-rose-500",
+      gradient: "from-orange-500 to-amber-500",
       free: true
     },
     {
@@ -42,7 +42,7 @@ const Home = () => {
       title: "Mudra Assessment",
       description: "Practice and get instant feedback on your mudra accuracy and form",
       path: "/assessment",
-      gradient: "from-brown-600 to-red-600",
+      gradient: "from-red-600 to-rose-600",
       free: false
     },
     {
@@ -50,7 +50,7 @@ const Home = () => {
       title: "Progress Analytics",
       description: "Detailed insights into your learning journey and improvement areas",
       path: "/progress",
-      gradient: "from-red-600 to-rose-600",
+      gradient: "from-brown-600 to-red-600",
       free: false
     },
     {
@@ -58,7 +58,7 @@ const Home = () => {
       title: "Group Learning",
       description: "Create virtual classrooms and track progress with fellow learners",
       path: "/groups",
-      gradient: "from-amber-600 to-orange-600",
+      gradient: "from-red-600 to-rose-600",
       free: false
     },
 

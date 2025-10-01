@@ -41,12 +41,12 @@ const Navbar = ({ showAuthButtons }) => {
                 >
                   Sign In
                 </Link>
-                <Link
+                {/* <Link
                   to="/sign-up"
                   className="px-4 py-2 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white rounded-2xl font-semibold transition-all duration-300"
                 >
                   Sign Up
-                </Link>
+                </Link> */}
               </>
             )
           )}
@@ -91,13 +91,13 @@ const Navbar = ({ showAuthButtons }) => {
                 >
                   Sign In
                 </Link>
-                <Link
+                {/* <Link
                   to="/sign-up"
                   onClick={() => setOpen(false)}
                   className="block px-4 py-2 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white rounded-2xl font-semibold transition-all duration-300"
                 >
                   Sign Up
-                </Link>
+                </Link> */}
               </>
             )
           )}
