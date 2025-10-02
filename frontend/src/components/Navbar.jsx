@@ -22,7 +22,7 @@ const Navbar = ({ showAuthButtons }) => {
           <Link to="/" className="hover:text-[#5C261A]">Home</Link>
           <Link to="/detect" className="hover:text-[#5C261A]">Detect</Link>
           <Link to="/library" className="hover:text-[#5C261A]">Library</Link>
-          <Link to="/assistant" className="hover:text-[#5C261A]">Assistant</Link>
+          <Link to="/ai-assistant" className="hover:text-[#5C261A]">Assistant</Link>
           <Link to="/assessment" className="hover:text-[#5C261A]">Assessment</Link>
           <Link to="/progress" className="hover:text-[#5C261A]">Progress</Link>
           <Link to="/groups" className="hover:text-[#5C261A]">Group</Link>
@@ -71,7 +71,7 @@ const Navbar = ({ showAuthButtons }) => {
           <Link to="/" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Home</Link>
           <Link to="/detect" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Detect</Link>
           <Link to="/library" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Library</Link>
-          <Link to="/assistant" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Assistant</Link>
+          <Link to="/ai-assistant" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Assistant</Link>
           <Link to="/assessment" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Assessment</Link>
           <Link to="/progress" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Progress</Link>
           <Link to="/groups" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Group</Link>

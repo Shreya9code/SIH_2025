@@ -61,10 +61,11 @@ npm install
 npm run dev
 
 # Backend setup (in a new terminal)
-cd ../backend
+cd backend
 npm install
 npm start
 
-# Python ML model setup (in a new terminal)
-cd ../ml_model
+# AI setup (in a new terminal)
+cd ai
 pip install -r requirements.txt
+streamlit run .\streamlit_frontend.py

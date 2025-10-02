@@ -36,7 +36,15 @@ const AppWrapper = () => {
       {/* Public pages */}
       <Route path="/detect" element={<Layout><MudraDetection /></Layout>} />
       <Route path="/library" element={<Layout><DigitalLibrary /></Layout>} />
-      <Route path="/assistant" element={<Layout><AIChatWidget /></Layout>} />
+      {/*<Route path="/assistant" element={<Layout><AIChatWidget /></Layout>} />*/}
+<Route path="/ai-assistant" element={
+  <Layout>
+    <iframe 
+      src="http://localhost:8501/" 
+      style={{ width: "100%", height: "100vh", border: "none" }} 
+    />
+  </Layout>
+} />
 
       {/* Protected routes */}
       <Route

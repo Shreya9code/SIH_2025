@@ -33,7 +33,7 @@ const Home = () => {
       icon: Zap,
       title: "AI Assistant",
       description: "Get instant answers to all your Bharatanatyam-related questions",
-      path: "/assistant",
+      path: "/ai-assistant",
       gradient: "from-orange-500 to-amber-500",
       free: true
     },
