@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Camera, Upload, Play, Square } from 'lucide-react';
+import axios from "axios";
 
 const MudraDetection = () => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -62,9 +63,9 @@ const MudraDetection = () => {
     if (!selectedFile) return;
     
     setIsAnalyzing(true);
-    
+    setDetectionResult(null);
     // Simulate API call with delay
-    setTimeout(() => {
+    /*setTimeout(() => {
       setDetectionResult({
         mudraName: "Pataka",
         accuracy: "92%",
@@ -73,7 +74,30 @@ const MudraDetection = () => {
         commonMistakes: ["Thumb not aligned properly", "Fingers too stiff", "Palm not facing forward"]
       });
       setIsAnalyzing(false);
-    }, 2000);
+    }, 2000);*/
+    try {
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    const res = await axios.post("http://localhost:8000/predict", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    // API returns something like: { predictions: [{class, probability}, ...] }
+    const top = res.data.predictions[0];
+
+    setDetectionResult({
+      mudraName: top.class,
+      accuracy: `${(top.probability * 100).toFixed(2)}%`,
+      meaning: "Meaning will come from your DB/extra mapping here",
+      innerThought: "Inner thought can be added from a predefined dictionary",
+      commonMistakes: ["To be filled with real data or static list"],
+    });
+  } catch (err) {
+    console.error("Error analyzing mudra:", err);
+    alert("Error analyzing image. Please try again.");
+  }finally {
+    setIsAnalyzing(false);
+  }
   };
 
   return (
