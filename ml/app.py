@@ -120,5 +120,3 @@ async def get_mudra_details(mudra_name: str = Query(..., title="Mudra Name")):
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
-# To run the app, use the command:
-# uvicorn app:app --reload
