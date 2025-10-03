@@ -270,7 +270,7 @@ const MudraAssessment = () => {
                                         {!showAnalysis && (
                                             <button
                                                 onClick={() => endMudra(false)}
-                                                className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700"
+                                                className="flex-1 px-6 py-3 bg-amber-600 text-white rounded-xl font-semibold hover:bg-amber-700"
                                             >
                                                 End Mudra
                                             </button>

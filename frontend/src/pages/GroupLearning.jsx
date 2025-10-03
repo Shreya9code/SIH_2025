@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import { useUser } from "@clerk/clerk-react";
+import { Users, BarChart3, MessageCircle, Trophy, Clock, Target, TrendingUp, Crown, Share2, Copy, ArrowLeft, Calendar, Award, Activity, Sparkles } from "lucide-react";
 
 // UI helpers
 function Modal({ open, onClose, children }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="relative w-[420px] max-w-[92vw] rounded-xl bg-white p-5 shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div className="relative w-[420px] max-w-[92vw] rounded-2xl bg-gradient-to-br from-white to-amber-50 p-6 shadow-2xl border border-amber-200">
         <button
-          className="absolute right-3 top-3 text-[#8C3B26] hover:text-[#D94F3D]"
+          className="absolute right-4 top-4 text-amber-600 hover:text-amber-800 transition-colors"
           onClick={onClose}
           aria-label="Close"
         >
@@ -39,6 +40,8 @@ function GroupLearning({ currentUser }) {
   const [showMemberModal, setShowMemberModal] = useState(false);
   const [memberSessions, setMemberSessions] = useState([]);
   const [memberAnalytics, setMemberAnalytics] = useState(null);
+  const [showMembersList, setShowMembersList] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
 
   // Fetch user groups (on mount)
   useEffect(() => {
@@ -132,27 +135,15 @@ function GroupLearning({ currentUser }) {
     }
   };
 
-  const handleProgressReport = async () => {
-    if (!activeGroup?._id) return;
+  const loadMemberReport = async (member) => {
+    if (!activeGroup?._id || !member?.clerkId) return;
     try {
-      const { data } = await axios.get(`http://localhost:5000/api/groups/${activeGroup._id}/progress`);
-      setProgressReport(data);
-      setSelectedMemberReport(null);
-    } catch (e) {
-      console.error('Failed to load progress', e);
-      setProgressReport(null);
-    }
-  };
-
-  const loadMemberReport = async (clerkId) => {
-    if (!activeGroup?._id || !clerkId) return;
-    try {
-      const safeId = encodeURIComponent(clerkId);
+      const safeId = encodeURIComponent(member.clerkId);
       const [detailRes, sessionsRes] = await Promise.all([
-        axios.get(`http://localhost:5000/api/groups/${activeGroup._id}/member-progress`, { params: { clerkId } }),
+        axios.get(`http://localhost:5000/api/groups/${activeGroup._id}/member-progress`, { params: { clerkId: member.clerkId } }),
         axios.get(`http://localhost:5000/api/users/${safeId}/sessions`)
       ]);
-      setSelectedMemberReport(detailRes.data);
+      setSelectedMemberReport({...detailRes.data, member});
       const sess = Array.isArray(sessionsRes?.data?.sessions) ? sessionsRes.data.sessions : [];
       setMemberSessions(sess);
       setMemberAnalytics(computeMemberAnalytics(sess));
@@ -227,306 +218,501 @@ function GroupLearning({ currentUser }) {
     ]
   );
 
+  const isAdmin = activeGroup?.adminClerkId === (user?.id || currentUser?._id);
   const isDetail = Boolean(activeGroup);
+
   return (
-    <div className="min-h-screen bg-[#2a1a06]/95 pt-20 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 pt-20 px-4 pb-8">
       {/* HEADER BAR WHEN IN DETAIL VIEW */}
       {isDetail && (
-        <div className="mx-auto mb-4 flex max-w-6xl items-center justify-between rounded-xl border border-[#FFD34E]/30 bg-white/95 p-3 shadow-md">
-          <div className="flex items-center gap-3">
-            <button onClick={() => { setActiveGroup(null); setProgressReport(null); }} className="rounded-md bg-[#FFF9E6] px-3 py-1 text-[#8C3B26] hover:bg-[#FFD34E]/40">← Back to Groups</button>
-            <div>
-              <div className="text-lg font-semibold text-[#8B4513]">{activeGroup.name}</div>
-              <div className="text-xs text-[#8C3B26]/70">{activeGroup.members.length} members</div>
+        <div className="mx-auto mb-6 max-w-7xl">
+          <div className="rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 p-6 shadow-2xl border border-amber-300">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <button 
+                  onClick={() => { 
+                    setActiveGroup(null); 
+                    setProgressReport(null); 
+                    setSelectedMemberReport(null);
+                    setShowMembersList(false);
+                  }} 
+                  className="flex items-center gap-2 rounded-xl bg-white/20 px-4 py-2 text-white backdrop-blur-sm hover:bg-white/30 transition-all duration-300"
+                >
+                  <ArrowLeft size={18} />
+                  Back to Groups
+                </button>
+                <div>
+                  <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+                    {activeGroup.name}
+                    {isAdmin && <Crown size={20} className="text-yellow-300" />}
+                  </h1>
+                  <button 
+                    onClick={() => setShowMembersList(!showMembersList)}
+                    className="flex items-center gap-2 mt-1 text-amber-100 hover:text-white transition-colors"
+                  >
+                    <Users size={16} />
+                    <span>{activeGroup.members.length} members</span>
+                  </button>
+                </div>
+              </div>
+              
+              {/* ADDED: Show Invite Code Button for Admin */}
+              {isAdmin && (
+                <button
+                  onClick={() => setShowInviteModal(true)}
+                  className="flex items-center gap-2 rounded-xl bg-white/20 px-4 py-2 text-white backdrop-blur-sm hover:bg-white/30 transition-all duration-300"
+                >
+                  <Share2 size={18} />
+                  Show Invite Code
+                </button>
+              )}
             </div>
+
+            {/* Members List Dropdown - Made scrollable */}
+            {showMembersList && (
+              <div className="mt-4 rounded-xl bg-white/20 backdrop-blur-sm p-4 border border-white/30">
+                <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                  <Users size={18} />
+                  Group Members
+                </h3>
+                <div className="max-h-60 overflow-y-auto space-y-2">
+                  {activeGroup.members.map((member, index) => (
+                    <div 
+                      key={member.clerkId || member.name}
+                      className="bg-white/10 rounded-lg p-3 border border-white/20 hover:bg-white/20 transition-all duration-300 cursor-pointer"
+                      onClick={() => loadMemberReport(member)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 flex items-center justify-center text-white text-sm font-bold">
+                            {member.name?.charAt(0) || 'U'}
+                          </div>
+                          <span className="text-white font-medium">{member.name}</span>
+                        </div>
+                        {member.clerkId === activeGroup.adminClerkId && (
+                          <Crown size={14} className="text-yellow-300" />
+                        )}
+                      </div>
+                      <div className="mt-2 flex justify-between text-xs text-amber-100">
+                        <span>View Progress</span>
+                        <TrendingUp size={12} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-          <div className="hidden md:block text-xs text-[#8C3B26]/70">Admin: {activeGroup.adminClerkId}</div>
         </div>
       )}
-      <div className={`mx-auto grid max-w-6xl grid-cols-1 gap-6 ${isDetail ? 'md:grid-cols-[1fr,320px]' : 'md:grid-cols-[320px,1fr]'}` }>
-        {!isDetail && (
-        <div className="rounded-xl border border-[#FFD34E]/30 bg-white/95 p-4 shadow-md">
-          <h3 className="mb-3 text-lg font-semibold text-[#8B4513]">Groups</h3>
-          <button
-            onClick={() => setShowGroupModal(true)}
-            className="mb-3 w-full rounded-lg bg-gradient-to-r from-[#D94F3D] to-[#8B0000] px-4 py-2 text-white transition hover:from-[#B33C2D] hover:to-[#660000]"
-          >
-          Create Group
-        </button>
-          <div className="mt-2">
-          <input
-            value={inviteCode}
-            onChange={e=>setInviteCode(e.target.value)}
-            placeholder="Enter invite code to join"
-              className="mb-2 w-full rounded-md border border-[#FFD34E]/50 bg-[#FFF9E6] px-3 py-2 text-[#8C3B26] placeholder-[#8C3B26]/60 focus:outline-none focus:ring-2 focus:ring-[#FFD34E]"
-            />
-            <button
-              onClick={joinGroup}
-              className="w-full rounded-lg bg-[#D94F3D] px-4 py-2 text-white transition hover:bg-[#8B0000]"
-            >
-              Join Group
-            </button>
-        </div>
-        {errorMsg && (
-            <div className="mt-2 text-sm text-red-700">{errorMsg}</div>
-        )}
-          <ul className="mt-3 space-y-2">
-          {groups.map(g => (
-              <li key={g._id}>
-                <button
-                  className={`w-full rounded-md border px-3 py-2 text-left transition ${activeGroup && activeGroup._id===g._id ? 'border-[#5CC8FF] bg-[#E6F7FF]' : 'border-[#FFD34E]/40 bg-white hover:bg-[#FFF9E6]'}`}
-                  onClick={()=>setActiveGroup(g)}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[#8C3B26]">{g.name}</span>
-                    <span className="text-xs text-[#8C3B26]/70">{g.adminClerkId === (user?.id || currentUser?._id) ? 'Admin' : ''}</span>
-                  </div>
-                </button>
-            </li>
-          ))}
-        </ul>
-      </div>
-        )}
 
-        {/* Center: Chat */}
-        <div className="rounded-xl border border-[#FFD34E]/30 bg-white/95 p-0 shadow-md">
-        {activeGroup ? (
-            <div className="flex h-[70vh] min-h-[460px] flex-col">
-              <div className="flex items-center justify-between border-b border-[#FFD34E]/40 px-4 py-3">
-            <div>
-                  <h2 className="text-lg font-semibold text-[#8B4513]">{activeGroup.name}</h2>
-                  <div className="text-xs text-[#8C3B26]/70">{activeGroup.members.length} members</div>
+      {/* MAIN CONTENT AREA */}
+      <div className="mx-auto max-w-7xl">
+        {!isDetail ? (
+          /* GROUPS LIST VIEW - When no group is selected */
+          <div className="grid grid-cols-1 lg:grid-cols-[350px,1fr] gap-6">
+            {/* Groups Sidebar */}
+            <div className="rounded-2xl bg-white p-6 shadow-xl border border-amber-200">
+              <div className="flex items-center gap-3 mb-6">
+                <Users className="text-amber-600" size={24} />
+                <h2 className="text-xl font-bold text-amber-900">Your Groups</h2>
+              </div>
+              
+              <button
+                onClick={() => setShowGroupModal(true)}
+                className="w-full rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 text-white font-semibold shadow-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-300 mb-4 flex items-center justify-center gap-2"
+              >
+                <Users size={18} />
+                Create New Group
+              </button>
+
+              <div className="space-y-3 mb-6">
+                {/* CHANGED: Input field to amber color */}
+                <input
+                  value={inviteCode}
+                  onChange={e => setInviteCode(e.target.value)}
+                  placeholder="Enter invite code"
+                  className="w-full rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-900 placeholder-amber-600/60 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                />
+                <button
+                  onClick={joinGroup}
+                  className="w-full rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 text-white font-semibold shadow-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-300 flex items-center justify-center gap-2"
+                >
+                  <Share2 size={18} />
+                  Join Group
+                </button>
+              </div>
+
+              {errorMsg && (
+                <div className="rounded-xl bg-red-50 border border-red-200 p-3 text-red-700 text-sm mb-4">
+                  {errorMsg}
+                </div>
+              )}
+
+              <div className="space-y-3">
+                {groups.map(group => (
+                  <div
+                    key={group._id}
+                    className="rounded-xl border-2 border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-4 hover:border-amber-300 hover:shadow-lg transition-all duration-300 cursor-pointer"
+                    onClick={() => setActiveGroup(group)}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-bold text-amber-900">{group.name}</h3>
+                      {group.adminClerkId === (user?.id || currentUser?._id) && (
+                        <Crown size={16} className="text-amber-600" />
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between text-sm text-amber-700">
+                      <span className="flex items-center gap-1">
+                        <Users size={14} />
+                        {group.members.length} members
+                      </span>
+                      <span className="bg-amber-200 text-amber-800 px-2 py-1 rounded-full text-xs">
+                        {group.adminClerkId === (user?.id || currentUser?._id) ? 'Admin' : 'Member'}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Welcome/Empty State */}
+            <div className="rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 p-8 text-white shadow-2xl border border-amber-300">
+              <div className="text-center max-w-2xl mx-auto">
+                <Sparkles size={48} className="mx-auto mb-4 text-yellow-300" />
+                <h2 className="text-3xl font-bold mb-4">Welcome to Group Learning</h2>
+                <p className="text-amber-100 text-lg mb-6">
+                  Collaborate with fellow Bharatanatyam enthusiasts! Create or join a group to track progress, 
+                  share insights, and learn together.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-white/20 rounded-xl p-4 backdrop-blur-sm">
+                    <BarChart3 size={24} className="mx-auto mb-2" />
+                    <h3 className="font-semibold">Track Progress</h3>
+                    <p className="text-amber-100 text-sm">Monitor group member achievements</p>
+                  </div>
+                  <div className="bg-white/20 rounded-xl p-4 backdrop-blur-sm">
+                    <Users size={24} className="mx-auto mb-2" />
+                    <h3 className="font-semibold">Collaborate</h3>
+                    <p className="text-amber-100 text-sm">Learn together with peers</p>
+                  </div>
+                  <div className="bg-white/20 rounded-xl p-4 backdrop-blur-sm">
+                    <Trophy size={24} className="mx-auto mb-2" />
+                    <h3 className="font-semibold">Achieve Goals</h3>
+                    <p className="text-amber-100 text-sm">Reach milestones as a team</p>
+                  </div>
                 </div>
               </div>
-              <div className="flex-1 overflow-y-auto px-4 py-3">
-                <div className="space-y-2 text-[#8C3B26]">
-                  {groupChat.map((msg,idx) => {
-                    const ts = msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString() : '';
-                    const mine = (msg.clerkId === (user?.id || currentUser?._id));
-                    return (
-                      <div key={idx} className={`max-w-[80%] rounded-lg px-3 py-2 text-sm shadow-sm ${mine ? 'ml-auto bg-[#E6F7FF] text-[#074f57]' : 'bg-[#FFF9E6] text-[#8C3B26]'}`}>
-                        <div className="mb-0.5 flex items-center justify-between gap-4">
-                          <b className="text-xs">{msg.name || msg.clerkId}</b>
-                          <span className="text-[10px] text-gray-500">{ts}</span>
-                        </div>
-                        <div>{msg.message}</div>
+            </div>
+          </div>
+        ) : (
+          /* GROUP DETAIL VIEW - When a group is selected */
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            {/* LEFT COLUMN: PROGRESS TRACKING */}
+            <div className="space-y-6">
+              {/* Group Progress Overview */}
+              {progressReport && (
+                <div className="rounded-2xl bg-gradient-to-br from-amber-500 to-indigo-600 p-6 text-white shadow-2xl">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Trophy size={24} />
+                    <h3 className="text-xl font-bold">Group Progress Overview</h3>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 mb-4">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold">{Math.round(progressReport.average || 0)}</div>
+                      <div className="text-amber-100 text-sm">Average</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold">{Math.round(progressReport.median || 0)}</div>
+                      <div className="text-amber-100 text-sm">Median</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold">{Math.round(progressReport.mode || 0)}</div>
+                      <div className="text-amber-100 text-sm">Mode</div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    {progressReport.memberSummaries?.map((member, index) => (
+                      <div key={member.clerkId} className="flex items-center justify-between bg-white/20 rounded-lg p-3">
+                        <span className="font-medium">{member.name}</span>
+                        <span className="text-amber-100">{member.totalPoints} pts • {member.sessions} sessions</span>
                       </div>
-                    );
-                  })}
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Member List - UPDATED: Same height as chat and scrollable */}
+              <div className="rounded-2xl bg-white shadow-xl border border-amber-200 h-[600px] flex flex-col">
+                <div className="flex items-center gap-3 border-b border-amber-200 px-6 py-4">
+                  <Users className="text-amber-600" size={20} />
+                  <h3 className="font-bold text-amber-900">Member Progress</h3>
+                </div>
+                
+                <div className="flex-1 overflow-y-auto p-6">
+                  <div className="space-y-3">
+                    {activeGroup.members.map((member) => {
+                      const isSelected = selectedMemberReport?.member?.clerkId === member.clerkId;
+                      return (
+                        <div
+                          key={member.clerkId}
+                          onClick={() => loadMemberReport(member)}
+                          className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
+                            isSelected 
+                              ? 'border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50 shadow-lg' 
+                              : 'border-amber-200 bg-amber-50 hover:border-amber-300 hover:shadow-md'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold">
+                                {member.name?.charAt(0) || 'U'}
+                              </div>
+                              <div>
+                                <div className="font-semibold text-amber-900">{member.name}</div>
+                                <div className="text-xs text-amber-600">
+                                  {member.clerkId === activeGroup.adminClerkId ? 'Admin' : 'Member'}
+                                </div>
+                              </div>
+                            </div>
+                            {isSelected && (
+                              <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                            )}
+                          </div>
+                          <div className="flex justify-between items-center text-sm text-amber-700">
+                            <span>Click to view progress</span>
+                            <TrendingUp size={14} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-              <div className="border-t border-[#FFD34E]/40 p-3">
+            </div>
+
+            {/* RIGHT COLUMN: GROUP CHAT */}
+            <div className="rounded-2xl bg-white shadow-xl border border-amber-200 h-[600px] flex flex-col">
+              <div className="flex items-center gap-3 border-b border-amber-200 px-6 py-4">
+                <MessageCircle className="text-amber-600" size={20} />
+                <h3 className="font-bold text-amber-900">Group Chat</h3>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
+                {groupChat.map((msg, idx) => {
+                  const ts = msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString() : '';
+                  const mine = (msg.clerkId === (user?.id || currentUser?._id));
+                  return (
+                    <div key={idx} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`max-w-[80%] rounded-2xl px-4 py-2 ${mine ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white' : 'bg-amber-100 text-amber-900'}`}>
+                        <div className="flex items-center justify-between gap-3 mb-1">
+                          <span className="text-sm font-semibold">{msg.name || msg.clerkId}</span>
+                          <span className="text-xs opacity-70">{ts}</span>
+                        </div>
+                        <div className="text-sm">{msg.message}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              
+              <div className="border-t border-amber-200 p-4">
                 <div className="flex gap-2">
+                  {/* CHANGED: Input field to amber color */}
                   <input
                     value={chatText}
-                    onChange={e=>setChatText(e.target.value)}
-                    onKeyDown={e=>{if(e.key==="Enter")sendMessage();}}
-                    placeholder="Type a message"
-                    className="flex-1 rounded-full border border-[#FFD34E]/50 bg-white px-4 py-2 text-[#8C3B26] placeholder-[#8C3B26]/60 focus:outline-none focus:ring-2 focus:ring-[#FFD34E]"
+                    onChange={e => setChatText(e.target.value)}
+                    onKeyDown={e => { if (e.key === "Enter") sendMessage(); }}
+                    placeholder="Type your message..."
+                    className="flex-1 rounded-xl border border-amber-300 bg-amber-50 px-4 py-2 text-amber-900 placeholder-amber-600/60 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                   />
                   <button
                     onClick={sendMessage}
-                    className="rounded-full bg-[#D94F3D] px-5 py-2 text-white hover:bg-[#8B0000]"
+                    className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-2 text-white font-semibold hover:from-amber-600 hover:to-orange-600 transition-all duration-300"
                   >
                     Send
                   </button>
                 </div>
               </div>
             </div>
-          ) : (
-            <div className="m-10 text-[#666]">Select a group to start collaborating.</div>
-          )}
-        </div>
-
-        {/* Right: Details & Progress */}
-        {isDetail && (
-          <div className="hidden rounded-xl border border-[#FFD34E]/30 bg-white/95 p-4 shadow-md md:block">
-            <div className="mb-4">
-              <div className="mb-2 text-sm font-semibold text-[#8B4513]">Members</div>
-              <ul className="max-h-56 space-y-1 overflow-y-auto rounded-md border border-[#FFD34E]/40 bg-[#FFF9E6] p-2 text-sm text-[#8C3B26]">
-                {activeGroup.members.map(m => {
-                  const isSel = selectedMemberReport?.member?.clerkId === m.clerkId;
-                  return (
-                    <li key={m.clerkId || m.name}>
-                      <button
-                        onClick={() => loadMemberReport(m.clerkId)}
-                        className={`w-full rounded px-2 py-1 text-left hover:bg-white ${isSel ? 'bg-white font-semibold' : ''}`}
-                      >
-                        {m.name}
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-              {activeGroup.adminClerkId === (user?.id || currentUser?._id) && (
-              <button
-                onClick={handleProgressReport}
-                className="mb-3 w-full rounded-lg bg-gradient-to-r from-[#FFD34E] to-[#D94F3D] px-3 py-2 text-[#8B4513] hover:from-[#F2C736] hover:to-[#C53A29]"
-              >
-                  Generate Progress Report
-                </button>
-              )}
-            {selectedMemberReport ? (
-              <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
-                <h4 className="mb-2 font-semibold text-amber-900">{selectedMemberReport.member?.name}</h4>
-                <div className="grid grid-cols-3 gap-3 text-sm">
-                  <div className="rounded-md bg-white p-2 text-center shadow-sm">Total<br/><span className="text-lg font-bold text-amber-700">{selectedMemberReport.totalPoints}</span></div>
-                  <div className="rounded-md bg-white p-2 text-center shadow-sm">Avg<br/><span className="text-lg font-bold text-amber-700">{Math.round(selectedMemberReport.average || 0)}</span></div>
-                  <div className="rounded-md bg-white p-2 text-center shadow-sm">Sessions<br/><span className="text-lg font-bold text-amber-700">{selectedMemberReport.sessionsCount}</span></div>
-                </div>
-                <div className="mt-3 max-h-32 overflow-y-auto rounded-md bg-white p-2 text-xs text-[#8C3B26] shadow-inner">
-                  {selectedMemberReport.sessions?.slice(-20).map((s, i) => (
-                    <div key={i} className="flex items-center justify-between border-b py-1 last:border-b-0">
-                      <span>Points: {s.points}</span>
-                      <span className="text-[10px] text-gray-500">{s.startedAt ? new Date(s.startedAt).toLocaleDateString() : ''}</span>
-                    </div>
-                  ))}
-                </div>
-                <button onClick={()=>setShowMemberModal(true)} className="mt-3 w-full rounded-md bg-[#D94F3D] px-3 py-2 text-sm text-white hover:bg-[#8B0000]">View full report</button>
-              </div>
-            ) : progressReport && (
-              <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3">
-                <h4 className="mb-2 font-semibold text-emerald-800">Group Progress</h4>
-                <div className="grid grid-cols-3 gap-3 text-sm">
-                  <div className="rounded-md bg-white p-2 text-center shadow-sm">Avg<br/><span className="text-lg font-bold text-emerald-700">{Math.round(progressReport.average || 0)}</span></div>
-                  <div className="rounded-md bg-white p-2 text-center shadow-sm">Median<br/><span className="text-lg font-bold text-emerald-700">{Math.round(progressReport.median || 0)}</span></div>
-                  <div className="rounded-md bg-white p-2 text-center shadow-sm">Mode<br/><span className="text-lg font-bold text-emerald-700">{Math.round(progressReport.mode || 0)}</span></div>
-                </div>
-                <div className="mt-3">
-                  <strong className="text-emerald-900">Members:</strong>
-                  <ul className="mt-1 list-disc pl-5 text-emerald-900">
-                      {progressReport.memberSummaries?.map(m => (
-                        <li key={m.clerkId}>{m.name} — {m.totalPoints} pts across {m.sessions} sessions</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              )}
-            </div>
-        )}
-
-        {/* Member Detailed Report Modal */}
-        {showMemberModal && selectedMemberReport && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-            <div className="max-h-[90vh] w-[900px] max-w-[95vw] overflow-y-auto rounded-xl bg-white p-5 shadow-xl">
-              <div className="mb-3 flex items-center justify-between">
-                <div>
-                  <div className="text-lg font-semibold text-[#8B4513]">{selectedMemberReport.member?.name}</div>
-                  <div className="text-xs text-[#8C3B26]/70">Detailed Progress</div>
-                </div>
-                <button className="rounded-md px-3 py-1 text-[#8C3B26] hover:bg-[#FFF9E6]" onClick={()=>setShowMemberModal(false)}>Close</button>
-              </div>
-              {memberAnalytics && (
-                <>
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-                    <div className="rounded-2xl border border-[#FFD34E]/30 bg-white p-4">
-                      <div className="text-sm text-[#8C3B26]">Overall Progress</div>
-                      <div className="text-2xl font-bold text-[#8B4513]">{memberAnalytics.overallProgress}%</div>
-                    </div>
-                    <div className="rounded-2xl border border-[#FFD34E]/30 bg-white p-4">
-                      <div className="text-sm text-[#8C3B26]">Practice Time</div>
-                      <div className="text-2xl font-bold text-[#8B4513]">{memberAnalytics.totalPracticeTime}</div>
-                    </div>
-                    <div className="rounded-2xl border border-[#FFD34E]/30 bg-white p-4">
-                      <div className="text-sm text-[#8C3B26]">Sessions</div>
-                      <div className="text-2xl font-bold text-[#8B4513]">{memberAnalytics.sessionsCompleted}</div>
-                    </div>
-                    <div className="rounded-2xl border border-[#FFD34E]/30 bg-white p-4">
-                      <div className="text-sm text-[#8C3B26]">Current Streak</div>
-                      <div className="text-2xl font-bold text-[#8B4513]">{memberAnalytics.currentStreak} days</div>
-                    </div>
-                  </div>
-                  <div className="mt-4 rounded-2xl border border-[#FFD34E]/30 bg-white p-4">
-                    <div className="mb-2 flex items-center justify-between text-[#8B4513]">
-                      <div>Accuracy Trend</div>
-                    </div>
-                    <div className="flex h-48 items-end justify-between space-x-2">
-                      {memberSessions.map((s, index) => {
-                        const value = Math.min(100, Math.round((Number(s.points) || 0) * 1));
-                        const label = new Date(s.startedAt).toLocaleDateString();
-                        return (
-                          <div key={index} className="flex flex-1 flex-col items-center">
-                            <div className="mb-1 text-xs text-[#8C3B26]">{value}</div>
-                            <div className="w-full rounded-t-lg bg-gradient-to-t from-[#D94F3D] to-[#FFD34E]" style={{ height: `${(value / 100) * 160}px` }}></div>
-                            <div className="mt-1 text-xs text-[#8C3B26]">{label}</div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                  <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div className="rounded-2xl border border-[#FFD34E]/30 bg-white p-4">
-                      <div className="mb-2 text-[#8B4513]">Mudra Performance</div>
-                      <div className="space-y-3">
-                        {memberAnalytics.mudraBreakdown.map((mudra, index) => (
-                          <div key={index} className="rounded-lg border border-[#FFD34E]/50 bg-[#FFF9E6] p-3">
-                            <div className="mb-1 flex items-center justify-between">
-                              <div className="font-semibold text-[#8B4513]">{mudra.name}</div>
-                              <div className="text-lg font-bold text-[#D94F3D]">{mudra.accuracy}%</div>
-                            </div>
-                            <div className="h-2 w-full rounded-full bg-gray-200">
-                              <div className="h-2 rounded-full bg-gradient-to-r from-[#FFD34E] to-[#D94F3D]" style={{ width: `${mudra.accuracy}%` }}></div>
-                            </div>
-                            <div className="mt-1 flex justify-between text-xs text-[#8C3B26]"><span>Practiced {mudra.practiceCount} times</span><span>{mudra.improvement >= 0 ? '↑' : '↓'} {Math.abs(mudra.improvement)}%</span></div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="rounded-2xl border border-[#FFD34E]/30 bg-white p-4">
-                      <div className="mb-2 text-[#8B4513]">Focus Areas</div>
-                      <div className="space-y-3">
-                        {memberAnalytics.improvementAreas.map((area, index) => (
-                          <div key={index} className="rounded-lg border border-[#FFD34E]/50 bg-[#FFF9E6] p-3">
-                            <div className="mb-1 flex items-center justify-between">
-                              <div className="font-semibold text-[#8B4513]">{area.mudra}</div>
-                              <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${area.priority === 'high' ? 'bg-red-100 text-red-800' : area.priority === 'medium' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'}`}>{area.priority} priority</span>
-                            </div>
-                            <div className="text-sm text-[#8C3B26]">{area.issue}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
           </div>
         )}
+      </div>
 
-      {/* Modal for new group */}
-      <Modal open={showGroupModal} onClose={()=>setShowGroupModal(false)}>
-          <h3 className="mb-3 text-lg font-semibold text-[#8B4513]">Create New Group</h3>
-        <form onSubmit={e=>{e.preventDefault(); createGroup();}}>
+      {/* ADDED: Invite Code Modal */}
+      <Modal open={showInviteModal} onClose={() => setShowInviteModal(false)}>
+        <h3 className="mb-4 text-xl font-bold text-amber-900 text-center">Group Invite Code</h3>
+        <div className="text-center mb-4">
+          <div className="text-2xl font-bold text-amber-600 bg-amber-100 rounded-xl py-4 px-6 mb-3">
+            {activeGroup?.inviteCode || shareCode}
+          </div>
+          <p className="text-amber-600 text-sm mb-4">
+            Share this code with others to join your group
+          </p>
+        </div>
+        <div className="space-y-3">
+          <input
+            value={shareLink}
+            readOnly
+            className="w-full rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-900 text-sm"
+          />
+          <button
+            onClick={() => navigator.clipboard.writeText(shareLink)}
+            className="w-full rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 text-white font-semibold hover:from-amber-600 hover:to-orange-600 transition-all duration-300 flex items-center justify-center gap-2"
+          >
+            <Copy size={18} />
+            Copy Invite Link
+          </button>
+        </div>
+      </Modal>
+
+      {/* Member Detailed Report Modal */}
+      {showMemberModal && selectedMemberReport && memberAnalytics && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="max-h-[90vh] w-[1000px] max-w-[95vw] overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl border border-amber-200">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-amber-900">{selectedMemberReport.member?.name}'s Detailed Progress</h2>
+                <div className="text-amber-600">Comprehensive performance analytics</div>
+              </div>
+              <button 
+                className="rounded-xl bg-amber-100 px-4 py-2 text-amber-700 hover:bg-amber-200 transition-colors"
+                onClick={() => setShowMemberModal(false)}
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-6">
+              {/* Key Metrics */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="rounded-2xl bg-gradient-to-br from-amber-500 to-indigo-600 p-4 text-white text-center">
+                  <div className="text-2xl font-bold">{memberAnalytics.overallProgress}%</div>
+                  <div className="text-amber-100 text-sm">Overall Progress</div>
+                </div>
+                <div className="rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 p-4 text-white text-center">
+                  <div className="text-2xl font-bold">{memberAnalytics.sessionsCompleted}</div>
+                  <div className="text-green-100 text-sm">Sessions</div>
+                </div>
+                <div className="rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 p-4 text-white text-center">
+                  <div className="text-2xl font-bold">{memberAnalytics.totalPracticeTime}</div>
+                  <div className="text-orange-100 text-sm">Practice Time</div>
+                </div>
+                <div className="rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 p-4 text-white text-center">
+                  <div className="text-2xl font-bold">{memberAnalytics.currentStreak}</div>
+                  <div className="text-purple-100 text-sm">Day Streak</div>
+                </div>
+              </div>
+
+              {/* Accuracy Trend Chart */}
+              <div className="rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 p-6 border border-amber-200">
+                <h3 className="text-lg font-bold text-amber-900 mb-4">Accuracy Trend</h3>
+                <div className="flex items-end justify-between h-48 space-x-2">
+                  {memberSessions.map((session, index) => {
+                    const value = Math.min(100, Math.round((Number(session.points) || 0) * 1));
+                    const label = new Date(session.startedAt).toLocaleDateString();
+                    return (
+                      <div key={index} className="flex flex-1 flex-col items-center">
+                        <div className="mb-2 text-sm font-semibold text-amber-700">{value}%</div>
+                        <div 
+                          className="w-full rounded-t-lg bg-gradient-to-t from-amber-500 to-orange-500 transition-all duration-500"
+                          style={{ height: `${(value / 100) * 160}px` }}
+                        ></div>
+                        <div className="mt-2 text-xs text-amber-600">{label}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Mudra Performance & Focus Areas */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 p-6 border border-green-200">
+                  <h3 className="text-lg font-bold text-green-900 mb-4">Mudra Performance</h3>
+                  <div className="space-y-4">
+                    {memberAnalytics.mudraBreakdown.map((mudra, index) => (
+                      <div key={index} className="rounded-xl bg-white p-4 shadow-sm border border-green-100">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-semibold text-green-900">{mudra.name}</span>
+                          <span className="text-lg font-bold text-green-600">{mudra.accuracy}%</span>
+                        </div>
+                        <div className="w-full bg-green-100 rounded-full h-2">
+                          <div 
+                            className="bg-gradient-to-r from-green-400 to-emerald-500 h-2 rounded-full transition-all duration-1000"
+                            style={{ width: `${mudra.accuracy}%` }}
+                          ></div>
+                        </div>
+                        <div className="flex justify-between text-sm text-green-700 mt-1">
+                          <span>Practiced {mudra.practiceCount} times</span>
+                          <span className={mudra.improvement >= 0 ? 'text-green-600' : 'text-red-500'}>
+                            {mudra.improvement >= 0 ? '↑' : '↓'} {Math.abs(mudra.improvement)}%
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-2xl bg-gradient-to-br from-rose-50 to-pink-50 p-6 border border-rose-200">
+                  <h3 className="text-lg font-bold text-rose-900 mb-4">Focus Areas</h3>
+                  <div className="space-y-4">
+                    {memberAnalytics.improvementAreas.map((area, index) => (
+                      <div key={index} className="rounded-xl bg-white p-4 shadow-sm border border-rose-100">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-semibold text-rose-900">{area.mudra}</span>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            area.priority === 'high' ? 'bg-red-100 text-red-800' :
+                            area.priority === 'medium' ? 'bg-amber-100 text-amber-800' :
+                            'bg-amber-100 text-amber-800'
+                          }`}>
+                            {area.priority} priority
+                          </span>
+                        </div>
+                        <div className="text-sm text-rose-700">{area.issue}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Group Modal */}
+      <Modal open={showGroupModal} onClose={() => setShowGroupModal(false)}>
+        <h3 className="mb-4 text-xl font-bold text-amber-900 text-center">Create New Group</h3>
+        <form onSubmit={e => { e.preventDefault(); createGroup(); }}>
           <input
             value={groupName}
-            onChange={e=>setGroupName(e.target.value)}
-            placeholder="Group name"
+            onChange={e => setGroupName(e.target.value)}
+            placeholder="Enter group name"
             required
-              className="mb-3 w-full rounded-md border border-[#FFD34E]/50 bg-[#FFF9E6] px-3 py-2 text-[#8C3B26] placeholder-[#8C3B26]/60 focus:outline-none focus:ring-2 focus:ring-[#FFD34E]"
+            className="w-full rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-900 placeholder-amber-600/60 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent mb-4"
           />
-            <button type="submit" className="w-full rounded-lg bg-gradient-to-r from-[#FFD34E] to-[#D94F3D] px-4 py-2 text-[#8B4513] hover:from-[#F2C736] hover:to-[#C53A29]">Create</button>
+          <button 
+            type="submit" 
+            className="w-full rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 text-white font-semibold shadow-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-300"
+          >
+            Create Group
+          </button>
         </form>
         {shareCode && (
-            <div className="mt-3 text-sm text-[#8C3B26]">
-            Share this invite code with members: <b>{shareCode}</b>
+          <div className="mt-4 p-3 rounded-xl bg-amber-100 border border-amber-300">
+            <div className="text-sm text-amber-800 font-semibold mb-2">Invite Code:</div>
+            <div className="flex items-center justify-between">
+              <code className="text-amber-900 font-bold">{shareCode}</code>
+              <button 
+                onClick={() => navigator.clipboard.writeText(shareCode)}
+                className="flex items-center gap-1 text-amber-700 hover:text-amber-900"
+              >
+                <Copy size={14} />
+                Copy
+              </button>
+            </div>
           </div>
         )}
       </Modal>
-      </div>
-
-      {shareCode && (
-        <div className="fixed bottom-4 right-4 rounded-xl border border-[#FFD34E]/40 bg-white p-4 shadow-lg">
-          <div className="mb-1 font-semibold text-[#8B4513]">Invite</div>
-          <div className="text-sm text-[#8C3B26]">Code: <b>{shareCode}</b></div>
-          {shareLink && (
-            <div className="mt-2">
-              <div className="break-all text-xs text-[#8C3B26]">{shareLink}</div>
-              <button onClick={() => { navigator.clipboard.writeText(shareLink); }} className="mt-2 rounded-md bg-[#D94F3D] px-3 py-1 text-xs text-white hover:bg-[#8B0000]">Copy Link</button>
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 }

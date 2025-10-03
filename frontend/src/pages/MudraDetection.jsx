@@ -306,7 +306,7 @@ const MudraDetection = () => {
                     <DetailItem
                       title="Inner Thought & Expression"
                       content={detectionResult.innerThought}
-                      icon={<Lightbulb className="w-5 h-5 text-blue-500" />}
+                      icon={<Lightbulb className="w-5 h-5 text-amber-500" />}
                     />
                     {detectionResult.commonMistakes && (
                       <div className="bg-rose-50 rounded-lg p-4 border border-rose-200">
