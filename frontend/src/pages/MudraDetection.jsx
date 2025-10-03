@@ -82,19 +82,19 @@ const MudraDetection = () => {
     const res = await axios.post("http://localhost:8000/predict", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
-    // API returns something like: { predictions: [{class, probability}, ...] }
-    const top = res.data.predictions[0];
+    // API returns something like:{"predictions":[{"class":"Aralam","probability":0.32877451181411743},{"class":"Tripathaka","probability":0.2217116802930832},{"class":"Ardhachandran","probability":0.08186914771795273}]}
+    const topPrediction = res.data.predictions[0];
 
     setDetectionResult({
-      mudraName: top.class,
-      accuracy: `${(top.probability * 100).toFixed(2)}%`,
+      mudraName: topPrediction.class,
+      accuracy: `${(topPrediction.probability * 100).toFixed(2)}%`,
       meaning: "Meaning will come from your DB/extra mapping here",
       innerThought: "Inner thought can be added from a predefined dictionary",
       commonMistakes: ["To be filled with real data or static list"],
     });
   } catch (err) {
     console.error("Error analyzing mudra:", err);
-    alert("Error analyzing image. Please try again.");
+    alert("Error analyzing image. Make sure FastAPI server is running.");
   }finally {
     setIsAnalyzing(false);
   }
