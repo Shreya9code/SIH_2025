@@ -69,3 +69,8 @@ npm start
 cd ai
 pip install -r requirements.txt
 streamlit run .\streamlit_frontend.py
+
+# AI setup (in a new terminal)
+cd ml
+pip install -r requirements.txt
+uvicorn app:app --reload
