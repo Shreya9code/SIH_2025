@@ -59,7 +59,7 @@ const DigitalLibrary = () => {
       return (
         <img
           src={`../data/images/${mudra.images}`}
-          alt={mudra.name_english}
+          alt={mudra.name_sanskrit}
           className="h-full w-auto object-contain"
           onError={e => {
             e.target.onerror = null;
@@ -70,7 +70,7 @@ const DigitalLibrary = () => {
     }
     return (
       <div className="text-6xl text-white">
-        {emojiMap[mudra.name_english] || '🤲'}
+        {emojiMap[mudra.name_sanskrit] || '🤲'}
       </div>
     );
   };
@@ -107,7 +107,7 @@ const DigitalLibrary = () => {
           </p>
         </div>
 
-        {/* Search + Filters */}
+        {/* Search + Filters - FORCE LIGHT THEME STYLING */}
         <div className="bg-white rounded-2xl shadow-lg border border-[#FFD34E]/30 p-6 mb-8">
           <div className="grid md:grid-cols-3 gap-4 items-center">
             {/* Search */}
@@ -119,7 +119,8 @@ const DigitalLibrary = () => {
                   placeholder="Search mudras..."
                   value={searchTerm}
                   onChange={e => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-[#FFD34E] rounded-xl bg-[#FFF9E6] text-[#8B4513] placeholder-[#8C3B26]/60 focus:outline-none focus:ring-2 focus:ring-[#D94F3D]"
+                  className="digital-library-input w-full pl-10 pr-4 py-3 border border-[#FFD34E] rounded-xl bg-[#FFF9E6] text-[#8B4513] placeholder-[#8C3B26]/60 focus:outline-none focus:ring-2 focus:ring-[#D94F3D] focus:bg-[#FFF9E6] focus:text-[#8B4513] text-center"
+                  style={{ backgroundColor: '#FFF9E6', color: '#8B4513', borderColor: '#FFD34E' }}
                 />
               </div>
             </div>
@@ -129,10 +130,11 @@ const DigitalLibrary = () => {
               <select
                 value={selectedCategory}
                 onChange={e => setSelectedCategory(e.target.value)}
-                className="w-full px-4 py-3 border border-[#FFD34E] rounded-xl bg-[#FFF9E6] text-[#8B4513] focus:outline-none focus:ring-2 focus:ring-[#D94F3D]"
+                className="digital-library-select w-full px-4 py-3 border border-[#FFD34E] rounded-xl bg-[#FFF9E6] text-[#8B4513] focus:outline-none focus:ring-2 focus:ring-[#D94F3D] focus:bg-[#FFF9E6] focus:text-[#8B4513]"
+                style={{ backgroundColor: '#FFF9E6', color: '#8B4513', borderColor: '#FFD34E' }}
               >
                 {categories.map(cat => (
-                  <option key={cat} value={cat}>
+                  <option key={cat} value={cat} style={{ backgroundColor: '#FFF9E6', color: '#8B4513' }}>
                     {cat === 'all' ? 'All Types' : cat}
                   </option>
                 ))}
@@ -144,10 +146,11 @@ const DigitalLibrary = () => {
               <select
                 value={selectedBhava}
                 onChange={e => setSelectedBhava(e.target.value)}
-                className="w-full px-4 py-3 border border-[#FFD34E] rounded-xl bg-[#FFF9E6] text-[#8B4513] focus:outline-none focus:ring-2 focus:ring-[#D94F3D]"
+                className="digital-library-select w-full px-4 py-3 border border-[#FFD34E] rounded-xl bg-[#FFF9E6] text-[#8B4513] focus:outline-none focus:ring-2 focus:ring-[#D94F3D] focus:bg-[#FFF9E6] focus:text-[#8B4513]"
+                style={{ backgroundColor: '#FFF9E6', color: '#8B4513', borderColor: '#FFD34E' }}
               >
                 {bhavas.map(bhava => (
-                  <option key={bhava} value={bhava}>
+                  <option key={bhava} value={bhava} style={{ backgroundColor: '#FFF9E6', color: '#8B4513' }}>
                     {bhava === 'all' ? 'All Bhavas' : bhava}
                   </option>
                 ))}
