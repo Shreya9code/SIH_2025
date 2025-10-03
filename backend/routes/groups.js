@@ -136,5 +136,94 @@ router.get('/:groupId/progress', async (req, res) => {
   }
 });
 
+// Per-member progress within a group
+router.get('/:groupId/progress/:clerkId', async (req, res) => {
+  try {
+    const { groupId, clerkId } = req.params;
+    const group = await Group.findById(groupId);
+    if (!group) return res.status(404).json({ message: 'Group not found' });
+
+    const isMember = group.members.some(m => m.clerkId === clerkId);
+    if (!isMember) return res.status(404).json({ message: 'Member not in group' });
+
+    const user = await User.findOne({ clerkId }, { sessions: 1, name: 1, clerkId: 1 });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const totals = (user.sessions || []).map(s => Number(s.points) || 0);
+    const totalPoints = totals.reduce((a,b)=>a+b,0);
+    const sessions = user.sessions || [];
+    const average = totals.length ? (totalPoints / totals.length) : 0;
+    const sorted = [...totals].sort((a,b)=>a-b);
+    const mid = Math.floor(sorted.length/2);
+    const median = sorted.length ? (sorted.length % 2 ? sorted[mid] : (sorted[mid-1] + sorted[mid]) / 2) : 0;
+    const mode = (() => {
+      const freq = new Map();
+      for (const v of totals) freq.set(v, (freq.get(v) || 0) + 1);
+      let best = null, bestC = 0;
+      for (const [v, c] of freq.entries()) if (c > bestC) { best = v; bestC = c; }
+      return best ?? 0;
+    })();
+
+    res.json({
+      member: { clerkId: user.clerkId, name: user.name || '' },
+      totalPoints,
+      sessionsCount: sessions.length,
+      average,
+      median,
+      mode,
+      sessions,
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Alternative: Per-member progress via query param to avoid path encoding issues
+router.get('/:groupId/member-progress', async (req, res) => {
+  try {
+    const { groupId } = req.params;
+    const { clerkId } = req.query;
+    if (!clerkId) return res.status(400).json({ message: 'clerkId is required' });
+
+    const group = await Group.findById(groupId);
+    if (!group) return res.status(404).json({ message: 'Group not found' });
+
+    const isMember = group.members.some(m => m.clerkId === clerkId);
+    if (!isMember) return res.status(404).json({ message: 'Member not in group' });
+
+    const user = await User.findOne({ clerkId }, { sessions: 1, name: 1, clerkId: 1 });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const totals = (user.sessions || []).map(s => Number(s.points) || 0);
+    const totalPoints = totals.reduce((a,b)=>a+b,0);
+    const sessions = user.sessions || [];
+    const average = totals.length ? (totalPoints / totals.length) : 0;
+    const sorted = [...totals].sort((a,b)=>a-b);
+    const mid = Math.floor(sorted.length/2);
+    const median = sorted.length ? (sorted.length % 2 ? sorted[mid] : (sorted[mid-1] + sorted[mid]) / 2) : 0;
+    const mode = (() => {
+      const freq = new Map();
+      for (const v of totals) freq.set(v, (freq.get(v) || 0) + 1);
+      let best = null, bestC = 0;
+      for (const [v, c] of freq.entries()) if (c > bestC) { best = v; bestC = c; }
+      return best ?? 0;
+    })();
+
+    res.json({
+      member: { clerkId: user.clerkId, name: user.name || '' },
+      totalPoints,
+      sessionsCount: sessions.length,
+      average,
+      median,
+      mode,
+      sessions,
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 export default router;
 
