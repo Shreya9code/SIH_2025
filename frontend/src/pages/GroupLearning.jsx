@@ -221,10 +221,14 @@ function GroupLearning({ currentUser }) {
   const isDetail = Boolean(activeGroup);
 
   return (
+    
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 pt-20 px-4 pb-8">
       {/* HEADER BAR WHEN IN DETAIL VIEW */}
+      
       {isDetail && (
+        
         <div className="mx-auto mb-6 max-w-7xl">
+          
           <div className="rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 p-6 shadow-2xl border border-amber-300">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -309,7 +313,37 @@ function GroupLearning({ currentUser }) {
       <div className="mx-auto max-w-7xl">
         {!isDetail ? (
           /* GROUPS LIST VIEW - When no group is selected */
+
+          
           <div className="grid grid-cols-1 lg:grid-cols-[350px,1fr] gap-6">
+              {/* Welcome/Empty State */}
+            <div className="rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 p-8 text-white shadow-2xl border border-amber-300">
+              <div className="text-center max-w-2xl mx-auto">
+                <Sparkles size={48} className="mx-auto mb-4 text-yellow-300" />
+                <h2 className="text-3xl font-bold mb-4">Welcome to Group Learning</h2>
+                <p className="text-amber-100 text-lg mb-6">
+                  Collaborate with fellow Bharatanatyam enthusiasts! Create or join a group to track progress,
+                  share insights, and learn together.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-white/20 rounded-xl p-4 backdrop-blur-sm">
+                    <BarChart3 size={24} className="mx-auto mb-2" />
+                    <h3 className="font-semibold">Track Progress</h3>
+                    <p className="text-amber-100 text-sm">Monitor group member achievements</p>
+                  </div>
+                  <div className="bg-white/20 rounded-xl p-4 backdrop-blur-sm">
+                    <Users size={24} className="mx-auto mb-2" />
+                    <h3 className="font-semibold">Collaborate</h3>
+                    <p className="text-amber-100 text-sm">Learn together with peers</p>
+                  </div>
+                  <div className="bg-white/20 rounded-xl p-4 backdrop-blur-sm">
+                    <Trophy size={24} className="mx-auto mb-2" />
+                    <h3 className="font-semibold">Achieve Goals</h3>
+                    <p className="text-amber-100 text-sm">Reach milestones as a team</p>
+                  </div>
+                </div>
+              </div>
+            </div>
             {/* Groups Sidebar */}
             <div className="rounded-2xl bg-white p-6 shadow-xl border border-amber-200">
               <div className="flex items-center gap-3 mb-6">
@@ -368,34 +402,10 @@ function GroupLearning({ currentUser }) {
               </div>
             </div>
 
-            {/* Welcome/Empty State */}
-            <div className="rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 p-8 text-white shadow-2xl border border-amber-300">
-              <div className="text-center max-w-2xl mx-auto">
-                <Sparkles size={48} className="mx-auto mb-4 text-yellow-300" />
-                <h2 className="text-3xl font-bold mb-4">Welcome to Group Learning</h2>
-                <p className="text-amber-100 text-lg mb-6">
-                  Collaborate with fellow Bharatanatyam enthusiasts! Create or join a group to track progress,
-                  share insights, and learn together.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-white/20 rounded-xl p-4 backdrop-blur-sm">
-                    <BarChart3 size={24} className="mx-auto mb-2" />
-                    <h3 className="font-semibold">Track Progress</h3>
-                    <p className="text-amber-100 text-sm">Monitor group member achievements</p>
-                  </div>
-                  <div className="bg-white/20 rounded-xl p-4 backdrop-blur-sm">
-                    <Users size={24} className="mx-auto mb-2" />
-                    <h3 className="font-semibold">Collaborate</h3>
-                    <p className="text-amber-100 text-sm">Learn together with peers</p>
-                  </div>
-                  <div className="bg-white/20 rounded-xl p-4 backdrop-blur-sm">
-                    <Trophy size={24} className="mx-auto mb-2" />
-                    <h3 className="font-semibold">Achieve Goals</h3>
-                    <p className="text-amber-100 text-sm">Reach milestones as a team</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+          
+
+
+
           </div>
         ) : (
           /* GROUP DETAIL VIEW - When a group is selected */
