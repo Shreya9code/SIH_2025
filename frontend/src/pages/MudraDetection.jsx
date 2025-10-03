@@ -1,10 +1,10 @@
-import React, { useState, useRef } from 'react';
-import { Camera, Upload, Play, Square } from 'lucide-react';
+import React, { useState, useRef } from "react";
+import { Camera, Upload, Play, Square } from "lucide-react";
 import axios from "axios";
 
 const MudraDetection = () => {
   const [selectedFile, setSelectedFile] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState('');
+  const [previewUrl, setPreviewUrl] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [detectionResult, setDetectionResult] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -22,46 +22,48 @@ const MudraDetection = () => {
 
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { width: 1280, height: 720 } 
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 1280, height: 720 },
       });
       streamRef.current = stream;
       videoRef.current.srcObject = stream;
       setIsRecording(true);
     } catch (error) {
-      console.error('Error accessing camera:', error);
-      alert('Unable to access camera. Please check permissions.');
+      console.error("Error accessing camera:", error);
+      alert("Unable to access camera. Please check permissions.");
     }
   };
 
   const stopCamera = () => {
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current.getTracks().forEach((track) => track.stop());
       setIsRecording(false);
     }
   };
 
   const captureImage = () => {
     if (videoRef.current) {
-      const canvas = document.createElement('canvas');
+      const canvas = document.createElement("canvas");
       canvas.width = videoRef.current.videoWidth;
       canvas.height = videoRef.current.videoHeight;
-      const context = canvas.getContext('2d');
+      const context = canvas.getContext("2d");
       context.drawImage(videoRef.current, 0, 0);
-      
+
       canvas.toBlob((blob) => {
-        const file = new File([blob], 'captured-image.jpg', { type: 'image/jpeg' });
+        const file = new File([blob], "captured-image.jpg", {
+          type: "image/jpeg",
+        });
         setSelectedFile(file);
         setPreviewUrl(URL.createObjectURL(blob));
         setDetectionResult(null);
         stopCamera();
-      }, 'image/jpeg');
+      }, "image/jpeg");
     }
   };
 
   const analyzeMudra = async () => {
     if (!selectedFile) return;
-    
+
     setIsAnalyzing(true);
     setDetectionResult(null);
     // Simulate API call with delay
@@ -76,28 +78,39 @@ const MudraDetection = () => {
       setIsAnalyzing(false);
     }, 2000);*/
     try {
-    const formData = new FormData();
-    formData.append("file", selectedFile);
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      // 1. CALL TO ML PREDICTION API
+      const res = await axios.post("http://localhost:8000/predict", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      // API returns something like:{"predictions":[{"class":"Aralam","probability":0.32877451181411743},{"class":"Tripathaka","probability":0.2217116802930832},{"class":"Ardhachandran","probability":0.08186914771795273}]}
+      const topPrediction = res.data.predictions[0];
+      const predictedMudra = topPrediction.class;
 
-    const res = await axios.post("http://localhost:8000/predict", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-    // API returns something like:{"predictions":[{"class":"Aralam","probability":0.32877451181411743},{"class":"Tripathaka","probability":0.2217116802930832},{"class":"Ardhachandran","probability":0.08186914771795273}]}
-    const topPrediction = res.data.predictions[0];
-
-    setDetectionResult({
-      mudraName: topPrediction.class,
-      accuracy: `${(topPrediction.probability * 100).toFixed(2)}%`,
-      meaning: "Meaning will come from your DB/extra mapping here",
-      innerThought: "Inner thought can be added from a predefined dictionary",
-      commonMistakes: ["To be filled with real data or static list"],
-    });
-  } catch (err) {
-    console.error("Error analyzing mudra:", err);
-    alert("Error analyzing image. Make sure FastAPI server is running.");
-  }finally {
-    setIsAnalyzing(false);
-  }
+      // 2. CALL TO YOUR BACKEND'S GEMINI-POWERED ENHANCEMENT API
+      // This assumes you create an endpoint on your server (e.g., /mudra-details)
+      // that takes the name and queries Gemini.
+      const detailsResponse = await axios.get(
+        "http://localhost:8000/mudra_info",
+        {
+          params: { mudra_name: predictedMudra },
+        }
+      );
+      // 3. UPDATE STATE WITH COMBINED DATA
+      setDetectionResult({
+        mudraName: predictedMudra,
+        accuracy: `${(topPrediction.probability * 100).toFixed(2)}%`,
+        meaning: detailsResponse.data.meaning,
+        innerThought: detailsResponse.data.innerThought,
+        commonMistakes: detailsResponse.data.commonMistakes,
+      });
+    } catch (err) {
+      console.error("Error analyzing mudra:", err);
+      alert("Error analyzing image. Make sure FastAPI server is running.");
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   return (
@@ -105,15 +118,17 @@ const MudraDetection = () => {
       <div className="max-w-6xl mx-auto px-2 py-4">
         {/* Header */}
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-[#8B4513] mb-2">Mudra Detection</h1>
+          <h1 className="text-3xl font-bold text-[#8B4513] mb-2">
+            Mudra Detection
+          </h1>
           <p className="text-lg text-[#8C3B26] max-w-2xl mx-auto">
-            Upload an image or use your camera to identify Bharatanatyam mudras with AI precision
+            Upload an image or use your camera to identify Bharatanatyam mudras
+            with AI precision
           </p>
         </div>
 
         {/* Main Input Row */}
         <div className="flex flex-col lg:flex-row gap-6 mb-8">
-          
           {/* Left Side: Upload + Image Preview */}
           <div className="flex-1 space-y-4">
             {/* Upload Box */}
@@ -123,30 +138,36 @@ const MudraDetection = () => {
                   <Upload className="w-5 h-5 text-[#D94F3D]" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold text-[#8B4513]">Upload Image</h2>
+                  <h2 className="text-lg font-semibold text-[#8B4513]">
+                    Upload Image
+                  </h2>
                   <p className="text-[#8C3B26] text-sm">JPG, PNG, or WebP</p>
                 </div>
               </div>
 
               <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-[#FFD34E] rounded-lg cursor-pointer hover:border-[#D94F3D] transition-colors bg-[#FFF9E6]">
                 <Upload className="w-8 h-8 text-[#D94F3D] mb-2" />
-                <span className="text-[#8C3B26] font-medium">Click to upload</span>
-                <span className="text-[#8C3B26]/70 text-xs mt-1">or drag and drop</span>
-                <input 
-                  type="file" 
-                  className="hidden" 
-                  onChange={handleFileSelect} 
-                  accept="image/*" 
+                <span className="text-[#8C3B26] font-medium">
+                  Click to upload
+                </span>
+                <span className="text-[#8C3B26]/70 text-xs mt-1">
+                  or drag and drop
+                </span>
+                <input
+                  type="file"
+                  className="hidden"
+                  onChange={handleFileSelect}
+                  accept="image/*"
                 />
               </label>
 
               {/* Preview Image */}
               {previewUrl && (
                 <div className="mt-4 bg-[#FFF9E6] rounded-lg border border-[#FFD34E]/50 p-2">
-                  <img 
-                    src={previewUrl} 
-                    alt="Preview" 
-                    className="w-full h-64 object-contain rounded-lg" 
+                  <img
+                    src={previewUrl}
+                    alt="Preview"
+                    className="w-full h-64 object-contain rounded-lg"
                   />
                 </div>
               )}
@@ -157,7 +178,7 @@ const MudraDetection = () => {
                   disabled={isAnalyzing}
                   className="w-full mt-3 px-4 py-3 bg-gradient-to-r from-[#D94F3D] to-[#8B0000] text-white rounded-lg font-semibold text-base hover:from-[#B33C2D] hover:to-[#660000] disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transition-all duration-300 shadow-md hover:shadow-lg"
                 >
-                  {isAnalyzing ? 'Analyzing Mudra...' : 'Analyze Mudra'}
+                  {isAnalyzing ? "Analyzing Mudra..." : "Analyze Mudra"}
                 </button>
               )}
             </div>
@@ -170,7 +191,9 @@ const MudraDetection = () => {
                 <Camera className="w-5 h-5 text-[#D94F3D]" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-[#8B4513]">Use Camera</h2>
+                <h2 className="text-lg font-semibold text-[#8B4513]">
+                  Use Camera
+                </h2>
                 <p className="text-[#8C3B26] text-sm">Real-time capture</p>
               </div>
             </div>
@@ -212,7 +235,6 @@ const MudraDetection = () => {
               )}
             </div>
           </div>
-
         </div>
 
         {/* Results */}
@@ -223,14 +245,20 @@ const MudraDetection = () => {
                 <span className="text-xl">🎭</span>
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-[#8B4513]">Analysis Results</h2>
-                <p className="text-[#8C3B26] text-sm">AI-powered identification</p>
+                <h2 className="text-lg font-semibold text-[#8B4513]">
+                  Analysis Results
+                </h2>
+                <p className="text-[#8C3B26] text-sm">
+                  AI-powered identification
+                </p>
               </div>
             </div>
 
             <div className="space-y-4">
               <div className="text-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
-                <h3 className="text-xl font-bold text-[#8B4513] mb-1">{detectionResult.mudraName}</h3>
+                <h3 className="text-xl font-bold text-[#8B4513] mb-1">
+                  {detectionResult.mudraName}
+                </h3>
                 <div className="inline-flex items-center space-x-1 bg-white px-3 py-1 rounded-full border border-green-300">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                   <span className="font-semibold text-green-700">
@@ -239,18 +267,31 @@ const MudraDetection = () => {
                 </div>
               </div>
 
-              <DetailItem title="Meaning" content={detectionResult.meaning} icon="📖" />
-              <DetailItem title="Inner Thought" content={detectionResult.innerThought} icon="💭" />
+              <DetailItem
+                title="Meaning"
+                content={detectionResult.meaning}
+                icon="📖"
+              />
+              <DetailItem
+                title="Inner Thought"
+                content={detectionResult.innerThought}
+                icon="💭"
+              />
 
               {detectionResult.commonMistakes && (
                 <div className="bg-amber-50 rounded-lg p-2 border border-amber-200">
                   <div className="flex items-center space-x-2 mb-2">
                     <span className="text-lg">⚠️</span>
-                    <h4 className="font-semibold text-amber-800">Common Mistakes</h4>
+                    <h4 className="font-semibold text-amber-800">
+                      Common Mistakes
+                    </h4>
                   </div>
                   <ul className="space-y-1">
                     {detectionResult.commonMistakes.map((mistake, index) => (
-                      <li key={index} className="flex items-start space-x-2 text-amber-700">
+                      <li
+                        key={index}
+                        className="flex items-start space-x-2 text-amber-700"
+                      >
                         <span className="w-1.5 h-1.5 bg-amber-500 rounded-full mt-1 flex-shrink-0"></span>
                         <span>{mistake}</span>
                       </li>
@@ -261,7 +302,6 @@ const MudraDetection = () => {
             </div>
           </div>
         )}
-
       </div>
     </div>
   );
