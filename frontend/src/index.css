@@ -153,3 +153,22 @@ input:focus, textarea:focus, select:focus {
   color: #8C3B26 !important;
   opacity: 0.6 !important;
 }
+
+/* Form elements - but exclude specific classes */
+input:not(.amber-input), 
+textarea:not(.amber-input), 
+select:not(.amber-input) {
+  background-color: #3D2A12; /* dark brown background */
+  color: #8B4513; /* brown text - changed from yellow */
+  border: 1px solid #D94F3D; /* red border */
+  border-radius: 0.5rem;
+  padding: 0.5em 1em;
+}
+
+input:not(.amber-input):focus, 
+textarea:not(.amber-input):focus, 
+select:not(.amber-input):focus {
+  outline: none;
+  border-color: #FFC107; /* yellow focus border */
+  box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2); /* yellow glow */
+}

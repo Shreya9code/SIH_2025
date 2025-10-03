@@ -42,8 +42,7 @@ function GroupLearning({ currentUser }) {
   const [memberAnalytics, setMemberAnalytics] = useState(null);
   const [showMembersList, setShowMembersList] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
-
-  // Fetch user groups (on mount)
+  const [showJoinModal, setShowJoinModal] = useState(false);  // Fetch user groups (on mount)
   useEffect(() => {
     const load = async () => {
       const clerkId = user?.id || currentUser?._id;
@@ -143,7 +142,7 @@ function GroupLearning({ currentUser }) {
         axios.get(`http://localhost:5000/api/groups/${activeGroup._id}/member-progress`, { params: { clerkId: member.clerkId } }),
         axios.get(`http://localhost:5000/api/users/${safeId}/sessions`)
       ]);
-      setSelectedMemberReport({...detailRes.data, member});
+      setSelectedMemberReport({ ...detailRes.data, member });
       const sess = Array.isArray(sessionsRes?.data?.sessions) ? sessionsRes.data.sessions : [];
       setMemberSessions(sess);
       setMemberAnalytics(computeMemberAnalytics(sess));
@@ -176,7 +175,7 @@ function GroupLearning({ currentUser }) {
     const days = new Set(sess.map(s => new Date(s.startedAt).toDateString()));
     let streak = 0;
     let d = new Date();
-    for (;;) {
+    for (; ;) {
       const key = d.toDateString();
       if (days.has(key)) {
         streak += 1;
@@ -229,13 +228,13 @@ function GroupLearning({ currentUser }) {
           <div className="rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 p-6 shadow-2xl border border-amber-300">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <button 
-                  onClick={() => { 
-                    setActiveGroup(null); 
-                    setProgressReport(null); 
+                <button
+                  onClick={() => {
+                    setActiveGroup(null);
+                    setProgressReport(null);
                     setSelectedMemberReport(null);
                     setShowMembersList(false);
-                  }} 
+                  }}
                   className="flex items-center gap-2 rounded-xl bg-white/20 px-4 py-2 text-white backdrop-blur-sm hover:bg-white/30 transition-all duration-300"
                 >
                   <ArrowLeft size={18} />
@@ -246,7 +245,7 @@ function GroupLearning({ currentUser }) {
                     {activeGroup.name}
                     {isAdmin && <Crown size={20} className="text-yellow-300" />}
                   </h1>
-                  <button 
+                  <button
                     onClick={() => setShowMembersList(!showMembersList)}
                     className="flex items-center gap-2 mt-1 text-amber-100 hover:text-white transition-colors"
                   >
@@ -255,7 +254,7 @@ function GroupLearning({ currentUser }) {
                   </button>
                 </div>
               </div>
-              
+
               {/* ADDED: Show Invite Code Button for Admin */}
               {isAdmin && (
                 <button
@@ -277,7 +276,7 @@ function GroupLearning({ currentUser }) {
                 </h3>
                 <div className="max-h-60 overflow-y-auto space-y-2">
                   {activeGroup.members.map((member, index) => (
-                    <div 
+                    <div
                       key={member.clerkId || member.name}
                       className="bg-white/10 rounded-lg p-3 border border-white/20 hover:bg-white/20 transition-all duration-300 cursor-pointer"
                       onClick={() => loadMemberReport(member)}
@@ -317,29 +316,22 @@ function GroupLearning({ currentUser }) {
                 <Users className="text-amber-600" size={24} />
                 <h2 className="text-xl font-bold text-amber-900">Your Groups</h2>
               </div>
-              
-              <button
-                onClick={() => setShowGroupModal(true)}
-                className="w-full rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 text-white font-semibold shadow-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-300 mb-4 flex items-center justify-center gap-2"
-              >
-                <Users size={18} />
-                Create New Group
-              </button>
 
-              <div className="space-y-3 mb-6">
-                {/* CHANGED: Input field to amber color */}
-                <input
-                  value={inviteCode}
-                  onChange={e => setInviteCode(e.target.value)}
-                  placeholder="Enter invite code"
-                  className="w-full rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-900 placeholder-amber-600/60 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                />
+              {/* UPDATED: Buttons side by side */}
+              <div className="grid grid-cols-2 gap-3 mb-6">
                 <button
-                  onClick={joinGroup}
-                  className="w-full rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 text-white font-semibold shadow-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-300 flex items-center justify-center gap-2"
+                  onClick={() => setShowGroupModal(true)}
+                  className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 text-white font-semibold shadow-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-300 flex items-center justify-center gap-2"
+                >
+                  <Users size={18} />
+                  Create
+                </button>
+                <button
+                  onClick={() => setShowJoinModal(true)}
+                  className="rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-3 text-white font-semibold shadow-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-300 flex items-center justify-center gap-2"
                 >
                   <Share2 size={18} />
-                  Join Group
+                  Join
                 </button>
               </div>
 
@@ -382,7 +374,7 @@ function GroupLearning({ currentUser }) {
                 <Sparkles size={48} className="mx-auto mb-4 text-yellow-300" />
                 <h2 className="text-3xl font-bold mb-4">Welcome to Group Learning</h2>
                 <p className="text-amber-100 text-lg mb-6">
-                  Collaborate with fellow Bharatanatyam enthusiasts! Create or join a group to track progress, 
+                  Collaborate with fellow Bharatanatyam enthusiasts! Create or join a group to track progress,
                   share insights, and learn together.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -448,7 +440,7 @@ function GroupLearning({ currentUser }) {
                   <Users className="text-amber-600" size={20} />
                   <h3 className="font-bold text-amber-900">Member Progress</h3>
                 </div>
-                
+
                 <div className="flex-1 overflow-y-auto p-6">
                   <div className="space-y-3">
                     {activeGroup.members.map((member) => {
@@ -457,11 +449,10 @@ function GroupLearning({ currentUser }) {
                         <div
                           key={member.clerkId}
                           onClick={() => loadMemberReport(member)}
-                          className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
-                            isSelected 
-                              ? 'border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50 shadow-lg' 
+                          className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${isSelected
+                              ? 'border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50 shadow-lg'
                               : 'border-amber-200 bg-amber-50 hover:border-amber-300 hover:shadow-md'
-                          }`}
+                            }`}
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-3">
@@ -497,7 +488,7 @@ function GroupLearning({ currentUser }) {
                 <MessageCircle className="text-amber-600" size={20} />
                 <h3 className="font-bold text-amber-900">Group Chat</h3>
               </div>
-              
+
               <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
                 {groupChat.map((msg, idx) => {
                   const ts = msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString() : '';
@@ -515,16 +506,15 @@ function GroupLearning({ currentUser }) {
                   );
                 })}
               </div>
-              
+
               <div className="border-t border-amber-200 p-4">
                 <div className="flex gap-2">
-                  {/* CHANGED: Input field to amber color */}
                   <input
                     value={chatText}
                     onChange={e => setChatText(e.target.value)}
                     onKeyDown={e => { if (e.key === "Enter") sendMessage(); }}
                     placeholder="Type your message..."
-                    className="flex-1 rounded-xl border border-amber-300 bg-amber-50 px-4 py-2 text-amber-900 placeholder-amber-600/60 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    className="flex-1 rounded-xl border border-amber-300 !bg-amber-50 px-4 py-2 !text-amber-900 placeholder-amber-600/60 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                   />
                   <button
                     onClick={sendMessage}
@@ -539,6 +529,60 @@ function GroupLearning({ currentUser }) {
         )}
       </div>
 
+      {/* Create Group Modal */}
+      <Modal open={showGroupModal} onClose={() => setShowGroupModal(false)}>
+        <h3 className="mb-4 text-xl font-bold text-amber-900 text-center">Create New Group</h3>
+        <form onSubmit={e => { e.preventDefault(); createGroup(); }}>
+          <input
+            value={groupName}
+            onChange={e => setGroupName(e.target.value)}
+            placeholder="Enter group name"
+            required
+            className="w-full rounded-xl border !border-amber-300 !bg-amber-50 px-4 py-3 !text-amber-900 placeholder-amber-600/60 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:!border-transparent mb-4"
+          />
+          <button
+            type="submit"
+            className="w-full rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 text-white font-semibold shadow-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-300"
+          >
+            Create Group
+          </button>
+        </form>
+        {shareCode && (
+          <div className="mt-4 p-3 rounded-xl bg-amber-100 border border-amber-300">
+            <div className="text-sm text-amber-800 font-semibold mb-2">Invite Code:</div>
+            <div className="flex items-center justify-between">
+              <code className="text-amber-900 font-bold">{shareCode}</code>
+              <button
+                onClick={() => navigator.clipboard.writeText(shareCode)}
+                className="flex items-center gap-1 text-amber-700 hover:text-amber-900"
+              >
+                <Copy size={14} />
+                Copy
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* Join Group Modal */}
+      <Modal open={showJoinModal} onClose={() => setShowJoinModal(false)}>
+        <h3 className="mb-4 text-xl font-bold text-amber-900 text-center">Join Group</h3>
+        <div className="space-y-4">
+          <input
+            value={inviteCode}
+            onChange={e => setInviteCode(e.target.value)}
+            placeholder="Enter invite code"
+            className="w-full rounded-xl border !border-amber-300 !bg-amber-50 px-4 py-3 !text-amber-900 placeholder-amber-600/60 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:!border-transparent"
+          />
+          <button
+            onClick={joinGroup}
+            className="w-full rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-3 text-white font-semibold shadow-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-300 flex items-center justify-center gap-2"
+          >
+            <Share2 size={18} />
+            Join Group
+          </button>
+        </div>
+      </Modal>
       {/* ADDED: Invite Code Modal */}
       <Modal open={showInviteModal} onClose={() => setShowInviteModal(false)}>
         <h3 className="mb-4 text-xl font-bold text-amber-900 text-center">Group Invite Code</h3>
@@ -552,12 +596,28 @@ function GroupLearning({ currentUser }) {
         </div>
         <div className="space-y-3">
           <input
-            value={shareLink}
+            value={shareLink || `${window.location.origin}/groups?code=${activeGroup?.inviteCode || shareCode}`}
             readOnly
             className="w-full rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-900 text-sm"
           />
           <button
-            onClick={() => navigator.clipboard.writeText(shareLink)}
+            onClick={async () => {
+              try {
+                const linkToCopy = shareLink || `${window.location.origin}/groups?code=${activeGroup?.inviteCode || shareCode}`;
+                await navigator.clipboard.writeText(linkToCopy);
+                alert('Invite link copied to clipboard!');
+              } catch (err) {
+                console.error('Failed to copy: ', err);
+                // Fallback method
+                const input = document.createElement('input');
+                input.value = shareLink || `${window.location.origin}/groups?code=${activeGroup?.inviteCode || shareCode}`;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                alert('Invite link copied to clipboard!');
+              }
+            }}
             className="w-full rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 text-white font-semibold hover:from-amber-600 hover:to-orange-600 transition-all duration-300 flex items-center justify-center gap-2"
           >
             <Copy size={18} />
@@ -575,7 +635,7 @@ function GroupLearning({ currentUser }) {
                 <h2 className="text-2xl font-bold text-amber-900">{selectedMemberReport.member?.name}'s Detailed Progress</h2>
                 <div className="text-amber-600">Comprehensive performance analytics</div>
               </div>
-              <button 
+              <button
                 className="rounded-xl bg-amber-100 px-4 py-2 text-amber-700 hover:bg-amber-200 transition-colors"
                 onClick={() => setShowMemberModal(false)}
               >
@@ -614,7 +674,7 @@ function GroupLearning({ currentUser }) {
                     return (
                       <div key={index} className="flex flex-1 flex-col items-center">
                         <div className="mb-2 text-sm font-semibold text-amber-700">{value}%</div>
-                        <div 
+                        <div
                           className="w-full rounded-t-lg bg-gradient-to-t from-amber-500 to-orange-500 transition-all duration-500"
                           style={{ height: `${(value / 100) * 160}px` }}
                         ></div>
@@ -637,7 +697,7 @@ function GroupLearning({ currentUser }) {
                           <span className="text-lg font-bold text-green-600">{mudra.accuracy}%</span>
                         </div>
                         <div className="w-full bg-green-100 rounded-full h-2">
-                          <div 
+                          <div
                             className="bg-gradient-to-r from-green-400 to-emerald-500 h-2 rounded-full transition-all duration-1000"
                             style={{ width: `${mudra.accuracy}%` }}
                           ></div>
@@ -660,11 +720,10 @@ function GroupLearning({ currentUser }) {
                       <div key={index} className="rounded-xl bg-white p-4 shadow-sm border border-rose-100">
                         <div className="flex items-center justify-between mb-2">
                           <span className="font-semibold text-rose-900">{area.mudra}</span>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            area.priority === 'high' ? 'bg-red-100 text-red-800' :
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${area.priority === 'high' ? 'bg-red-100 text-red-800' :
                             area.priority === 'medium' ? 'bg-amber-100 text-amber-800' :
-                            'bg-amber-100 text-amber-800'
-                          }`}>
+                              'bg-amber-100 text-amber-800'
+                            }`}>
                             {area.priority} priority
                           </span>
                         </div>
@@ -678,41 +737,6 @@ function GroupLearning({ currentUser }) {
           </div>
         </div>
       )}
-
-      {/* Create Group Modal */}
-      <Modal open={showGroupModal} onClose={() => setShowGroupModal(false)}>
-        <h3 className="mb-4 text-xl font-bold text-amber-900 text-center">Create New Group</h3>
-        <form onSubmit={e => { e.preventDefault(); createGroup(); }}>
-          <input
-            value={groupName}
-            onChange={e => setGroupName(e.target.value)}
-            placeholder="Enter group name"
-            required
-            className="w-full rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-900 placeholder-amber-600/60 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent mb-4"
-          />
-          <button 
-            type="submit" 
-            className="w-full rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 text-white font-semibold shadow-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-300"
-          >
-            Create Group
-          </button>
-        </form>
-        {shareCode && (
-          <div className="mt-4 p-3 rounded-xl bg-amber-100 border border-amber-300">
-            <div className="text-sm text-amber-800 font-semibold mb-2">Invite Code:</div>
-            <div className="flex items-center justify-between">
-              <code className="text-amber-900 font-bold">{shareCode}</code>
-              <button 
-                onClick={() => navigator.clipboard.writeText(shareCode)}
-                className="flex items-center gap-1 text-amber-700 hover:text-amber-900"
-              >
-                <Copy size={14} />
-                Copy
-              </button>
-            </div>
-          </div>
-        )}
-      </Modal>
     </div>
   );
 }
