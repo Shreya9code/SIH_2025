@@ -7,20 +7,21 @@
 body {
   font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
-  background-color: #FFF9E6; /* light yellow background */
-  color: #8B4513; /* brown text */
+  background-color: #2C1A00; /* dark brown background - always dark */
+  color: #8B4513; /* brown text - changed from yellow to brown */
   margin: 0;
 }
 
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
+  color: #8B4513; /* brown text for headings - changed from yellow */
 }
 
 /* Links */
 a {
   font-weight: 500;
-  color: #D94F3D; /* red theme */
+  color: #D94F3D; /* red theme for links */
   text-decoration: none;
 }
 a:hover {
@@ -37,43 +38,57 @@ button {
   font-family: inherit;
   cursor: pointer;
   transition: all 0.25s;
-  background-color: #FFD34E; /* yellow */
-  color: #8B4513; /* brown text */
+  background-color: #D94F3D; /* red buttons - dark mode style */
+  color: #FFF9E6; /* light text - dark mode style */
 }
 button:hover {
-  background-color: #FFC107; /* darker yellow on hover */
-  border-color: #D94F3D; /* red border on hover */
+  background-color: #8B0000; /* darker red on hover */
+  border-color: #FFC107; /* yellow border on hover */
+  color: #FFF9E6;
 }
 
-/* Responsive adjustments */
+/* Form elements */
+input, textarea, select {
+  background-color: #3D2A12; /* dark brown background */
+  color: #8B4513; /* brown text - changed from yellow */
+  border: 1px solid #D94F3D; /* red border */
+  border-radius: 0.5rem;
+  padding: 0.5em 1em;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #FFC107; /* yellow focus border */
+  box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2); /* yellow glow */
+}
+
+/* Cards and containers */
+.card, .container, .box {
+  background-color: #3D2A12; /* dark brown */
+  color: #8B4513; /* brown text - changed from yellow */
+  border: 1px solid #D94F3D; /* red border */
+}
+
+/* Remove all light mode specific styles and media queries since we want always dark */
 @media (prefers-color-scheme: light) {
-  body {
-    background-color: #FFF9E6;
-    color: #8B4513;
-  }
-  a:hover {
-    color: #D94F3D;
-  }
-  button {
-    background-color: #FFD34E;
-    color: #8B4513;
-  }
+  /* Empty - we don't want light mode */
 }
 
 @media (prefers-color-scheme: dark) {
+  /* Keep dark mode styles as default */
   body {
-    background-color: #2C1A00; /* dark brown background */
-    color: #FFD34E; /* yellow text */
+    background-color: #2C1A00;
+    color: #8B4513; /* changed from yellow to brown */
   }
   a {
-    color: #FFC107;
+    color: #D94F3D; /* changed from yellow to red */
   }
   a:hover {
-    color: #FFD34E;
+    color: #8B0000; /* changed from yellow to dark red */
   }
   button {
-    background-color: #D94F3D; /* red buttons in dark mode */
-    color: #FFF9E6; /* light text */
+    background-color: #D94F3D;
+    color: #FFF9E6;
   }
 }
 
@@ -89,3 +104,52 @@ button:hover {
   animation: icon-move 24s linear infinite;
 }
 
+/* Additional utility classes for consistent dark theme */
+.bg-dark-brown {
+  background-color: #2C1A00;
+}
+
+.bg-dark-card {
+  background-color: #3D2A12;
+}
+
+.text-brown {
+  color: #8B4513;
+}
+
+.text-light-brown {
+  color: #A0522D; /* slightly lighter brown */
+}
+
+.bg-red-button {
+  background-color: #D94F3D;
+}
+
+.border-red {
+  border-color: #D94F3D;
+}
+
+.border-yellow {
+  border-color: #FFC107;
+}
+
+/* Preserve light theme for Digital Library form elements */
+.library input,
+.library select,
+.library textarea {
+  background-color: #FFF9E6 !important;
+  color: #8B4513 !important;
+  border-color: #FFD34E !important;
+}
+
+.library input:focus,
+.library select:focus,
+.library textarea:focus {
+  border-color: #D94F3D !important;
+  box-shadow: 0 0 0 2px rgba(217, 79, 61, 0.2) !important;
+}
+
+.library input::placeholder {
+  color: #8C3B26 !important;
+  opacity: 0.6 !important;
+}
