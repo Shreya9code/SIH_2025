@@ -35,13 +35,23 @@ const MudraAssessment = () => {
   const canvasRef = useRef(null);
 
   const getRandomMudra = () => {
-    let remainingMudras = mudraData.mudras.filter(
-      (m) => !mudrasAttempted.includes(m.name_sanskrit)
+  // If this is the first attempt, return Sandamsha
+  if ((mudrasAttempted?.length || 0) === 0) {
+    const sandamsha = mudraData.mudras.find(
+      (m) => m.name_sanskrit === "Sandamsha"
     );
-    if (remainingMudras.length === 0) remainingMudras = mudraData.mudras;
-    const randomIndex = Math.floor(Math.random() * remainingMudras.length);
-    return remainingMudras[randomIndex];
-  };
+    if (sandamsha) return sandamsha;
+  }
+
+  // Otherwise, pick a random mudra not yet attempted
+  let remainingMudras = mudraData.mudras.filter(
+    (m) => !mudrasAttempted.includes(m.name_sanskrit)
+  );
+  if (remainingMudras.length === 0) remainingMudras = mudraData.mudras;
+
+  const randomIndex = Math.floor(Math.random() * remainingMudras.length);
+  return remainingMudras[randomIndex];
+};
 
   // Capture a single frame from the camera
   const captureSingleImage = () => {

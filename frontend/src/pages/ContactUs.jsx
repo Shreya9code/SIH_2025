@@ -106,7 +106,7 @@ const ContactUs = () => {
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Contact <span className="text-rose-600">MudraAI</span>
+            Contact <span className="text-rose-600">NrityaLens</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Get in touch with us. We'd love to hear from you about collaborations, feedback, or any questions you might have.
