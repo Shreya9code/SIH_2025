@@ -1,0 +1,68 @@
+# -----------------------------
+# Python
+# -----------------------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pkl
+*.log
+
+# Virtual environments
+venv/
+.env/
+.venv/
+env/
+ENV/
+*.env
+
+# IDEs & editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# macOS / Windows files
+.DS_Store
+Thumbs.db
+
+# TensorFlow / Keras models & checkpoints
+*.h5
+*.hdf5
+*.keras
+checkpoints/
+saved_models/
+
+# Datasets and images
+data/
+dataset/
+images/
+*.jpg
+*.jpeg
+*.png
+*.bmp
+*.gif
+
+# Temporary or output files
+outputs/
+logs/
+*.tmp
+*.bak
+*.csv
+*.xlsx
+*.npy
+*.npz
+
+# Compiled code
+*.so
+*.dll
+*.exe
+
+# -----------------------------
+# Custom project-specific
+# -----------------------------
+# Avoid uploading large model files; use Git LFS or a drive link instead
+mudra_model_new.keras
