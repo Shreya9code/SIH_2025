@@ -49,9 +49,6 @@ const Navbar = ({ showAuthButtons }) => {
           <Link to="/about" className="hover:text-[#5C261A]">
             About
           </Link>
-          <Link to="/contact" className="hover:text-[#5C261A]">
-            Contact
-          </Link>
 
           {/* Clerk UserButton at the very end */}
           {isSignedIn && user ? (
@@ -153,13 +150,6 @@ const Navbar = ({ showAuthButtons }) => {
             className="block text-[#8C3B26] hover:text-[#5C261A]"
           >
             About
-          </Link>
-          <Link
-            to="/contact"
-            onClick={() => setOpen(false)}
-            className="block text-[#8C3B26] hover:text-[#5C261A]"
-          >
-            Contact
           </Link>
 
           {/* Clerk UserButton / Sign In at the very end */}

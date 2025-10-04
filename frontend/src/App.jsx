@@ -15,7 +15,6 @@ import GroupLearning from "./pages/GroupLearning.jsx";
 import ProgressAnalytics from "./pages/ProgressAnalytics.jsx";
 import MudraAssessment from "./pages/MudraAssessment.jsx";
 import AboutUs from "./pages/AboutUs.jsx";
-import ContactUs from "./pages/ContactUs.jsx";
 
 // Layout wrapper for pages with Navbar, Footer, and AIChatWidget
 const Layout = ({ children }) => {
@@ -57,21 +56,16 @@ const AppWrapper = () => {
       <Route path="/detect" element={<Layout><MudraDetection /></Layout>} />
       <Route path="/library" element={<Layout><DigitalLibrary /></Layout>} />
       <Route path="/about" element={<Layout><AboutUs /></Layout>} />
-      <Route path="/contact" element={<Layout><ContactUs /></Layout>} />
-      
+
       {/* AI Assistant iframe page */}
-      <Route 
-        path="/ai-assistant" 
-        element={
-          <IFrameLayout>
-            <iframe 
-              src="http://localhost:8501/" 
-              style={{ width: "100%", height: "100vh", border: "none" }} 
-              title="AI Assistant"
-            />
-          </IFrameLayout>
-        } 
-      />
+      <Route path="/ai-assistant" element={
+        <Layout>
+          <iframe
+            src="http://localhost:8501/"
+            style={{ width: "100%", height: "100vh", border: "none" }}
+          />
+        </Layout>
+      } />
 
       {/* Protected routes */}
       <Route

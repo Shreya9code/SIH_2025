@@ -35,23 +35,23 @@ const MudraAssessment = () => {
   const canvasRef = useRef(null);
 
   const getRandomMudra = () => {
-  // If this is the first attempt, return Sandamsha
-  if ((mudrasAttempted?.length || 0) === 0) {
-    const sandamsha = mudraData.mudras.find(
-      (m) => m.name_sanskrit === "Sandamsha"
+    // If this is the first attempt, return Sandamsha
+    if ((mudrasAttempted?.length || 0) === 0) {
+      const sandamsha = mudraData.mudras.find(
+        (m) => m.name_sanskrit === "Sandamsha"
+      );
+      if (sandamsha) return sandamsha;
+    }
+
+    // Otherwise, pick a random mudra not yet attempted
+    let remainingMudras = mudraData.mudras.filter(
+      (m) => !mudrasAttempted.includes(m.name_sanskrit)
     );
-    if (sandamsha) return sandamsha;
-  }
+    if (remainingMudras.length === 0) remainingMudras = mudraData.mudras;
 
-  // Otherwise, pick a random mudra not yet attempted
-  let remainingMudras = mudraData.mudras.filter(
-    (m) => !mudrasAttempted.includes(m.name_sanskrit)
-  );
-  if (remainingMudras.length === 0) remainingMudras = mudraData.mudras;
-
-  const randomIndex = Math.floor(Math.random() * remainingMudras.length);
-  return remainingMudras[randomIndex];
-};
+    const randomIndex = Math.floor(Math.random() * remainingMudras.length);
+    return remainingMudras[randomIndex];
+  };
 
   // Capture a single frame from the camera
   const captureSingleImage = () => {
@@ -212,8 +212,8 @@ const MudraAssessment = () => {
       const basePoints = Math.floor(averageAccuracy / 20); // 0-5 points based on accuracy
       const mudraMatchBonus =
         topPrediction &&
-        currentMudra &&
-        topPrediction.class.toLowerCase() ===
+          currentMudra &&
+          topPrediction.class.toLowerCase() ===
           currentMudra.name_sanskrit.toLowerCase()
           ? 2
           : 0;
@@ -235,14 +235,14 @@ const MudraAssessment = () => {
         points: totalPoints,
         predictedMudra: topPrediction
           ? {
-              name: topPrediction.class,
-              confidence: predictionConfidence,
-              matchesTarget:
-                topPrediction &&
-                currentMudra &&
-                topPrediction.class.toLowerCase() ===
-                  currentMudra.name_sanskrit.toLowerCase(),
-            }
+            name: topPrediction.class,
+            confidence: predictionConfidence,
+            matchesTarget:
+              topPrediction &&
+              currentMudra &&
+              topPrediction.class.toLowerCase() ===
+              currentMudra.name_sanskrit.toLowerCase(),
+          }
           : null,
       };
 
@@ -367,9 +367,10 @@ const MudraAssessment = () => {
         <div className="text-center mb-6">
           <div className="rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 p-6 shadow-2xl border border-amber-300">
             <Sparkles size={36} className="mx-auto mb-3 text-yellow-300" />
-            <h1 className="text-3xl font-bold text-white mb-2">
-              Mudra Assessment
-            </h1>
+            <h1 className="text-3xl font-bold mb-2 !text-white">
+  Mudra Assessment
+</h1>
+
             <p className="text-amber-100">
               Test your mudra knowledge with single image capture assessment
             </p>
@@ -504,10 +505,10 @@ const MudraAssessment = () => {
                       {isAssessing && !capturedImage
                         ? `Perform: ${currentMudra.name_sanskrit}`
                         : capturedImage && !showAnalysis
-                        ? "Analyzing your hand position..."
-                        : showAnalysis
-                        ? "Analysis complete - ready for next mudra"
-                        : "Ready to capture and analyze"}
+                          ? "Analyzing your hand position..."
+                          : showAnalysis
+                            ? "Analysis complete - ready for next mudra"
+                            : "Ready to capture and analyze"}
                     </p>
                   </div>
                 )}
@@ -608,11 +609,10 @@ const MudraAssessment = () => {
                       <div className="space-y-3">
                         <div className="grid grid-cols-2 gap-2">
                           <div
-                            className={`rounded-lg p-2 text-white text-center ${
-                              assessmentResult.accuracy >= 70
+                            className={`rounded-lg p-2 text-white text-center ${assessmentResult.accuracy >= 70
                                 ? "bg-gradient-to-br from-green-500 to-emerald-600"
                                 : "bg-gradient-to-br from-amber-500 to-orange-500"
-                            }`}
+                              }`}
                           >
                             <div className="text-md font-bold">
                               {assessmentResult.accuracy}%
@@ -648,11 +648,10 @@ const MudraAssessment = () => {
                         {/* Mudra Match Status */}
                         {assessmentResult.predictedMudra && (
                           <div
-                            className={`rounded-lg p-3 border ${
-                              assessmentResult.predictedMudra.matchesTarget
+                            className={`rounded-lg p-3 border ${assessmentResult.predictedMudra.matchesTarget
                                 ? "bg-green-50 border-green-200"
                                 : "bg-amber-50 border-amber-200"
-                            }`}
+                              }`}
                           >
                             <div className="flex justify-between items-center text-sm">
                               <span className="font-semibold">
