@@ -41,11 +41,11 @@ button {
   /* background-color: #D94F3D; 
   color: #FFF9E6;  */
 }
-button:hover {
-  /* background-color: #8B0000; 
+/* button:hover {
+  background-color: #8B0000; 
   border-color: #FFC107; 
-  color: #FFF9E6; */
-} 
+  color: #FFF9E6;
+}  */
 
 /* Form elements */
 input, textarea, select {
