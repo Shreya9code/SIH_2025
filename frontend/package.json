@@ -12,6 +12,7 @@
   "dependencies": {
     "@clerk/clerk-react": "^5.49.1",
     "axios": "^1.12.2",
+    "emailjs-com": "^3.2.0",
     "framer-motion": "^12.23.22",
     "lucide-react": "^0.544.0",
     "react": "^18.3.1",

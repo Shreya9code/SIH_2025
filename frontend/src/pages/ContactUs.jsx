@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send, Clock, ExternalLink } from 'lucide-react';
+import emailjs from 'emailjs-com';
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -19,16 +20,28 @@ const ContactUs = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission here
-    console.log('Form submitted:', formData);
-    alert('Thank you for your message! We will get back to you soon.');
-    setFormData({ name: '', email: '', subject: '', message: '' });
-  };
+    emailjs.send(
+    'service_51a1bgq',   // Replace with your EmailJS Service ID
+    'template_ntkwris',  // Replace with your EmailJS Template ID
+    formData,            // The object with { name, email, subject, message }
+    'rekIDdh8wESkfILzW'    // Replace with your EmailJS Public Key
+  ).then(
+    (result) => {
+      alert('Message sent successfully!');
+      setFormData({ name: '', email: '', subject: '', message: '' }); // clear form
+    },
+    (error) => {
+      alert('Failed to send message. Please try again.');
+      console.error(error);
+    }
+  );
+};
 
   const contactMethods = [
     {
       icon: <Mail className="w-6 h-6" />,
       title: 'Email Us',
-      details: 'contact@nrityalens.com',
+      details: 'nrityalens@gmail.com',
       description: 'Send us an email anytime'
     },
     {
