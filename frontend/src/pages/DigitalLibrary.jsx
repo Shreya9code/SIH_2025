@@ -1,31 +1,31 @@
-import React, { useState, useMemo } from 'react';
-import mudrasData from '../data/mudra.json';
-import { Search, Play, BookOpen, Download, Share2 } from 'lucide-react';
+import React, { useState, useMemo } from "react";
+import mudrasData from "../data/mudra.json";
+import { Search, Play, BookOpen, Download, Share2 } from "lucide-react";
 
 // Emoji fallback for images
 const emojiMap = {
-  "Flag": "👐",
+  Flag: "👐",
 };
 
 const DigitalLibrary = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedBhava, setSelectedBhava] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedBhava, setSelectedBhava] = useState("all");
   const [selectedMudra, setSelectedMudra] = useState(null);
   const [showVideo, setShowVideo] = useState(false);
 
   const categories = useMemo(
-    () => ['all', ...Array.from(new Set(mudrasData.mudras.map(m => m.type)))],
+    () => ["all", ...Array.from(new Set(mudrasData.mudras.map((m) => m.type)))],
     []
   );
 
   const bhavas = useMemo(
     () => [
-      'all',
+      "all",
       ...Array.from(
         new Set(
           mudrasData.mudras
-            .flatMap(m => (m.keywords || '').split(',').map(b => b.trim()))
+            .flatMap((m) => (m.keywords || "").split(",").map((b) => b.trim()))
             .filter(Boolean)
         )
       ),
@@ -35,47 +35,51 @@ const DigitalLibrary = () => {
 
   const filteredMudras = useMemo(
     () =>
-      mudrasData.mudras.filter(mudra => {
+      mudrasData.mudras.filter((mudra) => {
         const matchesSearch =
           mudra.name_english.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          mudra.name_sanskrit.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          mudra.name_sanskrit
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
           mudra.about.toLowerCase().includes(searchTerm.toLowerCase()) ||
           mudra.keywords.toLowerCase().includes(searchTerm.toLowerCase());
 
         const matchesCategory =
-          selectedCategory === 'all' || mudra.type === selectedCategory;
+          selectedCategory === "all" || mudra.type === selectedCategory;
 
-        const bhavaList = (mudra.keywords || '').split(',').map(b => b.trim());
+        const bhavaList = (mudra.keywords || "")
+          .split(",")
+          .map((b) => b.trim());
         const matchesBhava =
-          selectedBhava === 'all' || bhavaList.includes(selectedBhava);
+          selectedBhava === "all" || bhavaList.includes(selectedBhava);
 
         return matchesSearch && matchesCategory && matchesBhava;
       }),
     [searchTerm, selectedCategory, selectedBhava]
   );
 
-  const renderMudraImage = mudra => {
+  const renderMudraImage = (mudra) => {
     if (mudra.images) {
       return (
         <img
           src={mudra.images}
           alt={mudra.name_sanskrit}
           className="h-full w-auto object-contain"
-          onError={e => {
+          onError={(e) => {
             e.target.onerror = null;
-            e.target.style.display = 'none';
+            e.target.style.display = "none";
           }}
         />
       );
     }
     return (
       <div className="text-6xl text-white">
-        {emojiMap[mudra.name_sanskrit] || '🤲'}
+        {emojiMap[mudra.name_sanskrit] || "🤲"}
       </div>
     );
   };
 
-  const getVideoSource = mudra => {
+  const getVideoSource = (mudra) => {
     if (mudra.videos) {
       return `../data/videos/${mudra.videos}`;
     }
@@ -87,7 +91,7 @@ const DigitalLibrary = () => {
   // Group mudras by type
   const groupedMudras = useMemo(() => {
     const groups = {};
-    filteredMudras.forEach(mudra => {
+    filteredMudras.forEach((mudra) => {
       if (!groups[mudra.type]) groups[mudra.type] = [];
       groups[mudra.type].push(mudra);
     });
@@ -103,7 +107,8 @@ const DigitalLibrary = () => {
             Digital Library
           </h1>
           <p className="text-xl text-[#8C3B26] max-w-3xl mx-auto">
-            Explore a collection of Bharatanatyam mudras—type, history, and more.
+            Explore a collection of Bharatanatyam mudras—type, history, and
+            more.
           </p>
         </div>
 
@@ -118,9 +123,13 @@ const DigitalLibrary = () => {
                   type="text"
                   placeholder="Search mudras..."
                   value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   className="digital-library-input w-full pl-10 pr-4 py-3 border border-[#FFD34E] rounded-xl bg-[#FFF9E6] text-[#8B4513] placeholder-[#8C3B26]/60 focus:outline-none focus:ring-2 focus:ring-[#D94F3D] focus:bg-[#FFF9E6] focus:text-[#8B4513] text-center"
-                  style={{ backgroundColor: '#FFF9E6', color: '#8B4513', borderColor: '#FFD34E' }}
+                  style={{
+                    backgroundColor: "#FFF9E6",
+                    color: "#8B4513",
+                    borderColor: "#FFD34E",
+                  }}
                 />
               </div>
             </div>
@@ -129,13 +138,21 @@ const DigitalLibrary = () => {
             <div>
               <select
                 value={selectedCategory}
-                onChange={e => setSelectedCategory(e.target.value)}
+                onChange={(e) => setSelectedCategory(e.target.value)}
                 className="digital-library-select w-full px-4 py-3 border border-[#FFD34E] rounded-xl bg-[#FFF9E6] text-[#8B4513] focus:outline-none focus:ring-2 focus:ring-[#D94F3D] focus:bg-[#FFF9E6] focus:text-[#8B4513]"
-                style={{ backgroundColor: '#FFF9E6', color: '#8B4513', borderColor: '#FFD34E' }}
+                style={{
+                  backgroundColor: "#FFF9E6",
+                  color: "#8B4513",
+                  borderColor: "#FFD34E",
+                }}
               >
-                {categories.map(cat => (
-                  <option key={cat} value={cat} style={{ backgroundColor: '#FFF9E6', color: '#8B4513' }}>
-                    {cat === 'all' ? 'All Types' : cat}
+                {categories.map((cat) => (
+                  <option
+                    key={cat}
+                    value={cat}
+                    style={{ backgroundColor: "#FFF9E6", color: "#8B4513" }}
+                  >
+                    {cat === "all" ? "All Types" : cat}
                   </option>
                 ))}
               </select>
@@ -145,13 +162,21 @@ const DigitalLibrary = () => {
             <div>
               <select
                 value={selectedBhava}
-                onChange={e => setSelectedBhava(e.target.value)}
+                onChange={(e) => setSelectedBhava(e.target.value)}
                 className="digital-library-select w-full px-4 py-3 border border-[#FFD34E] rounded-xl bg-[#FFF9E6] text-[#8B4513] focus:outline-none focus:ring-2 focus:ring-[#D94F3D] focus:bg-[#FFF9E6] focus:text-[#8B4513]"
-                style={{ backgroundColor: '#FFF9E6', color: '#8B4513', borderColor: '#FFD34E' }}
+                style={{
+                  backgroundColor: "#FFF9E6",
+                  color: "#8B4513",
+                  borderColor: "#FFD34E",
+                }}
               >
-                {bhavas.map(bhava => (
-                  <option key={bhava} value={bhava} style={{ backgroundColor: '#FFF9E6', color: '#8B4513' }}>
-                    {bhava === 'all' ? 'All Bhavas' : bhava}
+                {bhavas.map((bhava) => (
+                  <option
+                    key={bhava}
+                    value={bhava}
+                    style={{ backgroundColor: "#FFF9E6", color: "#8B4513" }}
+                  >
+                    {bhava === "all" ? "All Bhavas" : bhava}
                   </option>
                 ))}
               </select>
@@ -160,11 +185,11 @@ const DigitalLibrary = () => {
         </div>
 
         {/* Results */}
-        {Object.keys(groupedMudras).map(type => (
+        {Object.keys(groupedMudras).map((type) => (
           <div key={type} className="mb-12">
             <h2 className="text-2xl font-bold text-[#8B4513] mb-6">{type}</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {groupedMudras[type].map(mudra => (
+              {groupedMudras[type].map((mudra) => (
                 <div
                   key={mudra.sl_no}
                   className="bg-white rounded-2xl shadow-lg border border-[#FFD34E]/30 overflow-hidden hover:shadow-xl transition-all duration-300"
@@ -191,7 +216,7 @@ const DigitalLibrary = () => {
                     </p>
 
                     <div className="mb-1">
-                      {mudra.keywords.split(',').map((b, i) => (
+                      {mudra.keywords.split(",").map((b, i) => (
                         <span
                           key={i}
                           className="px-2 py-1 bg-[#FFF9E6] text-[#8C3B26] text-xs rounded border border-[#FFD34E] mr-1"
@@ -263,7 +288,7 @@ const DigitalLibrary = () => {
                         Keywords
                       </h3>
                       <div className="flex flex-wrap gap-2">
-                        {selectedMudra.keywords.split(',').map((b, i) => (
+                        {selectedMudra.keywords.split(",").map((b, i) => (
                           <span
                             key={i}
                             className="px-3 py-2 bg-[#FFD34E] text-[#8B4513] rounded-lg font-medium"
@@ -280,12 +305,16 @@ const DigitalLibrary = () => {
                     </div>
                     <div className="bg-[#FFF9E6] rounded-xl p-6 border border-[#FFD34E] space-y-2">
                       <div>
-                        <span className="font-medium text-[#8C3B26]">Type:</span>{' '}
+                        <span className="font-medium text-[#8C3B26]">
+                          Type:
+                        </span>{" "}
                         {selectedMudra.type}
                       </div>
                       <div>
-                        <span className="font-medium text-[#8C3B26]">Slokas:</span>{' '}
-                        {selectedMudra.slokas || 'N/A'}
+                        <span className="font-medium text-[#8C3B26]">
+                          Slokas:
+                        </span>{" "}
+                        {selectedMudra.slokas || "N/A"}
                       </div>
                     </div>
                     <div className="flex space-x-3">
@@ -304,12 +333,27 @@ const DigitalLibrary = () => {
                         <Download size={18} />
                       </a>
                       <button
-                        className="p-3 bg-[#FFD34E] text-[#8B4513] rounded-xl"
+                        className="p-3 bg-[#FFD34E] text-[#8B4513] rounded-xl flex items-center gap-2"
                         onClick={() => {
-                          navigator.clipboard.writeText(window.location.href);
+                          if (navigator.share) {
+                            navigator
+                              .share({
+                                title: document.title,
+                                text: "Check out this page!",
+                                url: window.location.href,
+                              })
+                              .catch((err) =>
+                                console.log("Share cancelled", err)
+                              );
+                          } else {
+                            // fallback: copy link
+                            navigator.clipboard.writeText(window.location.href);
+                            alert("Link copied to clipboard!");
+                          }
                         }}
                       >
                         <Share2 size={18} />
+                        Share
                       </button>
                     </div>
                     {showVideo && (
