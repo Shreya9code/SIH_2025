@@ -333,28 +333,53 @@ const DigitalLibrary = () => {
                         <Download size={18} />
                       </a>
                       <button
-                        className="p-3 bg-[#FFD34E] text-[#8B4513] rounded-xl flex items-center gap-2"
-                        onClick={() => {
-                          if (navigator.share) {
-                            navigator
-                              .share({
-                                title: document.title,
-                                text: "Check out this page!",
-                                url: window.location.href,
-                              })
-                              .catch((err) =>
-                                console.log("Share cancelled", err)
-                              );
-                          } else {
-                            // fallback: copy link
-                            navigator.clipboard.writeText(window.location.href);
-                            alert("Link copied to clipboard!");
-                          }
-                        }}
-                      >
-                        <Share2 size={18} />
-                        Share
-                      </button>
+  className="p-3 bg-[#FFD34E] text-[#8B4513] rounded-xl flex items-center gap-2"
+  onClick={async () => {
+    try {
+      if (navigator.canShare && navigator.canShare({ files: [] })) {
+        // Mobile: share the image file
+        const response = await fetch(selectedMudra.images);
+        const blob = await response.blob();
+        const file = new File(
+          [blob],
+          selectedMudra.name_english.replace(/\s+/g, "_") + ".jpg",
+          { type: blob.type }
+        );
+        await navigator.share({
+          title: selectedMudra.name_sanskrit,
+          text: "Check out this mudra!",
+          files: [file],
+        });
+      } else if (navigator.clipboard && navigator.clipboard.write) {
+        // Desktop: convert to PNG & copy
+        const response = await fetch(selectedMudra.images);
+        const blob = await response.blob();
+        const img = await createImageBitmap(blob);
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        const pngBlob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
+        await navigator.clipboard.write([new ClipboardItem({ "image/png": pngBlob })]);
+        alert("Image copied to clipboard as PNG!");
+        window.open(selectedMudra.images, "_blank");
+      } else {
+        // Fallback: download
+        const link = document.createElement("a");
+        link.href = selectedMudra.images;
+        link.download = selectedMudra.name_english.replace(/\s+/g, "_") + ".jpg";
+        link.click();
+        alert("Image downloaded! You can now share it manually.");
+      }
+    } catch (err) {
+      console.log("Share failed:", err);
+      alert("Sharing is not supported on this device.");
+    }
+  }}
+>
+  <Share2 size={18} /> Share
+</button>
                     </div>
                     {showVideo && (
                       <div className="mt-4">
