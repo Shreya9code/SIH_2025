@@ -221,14 +221,14 @@ function GroupLearning({ currentUser }) {
   const isDetail = Boolean(activeGroup);
 
   return (
-    
+
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 pt-20 px-4 pb-8">
       {/* HEADER BAR WHEN IN DETAIL VIEW */}
-      
+
       {isDetail && (
-        
+
         <div className="mx-auto mb-6 max-w-7xl">
-          
+
           <div className="rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 p-6 shadow-2xl border border-amber-300">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -314,13 +314,17 @@ function GroupLearning({ currentUser }) {
         {!isDetail ? (
           /* GROUPS LIST VIEW - When no group is selected */
 
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-[350px,1fr] gap-6">
-              {/* Welcome/Empty State */}
+            {/* Welcome/Empty State */}
             <div className="rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 p-8 text-white shadow-2xl border border-amber-300">
               <div className="text-center max-w-2xl mx-auto">
                 <Sparkles size={48} className="mx-auto mb-4 text-yellow-300" />
-                <h2 className="text-3xl font-bold mb-4">Welcome to Group Learning</h2>
+                <h2
+                  className="text-4xl font-bold mb-4 !text-white"
+                >
+                  Group Learning
+                </h2>
                 <p className="text-amber-100 text-lg mb-6">
                   Collaborate with fellow Bharatanatyam enthusiasts! Create or join a group to track progress,
                   share insights, and learn together.
@@ -402,7 +406,7 @@ function GroupLearning({ currentUser }) {
               </div>
             </div>
 
-          
+
 
 
 
@@ -460,8 +464,8 @@ function GroupLearning({ currentUser }) {
                           key={member.clerkId}
                           onClick={() => loadMemberReport(member)}
                           className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${isSelected
-                              ? 'border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50 shadow-lg'
-                              : 'border-amber-200 bg-amber-50 hover:border-amber-300 hover:shadow-md'
+                            ? 'border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50 shadow-lg'
+                            : 'border-amber-200 bg-amber-50 hover:border-amber-300 hover:shadow-md'
                             }`}
                         >
                           <div className="flex items-center justify-between mb-2">

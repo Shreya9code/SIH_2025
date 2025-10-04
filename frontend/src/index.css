@@ -38,14 +38,14 @@ button {
   font-family: inherit;
   cursor: pointer;
   transition: all 0.25s;
-  background-color: #D94F3D; /* red buttons - dark mode style */
-  color: #FFF9E6; /* light text - dark mode style */
+  /* background-color: #D94F3D; 
+  color: #FFF9E6;  */
 }
 button:hover {
-  background-color: #8B0000; /* darker red on hover */
-  border-color: #FFC107; /* yellow border on hover */
-  color: #FFF9E6;
-}
+  /* background-color: #8B0000; 
+  border-color: #FFC107; 
+  color: #FFF9E6; */
+} 
 
 /* Form elements */
 input, textarea, select {

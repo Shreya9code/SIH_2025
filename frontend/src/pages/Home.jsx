@@ -242,12 +242,13 @@ const Home = () => {
             </button>
 
             <button
-              onClick={scrollToQnA}
-              className="group px-12 py-4 border-2 border-amber-300 hover:border-amber-200 text-amber-100 hover:text-white rounded-2xl font-semibold text-lg backdrop-blur-sm bg-white/10 hover:bg-amber-500/20 transition-all duration-300 transform hover:-translate-y-1 flex items-center space-x-3"
-            >
-              <HelpCircle size={24} />
-              <span>Learn How It Works</span>
-            </button>
+  onClick={scrollToQnA}
+  className="group px-12 py-4 border-2 border-amber-300 hover:border-amber-200 !text-white hover:!text-white rounded-2xl font-semibold text-lg backdrop-blur-sm bg-white/10 hover:bg-amber-500/20 transition-all duration-300 transform hover:-translate-y-1 flex items-center space-x-3"
+>
+  <HelpCircle size={24} className="!text-white" />
+  <span className="!text-white">Learn How It Works</span>
+</button>
+
           </div>
 
           {/* Stats Preview */}
@@ -405,34 +406,42 @@ const Home = () => {
           </div>
 
           {/* Tab Navigation */}
-          <div className="flex justify-center mb-12">
-            <div className="bg-amber-100 rounded-2xl p-2 flex space-x-2">
-              <button
-                onClick={() => setActiveTab('free')}
-                className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === 'free'
-                  ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg'
-                  : 'text-amber-700 hover:text-amber-900'
-                  }`}
-              >
-                <div className="flex items-center space-x-2">
-                  <Zap size={20} />
-                  <span>Free Features</span>
-                </div>
-              </button>
-              <button
-                onClick={() => setActiveTab('premium')}
-                className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === 'premium'
-                  ? 'bg-gradient-to-r from-red-500 to-rose-500 text-white shadow-lg'
-                  : 'text-amber-700 hover:text-amber-900'
-                  }`}
-              >
-                <div className="flex items-center space-x-2">
-                  <Lock size={20} />
-                  <span>Premium Features</span>
-                </div>
-              </button>
-            </div>
-          </div>
+<div className="flex justify-center mb-12">
+  <div className="bg-amber-100 rounded-2xl p-2 flex space-x-2">
+    
+    {/* Free Tab */}
+    <button
+      onClick={() => setActiveTab('free')}
+      className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 ${
+        activeTab === 'free'
+          ? 'bg-gradient-to-r from-amber-500 to-orange-500 !text-white shadow-lg'
+          : '!text-amber-700 hover:!text-white hover:bg-gradient-to-r hover:from-amber-400 hover:to-orange-400'
+      }`}
+    >
+      <div className="flex items-center space-x-2">
+        <Zap size={20} className={activeTab === 'free' ? '!text-white' : '!text-amber-700 group-hover:!text-white'} />
+        <span>Free Features</span>
+      </div>
+    </button>
+
+    {/* Premium Tab */}
+    <button
+      onClick={() => setActiveTab('premium')}
+      className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 ${
+        activeTab === 'premium'
+          ? 'bg-gradient-to-r from-red-500 to-rose-500 !text-white shadow-lg'
+          : '!text-amber-700 hover:!text-white hover:bg-gradient-to-r hover:from-red-400 hover:to-rose-400'
+      }`}
+    >
+      <div className="flex items-center space-x-2">
+        <Lock size={20} className={activeTab === 'premium' ? '!text-white' : '!text-amber-700 group-hover:!text-white'} />
+        <span>Premium Features</span>
+      </div>
+    </button>
+
+  </div>
+</div>
+
 
           {/* Features Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

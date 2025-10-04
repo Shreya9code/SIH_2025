@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Camera, Upload, Play, Square, BookOpen, Lightbulb, AlertTriangle, ChevronDown, Library } from "lucide-react";
+import { Camera, Upload, Play, Square, BookOpen, Lightbulb, AlertTriangle, ChevronDown, Library, Sparkles, Target, TrendingUp } from "lucide-react";
 import axios from "axios";
 import IconImg from "../assets/icon.png";
 
@@ -139,59 +139,54 @@ const MudraDetection = () => {
   };
 
   const navigateToLibrary = () => {
-    // Navigate to digital library - you can replace this with your actual navigation logic
-    window.location.href = "/library"; // or use your router navigation
+    window.location.href = "/library";
   };
 
   return (
-    <div className="min-h-screen bg-[#FFF9E6] pt-18">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 pt-18">
       <div className="max-w-7xl mx-auto px-4">
+        {/* Header Banner - Group Learning Style */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-serif font-bold text-amber-900 mb-2">
-            Mudra Detection
-          </h1>
-          <p className="text-amber-700/80 text-lg">
-            AI-powered Bharatanatyam mudra recognition
-          </p>
+          <div className="rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 p-8 shadow-2xl border border-amber-300 mb-6">
+            <Sparkles size={48} className="mx-auto mb-4 text-yellow-300" />
+            <h1 className="text-4xl font-bold !text-white mb-3">
+              Mudra Detection
+            </h1>
+            <p className="text-amber-100 text-lg">
+              AI-powered Bharatanatyam mudra recognition
+            </p>
+          </div>
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl border border-amber-100 overflow-hidden mb-6">
           <div className="grid grid-cols-1 lg:grid-cols-6">
             {/* Left Side - Input & Controls */}
             <div className="lg:col-span-2 p-6 border-r border-amber-100">
-              {/* Dropdown Navigation */}
-              <div className="relative mb-6">
-                <button
-                  onClick={() => setShowDropdown(!showDropdown)}
-                  className="w-full flex items-center justify-between px-4 py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors text-sm font-medium"
-                >
-                  <div className="flex items-center space-x-2">
-                    {mode === "upload" ? <Upload size={18} /> : <Camera size={18} />}
-                    <span className="text-base">{mode === "upload" ? "Upload Image" : "Camera Capture"}</span>
-                  </div>
-                  <ChevronDown size={18} className={`transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
-                </button>
-
-                {showDropdown && (
-                  <div className="absolute top-full left-0 right-0 mt-1 rounded-xl shadow-lg z-10">
-                    <button
-                      onClick={() => flipMode("upload")}
-                      className="w-full flex items-center space-x-2 px-4 py-3 text-left text-white bg-amber-500 hover:bg-amber-600 rounded-t-xl transition-colors text-sm"
-                    >
-                      <Upload size={16} />
-                      <span>Upload Image</span>
-                    </button>
-                    <button
-                      onClick={() => flipMode("camera")}
-                      className="w-full flex items-center space-x-2 px-4 py-3 text-left text-white bg-amber-500 hover:bg-amber-600 rounded-b-xl border-t border-amber-400 transition-colors text-sm"
-                    >
-                      <Camera size={16} />
-                      <span>Camera Capture</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-
+              {/* Mode Selector - Like Timeframe Selector */}
+<div className="flex space-x-2 bg-white rounded-xl p-1 border border-green-200 shadow-lg mb-6">
+  <button
+    onClick={() => flipMode("upload")}
+    className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-lg font-medium capitalize transition-all flex-1 text-sm ${
+      mode === "upload"
+        ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg'
+        : 'text-green-700 hover:bg-green-50'
+    }`}
+  >
+    <Upload size={16} />
+    <span>Upload</span>
+  </button>
+  <button
+    onClick={() => flipMode("camera")}
+    className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-lg font-medium capitalize transition-all flex-1 text-sm ${
+      mode === "camera"
+        ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg'
+        : 'text-green-700 hover:bg-green-50'
+    }`}
+  >
+    <Camera size={16} />
+    <span>Camera</span>
+  </button>
+</div>
 
               {/* Preview Area */}
               <div className="mb-4 p-2 border border-amber-200 rounded-lg bg-amber-50">
@@ -201,8 +196,8 @@ const MudraDetection = () => {
                   </div>
                 ) : mode === "upload" ? (
                   <label className="flex flex-col items-center justify-center h-64 border-2 border-dashed border-amber-300 rounded-md cursor-pointer hover:border-amber-400 transition-colors bg-white">
-                    <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mb-3 border border-amber-200">
-                      <Upload className="w-6 h-6 text-amber-600" />
+                    <div className="w-12 h-12 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full flex items-center justify-center mb-3 border border-amber-200">
+                      <Upload className="w-6 h-6 text-white" />
                     </div>
                     <span className="text-amber-800 font-medium text-sm mb-1">Choose Image</span>
                     <span className="text-amber-600/70 text-xs">JPG, PNG, or WebP</span>
@@ -217,7 +212,7 @@ const MudraDetection = () => {
                       {!isRecording ? (
                         <button
                           onClick={startCamera}
-                          className="flex items-center justify-center space-x-2 flex-1 px-4 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg hover:from-amber-600 hover:to-amber-700 transition-all text-sm font-medium"
+                          className="flex items-center justify-center space-x-2 flex-1 px-4 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg hover:from-amber-600 hover:to-orange-600 transition-all text-sm font-medium"
                         >
                           <Play size={16} className="fill-current" />
                           <span>Start Camera</span>
@@ -226,14 +221,14 @@ const MudraDetection = () => {
                         <>
                           <button
                             onClick={stopCamera}
-                            className="flex items-center justify-center space-x-2 flex-1 px-4 py-3 bg-gradient-to-r from-rose-500 to-rose-600 text-white rounded-lg hover:from-rose-600 hover:to-rose-700 transition-all text-sm font-medium"
+                            className="flex items-center justify-center space-x-2 flex-1 px-4 py-3 bg-gradient-to-r from-rose-500 to-red-600 text-white rounded-lg hover:from-rose-600 hover:to-red-700 transition-all text-sm font-medium"
                           >
                             <Square size={16} />
                             <span>Stop</span>
                           </button>
                           <button
                             onClick={captureImage}
-                            className="flex items-center justify-center space-x-2 flex-1 px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all text-sm font-medium"
+                            className="flex items-center justify-center space-x-2 flex-1 px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all text-sm font-medium"
                           >
                             <Camera size={16} />
                             <span>Capture</span>
@@ -244,7 +239,6 @@ const MudraDetection = () => {
                   </div>
                 )}
               </div>
-
               {/* Action Buttons */}
               {previewUrl && (
                 <div className="flex space-x-3 mb-4">
@@ -254,17 +248,17 @@ const MudraDetection = () => {
                       setPreviewUrl("");
                       setDetectionResult(null);
                     }}
-                    className="flex-1 px-4 py-3 bg-amber-100 text-amber-700 rounded-lg border border-amber-200 hover:bg-amber-200 transition-colors text-sm font-medium"
+                    className="flex-1 px-4 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg hover:from-amber-600 hover:to-orange-600 transition-all text-sm font-medium"
                   >
                     Change Image
                   </button>
                   <button
                     onClick={analyzeMudra}
                     disabled={isAnalyzing}
-                    className={`flex-1 px-4 py-3 ${isAnalyzing
-                      ? "bg-amber-300 cursor-not-allowed"
-                      : "bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600"
-                      } text-white rounded-lg font-semibold text-sm transition-all`}
+                    className={`flex-1 px-4 py-3 rounded-lg font-semibold text-sm transition-all ${isAnalyzing
+                      ? "!bg-gray-500 !text-white cursor-not-allowed"
+                      : "!bg-gradient-to-r !from-green-500 !to-emerald-600 hover:!from-green-600 hover:!to-emerald-700 !text-white"
+                      }`}
                   >
                     {isAnalyzing ? (
                       <div className="flex items-center justify-center space-x-2">
@@ -278,7 +272,7 @@ const MudraDetection = () => {
                 </div>
               )}
 
-              {/* Detection Result - Mudra Name & Accuracy */}
+              {/* Detection Result - Mudra Name & Accuracy - RESTORED ORIGINAL COLORS */}
               {detectionResult && detectionResult.rawAccuracy >= 80 && (
                 <div className="text-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200 mb-4">
                   <h3 className="text-xl font-bold text-[#8B4513] mb-1">
@@ -294,7 +288,7 @@ const MudraDetection = () => {
               )}
             </div>
 
-            {/* Right Side - Results & Information */}
+            {/* Right Side - Results & Information - RESTORED ORIGINAL COLORS */}
             <div className="lg:col-span-4 p-6 bg-amber-50/30">
               {detectionResult ? (
                 detectionResult.rawAccuracy >= 80 ? (
@@ -327,7 +321,7 @@ const MudraDetection = () => {
                     )}
                   </div>
                 ) : (
-                  // Low Accuracy Disclaimer
+                  // Low Accuracy Disclaimer - RESTORED ORIGINAL COLORS
                   <div className="h-full space-y-6">
                     <div className="bg-rose-50 rounded-xl p-6 border border-rose-200 text-center">
                       <AlertTriangle className="w-16 h-16 text-rose-500 mx-auto mb-4" />
@@ -359,7 +353,7 @@ const MudraDetection = () => {
 
                       <button
                         onClick={navigateToLibrary}
-                        className="flex items-center justify-center space-x-2 px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg hover:from-amber-600 hover:to-amber-700 transition-all font-semibold text-lg mx-auto"
+                        className="flex items-center justify-center space-x-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all font-semibold text-lg mx-auto !border-transparent"
                       >
                         <Library size={20} />
                         <span>Explore Digital Library To Know About All Bharatnatyam Mudras</span>

@@ -5,39 +5,140 @@ from langgraph_backend import chatbot
 from langchain_core.messages import HumanMessage, SystemMessage
 import uuid
 
-# Custom CSS for better styling
+# Set wide layout
+st.set_page_config(layout="wide", initial_sidebar_state="expanded")
+
+# Custom CSS
 st.markdown("""
 <style>
+    /* Main app background */
+    .stApp {
+        background: linear-gradient(135deg, #FFFBFF 0%, #FFF8F5 100%);
+    }
+    
+    /* Headers */
     .main-header {
-        font-size: 2.5rem;
-        color: #8B4513;
+        font-size: 3rem;
+        background: linear-gradient(135deg, #FFB74D 0%, #FF9800 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
         text-align: center;
         margin-bottom: 1rem;
+        font-weight: 700;
+        font-family: 'Georgia', serif;
     }
-    .mudra-info {
-        background-color: #FFF8DC;
-        padding: 1rem;
-        border-radius: 10px;
-        border-left: 5px solid #DAA520;
-        margin: 1rem 0;
-    }
+    
+    /* Chat messages */
     .chat-message {
-        padding: 1rem;
-        border-radius: 10px;
+        padding: 0.8rem;
+        border-radius: 15px;
         margin: 0.5rem 0;
+        box-shadow: 0 2px 8px rgba(139, 69, 19, 0.08);
+        border: 1px solid;
+        font-size: 0.9rem; /* smaller text */
+        width: fit-content;
     }
+    
     .user-message {
-        background-color: #E6F3FF;
-        border-left: 5px solid #0074D9;
+        background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+        border-color: #FFD54F;
+        border-left: 5px solid #FFB74D;
+        margin-left: auto !important;
+        margin-right: 0 !important;
+        text-align: left;
+        max-width: 70%;
     }
+    
     .assistant-message {
-        background-color: #F0F8FF;
-        border-left: 5px solid #2ECC40;
+        background: linear-gradient(135deg, #F1F8E9 0%, #E8F5E8 100%);
+        border-color: #AED581;
+        border-left: 5px solid #81C784;
+        margin-right: auto !important;
+        margin-left: 0 !important;
+        text-align: left;
+        max-width: 70%;
+    }
+    
+    /* Sidebar styling */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #E8F5E9 0%, #C8E6C9 100%) !important;
+        width: 400px !important; /* increased width */
+    }
+    
+    section[data-testid="stSidebar"] > div {
+        background: transparent !important;
+    }
+    
+    .sidebar-content {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin: 0.5rem 0;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Buttons */
+    .stButton button {
+        background: linear-gradient(135deg, #C8E6C9 0%, #81C784 100%) !important;
+        color: #2E7D32 !important;
+        border: none !important;
+        padding: 0.7rem 1rem !important;
+        border-radius: 12px !important;
+        font-weight: 500 !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 2px 6px rgba(129, 199, 132, 0.3) !important;
+    }
+    
+    .stButton button:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 3px 10px rgba(129, 199, 132, 0.5) !important;
+        background: linear-gradient(135deg, #81C784 0%, #66BB6A 100%) !important;
+        color: #1B5E20 !important;
+    }
+    
+    /* Toggle */
+    .stToggle {
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 12px;
+        padding: 0.5rem;
+        border: 1px solid rgba(255, 181, 77, 0.3);
+    }
+    
+    /* Chat input */
+    .stChatInput input {
+        background: rgba(255, 255, 255, 0.95);
+        border: 2px solid #FFE0B2;
+        border-radius: 25px;
+        color: #8D6E63;
+        padding: 1rem 1.5rem;
+    }
+    
+    .stChatInput input:focus {
+        border-color: #AED581;
+        box-shadow: 0 0 0 2px rgba(174, 213, 129, 0.2);
+    }
+    
+    /* Mudra info box */
+    .mudra-info {
+        background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
+        padding: 1.5rem;
+        border-radius: 15px;
+        border-left: 5px solid #FFD54F;
+        margin: 1rem 0;
+        box-shadow: 0 2px 8px rgba(139, 69, 19, 0.05);
+    }
+    
+    /* Force main container to use full width */
+    .main .block-container {
+        padding-left: 2rem;
+        padding-right: 2rem;
+        max-width: 100%;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Session state initialization
+# Session state
 if 'message_history' not in st.session_state:
     st.session_state.message_history = []
 if 'thread_id' not in st.session_state:
@@ -46,132 +147,158 @@ if 'expert_mode' not in st.session_state:
     st.session_state.expert_mode = False
 
 # Header
-st.markdown(
-    '<div class="main-header" style="color: white;">🪷 Mudra AI Assistant</div>',
-    unsafe_allow_html=True
-)
+st.markdown('<div class="main-header">🪷 Mudra AI Assistant</div>', unsafe_allow_html=True)
 
-# Sidebar with mudra information and controls
+# Sidebar
 with st.sidebar:
-    st.header("🎭 Mudra Assistant")
-    
+    # Sidebar header - now greenish
     st.markdown("""
-    **Common Mudras to ask about:**
-    - Pataka (flag)
-    - Tripataka (three-part flag)
-    - Ardhapataka (half flag)
-    - Kartarimukha (scissors)
-    - Mayura (peacock)
-    - Ardhachandra (half moon)
-    - Shikhara (spire)
-    - Kapitta (elephant apple)
-    - Kataka (link)
-    - Suchi (needle)
+    <div style='
+        background: linear-gradient(135deg, #C8E6C9 0%, #81C784 100%);
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin-bottom: 1.5rem;
+        color: #2E7D32;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    '>
+        <h2 style='color: #2E7D32; margin: 0; font-family: Georgia, serif;'>🎭 Mudra Guide</h2>
+        <p style='margin: 0.5rem 0 0 0; opacity: 0.8;'>Your hand gesture expert</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Mudra reference
+    st.markdown("""
+    **Common Mudras to explore:**
+    - 🟫 **Pataka** (flag) - Starting, clouds
+    - 🟧 **Tripataka** (three-part flag) - Crown, tree
+    - 🟨 **Ardhapataka** (half flag) - Spear, tower  
+    - 🟩 **Kartarimukha** (scissors) - Separation
+    - 🟦 **Mayura** (peacock) - Elegance, beauty
+    - 🌙 **Ardhachandra** (half moon) - Moon, grace
+    - 🏔️ **Shikhara** (spire) - Strength, power
+    - 🍎 **Kapitta** (elephant apple) - Offering
+    - 🔗 **Kataka** (link) - Connection, chain
+    - 🪡 **Suchi** (needle) - Pointing, focus
     """)
     
     st.divider()
-    
+        
     # Expert mode toggle
-    expert_mode = st.toggle("Expert Mode", value=st.session_state.expert_mode)
+    expert_mode = st.toggle("🔬 Expert Mode", value=st.session_state.expert_mode,
+                          help="Enable for detailed technical analysis")
     st.session_state.expert_mode = expert_mode
     
-    if st.button("🆕 New Conversation"):
+    if expert_mode:
+        st.info("Detailed analysis enabled")
+    
+    # Quick Actions inside sidebar
+    st.subheader("🚀 Quick Actions")
+    
+    if st.button("🆕 New Chat", use_container_width=True):
         st.session_state.message_history = []
         st.session_state.thread_id = str(uuid.uuid4())
         st.rerun()
+
+    if st.button("💾 Save Conversation", use_container_width=True):
+        st.success("Conversation saved!")
     
-    if st.button("📚 Sample Questions"):
-        sample_questions = [
-            "Explain the Pataka mudra",
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# Display chat messages
+for message in st.session_state.message_history:
+    if message["role"] == "user":
+        st.markdown(f"""
+        <div class="chat-message user-message">
+            <strong style='color: #8D6E63;'>You:</strong><br>
+            <div style='margin-top: 0.5rem; color: #8D6E63; line-height: 1.4; font-size: 0.9rem;'>{message["content"]}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown(f"""
+        <div class="chat-message assistant-message">
+            <strong style='color: #689F38;'>🧘‍♀️ Mudra Expert:</strong><br>
+            <div style='margin-top: 0.5rem; color: #558B2F; line-height: 1.4; font-size: 0.9rem;'>{message["content"]}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+# Show welcome message only if no chat history
+if not st.session_state.message_history:
+    st.markdown("""
+    <div style='
+        text-align: center; 
+        padding: 3rem; 
+        color: #A1887F;
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 20px;
+        margin: 2rem 0;
+        border: 1px solid rgba(255, 213, 79, 0.2);
+    '>
+        <div style='font-size: 4rem; margin-bottom: 1rem;'>🪷</div>
+        <h3 style='color: #8D6E63;'>Welcome to Mudra AI</h3>
+        <p>Try these sample questions!</p>
+        <p> "Explain the Pataka mudra",
             "What are the uses of Tripataka in Bharatanatyam?",
             "Show me mudras for expressing emotions",
             "Difference between Ardhapataka and Kartarimukha"
-        ]
-        for question in sample_questions:
-            if st.button(question, use_container_width=True):
-                st.session_state.user_input = question
-
-# Main chat interface
-col1, col2 = st.columns([3, 1])
-
-with col1:
-    st.subheader("Mudra Conversation")
-    
-    # Display chat history with better formatting
-    for message in st.session_state.message_history:
-        if message["role"] == "user":
-            st.markdown(f"""
-            <div class="chat-message user-message">
-                <strong>You:</strong><br>{message["content"]}
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.markdown(f"""
-            <div class="chat-message assistant-message">
-                <strong>Mudra Expert:</strong><br>{message["content"]}
-            </div>
-            """, unsafe_allow_html=True)
-
-with col2:
-    st.subheader("Quick Actions")
-    if st.button("🔄 Refresh"):
-        st.rerun()
-    
-    if st.button("💾 Save Chat"):
-        st.success("Conversation saved!")
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
 # Chat input
-user_input = st.chat_input("Ask about dance mudras...")
+user_input = st.chat_input("💭 Ask about dance mudras...")
 
 if user_input:
-    # Add user message to history
+    # Immediately add user message to history and display it
     st.session_state.message_history.append({"role": "user", "content": user_input})
     
-    # Display user message immediately
-    with st.chat_message("user"):
-        st.write(user_input)
+    # Rerun to show the user message immediately
+    st.rerun()
+
+# Process AI response after showing user message
+if (st.session_state.message_history and 
+    st.session_state.message_history[-1]["role"] == "user" and
+    not any(msg["role"] == "assistant" for msg in st.session_state.message_history[-1:])):
     
-    # Prepare messages for the chatbot
+    user_input = st.session_state.message_history[-1]["content"]
+    
     messages = [HumanMessage(content=user_input)]
-    
-    # Add expert mode context if enabled
     if st.session_state.expert_mode:
         expert_prompt = "Provide detailed technical analysis including muscle movements, historical context, and advanced variations."
         messages.insert(0, SystemMessage(content=expert_prompt))
     
-    # Get AI response
-    with st.chat_message("assistant"):
-        with st.spinner("Analyzing mudras..."):
-            try:
-                response = chatbot.invoke(
-                    {"messages": messages}, 
-                    config={"configurable": {"thread_id": st.session_state.thread_id}}
-                )
-                ai_response = response['messages'][-1].content
-                
-                # Display response
-                st.write(ai_response)
-                
-                # Add to history
-                st.session_state.message_history.append({
-                    "role": "assistant", 
-                    "content": ai_response
-                })
-                
-            except Exception as e:
-                error_msg = "I apologize, but I encountered an error. Please try again."
-                st.error(error_msg)
-                st.session_state.message_history.append({
-                    "role": "assistant", 
-                    "content": error_msg
-                })
+    with st.spinner("🔍 Analyzing mudra techniques..."):
+        try:
+            response = chatbot.invoke(
+                {"messages": messages}, 
+                config={"configurable": {"thread_id": st.session_state.thread_id}}
+            )
+            ai_response = response['messages'][-1].content
+            
+            st.session_state.message_history.append({
+                "role": "assistant", 
+                "content": ai_response
+            })
+            
+            st.rerun()
+        except Exception as e:
+            error_msg = "I apologize, but I encountered an error. Please try again."
+            st.error(error_msg)
+            st.session_state.message_history.append({
+                "role": "assistant", 
+                "content": error_msg
+            })
+            st.rerun()
 
-# Footer with mudra information
+# Footer
 st.markdown("---")
 st.markdown("""
-<div class="mudra-info" style="color: #8B4513;">
-    <strong>Did you know?</strong> There are 28 single-hand mudras (Asamyukta Hastas) and 
+<div class="mudra-info">
+    <strong style='color: #8D6E63;'>🎭 Cultural Heritage</strong><br>
+    <span style='color: #8D6E63;'>
+    There are 28 single-hand mudras (Asamyukta Hastas) and 
     24 combined-hand mudras (Samyukta Hastas) in Bharatanatyam. Each mudra can represent 
     various objects, gods, relationships, and actions when used in different contexts.
+    </span>
 </div>
 """, unsafe_allow_html=True)
