@@ -58,7 +58,7 @@ const DigitalLibrary = () => {
     if (mudra.images) {
       return (
         <img
-          src={`../data/images/${mudra.images}`}
+          src={mudra.images}
           alt={mudra.name_sanskrit}
           className="h-full w-auto object-contain"
           onError={e => {
