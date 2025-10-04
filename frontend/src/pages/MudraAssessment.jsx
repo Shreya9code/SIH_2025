@@ -46,17 +46,17 @@ const MudraAssessment = () => {
   // Capture a single frame from the camera
   const captureSingleImage = () => {
     if (!videoRef.current) return null;
-    
+
     const canvas = document.createElement("canvas");
     canvas.width = videoRef.current.videoWidth;
     canvas.height = videoRef.current.videoHeight;
     const ctx = canvas.getContext("2d");
     ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-    
+
     const imageDataUrl = canvas.toDataURL("image/jpeg");
     setCapturedImage(imageDataUrl);
     console.log("📸 Single image captured");
-    
+
     return imageDataUrl;
   };
 
@@ -110,25 +110,25 @@ const MudraAssessment = () => {
     }
 
     console.log("🔄 Sending image to backend for analysis...");
-    
+
     try {
       const res = await fetch(dataUrl);
       const blob = await res.blob();
       const formData = new FormData();
       formData.append("file", blob, "hand.jpg");
-      
+
       console.log("📤 Sending request to backend...");
       const response = await axios.post(
         "http://localhost:8000/hand_analysis",
         formData,
         {
           params: {
-            include_annotated_image: true // Request annotated image
+            include_annotated_image: true, // Request annotated image
           },
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-      
+
       console.log("✅ Full backend response:", response.data);
       const data = response.data;
 
@@ -148,7 +148,7 @@ const MudraAssessment = () => {
           fingerAnalysis: [],
           commonMistakes: ["No hands detected in the image"],
           points: 0,
-          predictedMudra: null
+          predictedMudra: null,
         });
 
         return;
@@ -160,19 +160,22 @@ const MudraAssessment = () => {
       let fingerCount = 0;
 
       // Process finger confidence for each detected hand
-      Object.entries(data.finger_confidence || {}).forEach(([handKey, fingers]) => {
-        Object.entries(fingers).forEach(([finger, confidence]) => {
-          fingerData.push({
-            finger: `${finger} (${handKey})`,
-            correct: confidence >= 50,
-            confidence: confidence
+      Object.entries(data.finger_confidence || {}).forEach(
+        ([handKey, fingers]) => {
+          Object.entries(fingers).forEach(([finger, confidence]) => {
+            fingerData.push({
+              finger: `${finger} (${handKey})`,
+              correct: confidence >= 50,
+              confidence: confidence,
+            });
+            totalConfidence += confidence;
+            fingerCount++;
           });
-          totalConfidence += confidence;
-          fingerCount++;
-        });
-      });
+        }
+      );
 
-      const averageAccuracy = fingerCount > 0 ? Math.round(totalConfidence / fingerCount) : 0;
+      const averageAccuracy =
+        fingerCount > 0 ? Math.round(totalConfidence / fingerCount) : 0;
 
       // Extract mudra predictions
       const mudraPredictions = data.mudra_predictions || [];
@@ -181,42 +184,62 @@ const MudraAssessment = () => {
       let topPrediction = null;
       let predictionConfidence = 0;
 
-      if (mudraPredictions.length > 0 && mudraPredictions[0].predictions?.length > 0) {
+      if (
+        mudraPredictions.length > 0 &&
+        mudraPredictions[0].predictions?.length > 0
+      ) {
         topPrediction = mudraPredictions[0].predictions[0];
         predictionConfidence = topPrediction.confidence || 0;
-        console.log("🎯 Top prediction:", topPrediction.class, "with confidence:", predictionConfidence);
+        console.log(
+          "🎯 Top prediction:",
+          topPrediction.class,
+          "with confidence:",
+          predictionConfidence
+        );
       }
 
       // Calculate points based on accuracy and mudra match
       const basePoints = Math.floor(averageAccuracy / 20); // 0-5 points based on accuracy
-      const mudraMatchBonus = topPrediction && currentMudra && 
-                            topPrediction.class.toLowerCase() === currentMudra.name_sanskrit.toLowerCase() ? 2 : 0;
+      const mudraMatchBonus =
+        topPrediction &&
+        currentMudra &&
+        topPrediction.class.toLowerCase() ===
+          currentMudra.name_sanskrit.toLowerCase()
+          ? 2
+          : 0;
       const totalPoints = basePoints + mudraMatchBonus;
 
       // Identify common mistakes (fingers with low confidence)
       const commonMistakes = fingerData
-        .filter(f => !f.correct)
-        .map(f => `${f.finger} position (${Math.round(f.confidence)}%)`);
+        .filter((f) => !f.correct)
+        .map((f) => `${f.finger} position (${Math.round(f.confidence)}%)`);
 
       const result = {
         accuracy: averageAccuracy,
         isCorrect: averageAccuracy >= 70,
         fingerAnalysis: fingerData,
-        commonMistakes: commonMistakes.length > 0 ? commonMistakes : ["Good finger positioning"],
+        commonMistakes:
+          commonMistakes.length > 0
+            ? commonMistakes
+            : ["Good finger positioning"],
         points: totalPoints,
-        predictedMudra: topPrediction ? {
-          name: topPrediction.class,
-          confidence: predictionConfidence,
-          matchesTarget: topPrediction && currentMudra && 
-                        topPrediction.class.toLowerCase() === currentMudra.name_sanskrit.toLowerCase()
-        } : null
+        predictedMudra: topPrediction
+          ? {
+              name: topPrediction.class,
+              confidence: predictionConfidence,
+              matchesTarget:
+                topPrediction &&
+                currentMudra &&
+                topPrediction.class.toLowerCase() ===
+                  currentMudra.name_sanskrit.toLowerCase(),
+            }
+          : null,
       };
 
       console.log("📈 Assessment result:", result);
       setAssessmentResult(result);
       setCurrentMudraPrediction(topPrediction?.class || null);
-      setScore(prev => prev + totalPoints);
-
+      setScore((prev) => prev + totalPoints);
     } catch (err) {
       console.error("❌ Hand analysis error:", err);
       setAssessmentResult({
@@ -225,7 +248,7 @@ const MudraAssessment = () => {
         fingerAnalysis: [],
         commonMistakes: ["Error connecting to analysis service"],
         points: 0,
-        predictedMudra: null
+        predictedMudra: null,
       });
     }
   };
@@ -233,7 +256,7 @@ const MudraAssessment = () => {
   // End a single mudra attempt
   const endMudra = async (timedOut = false) => {
     if (timerRef.current) clearInterval(timerRef.current);
-    
+
     // Stop camera stream immediately after capture
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
@@ -248,7 +271,7 @@ const MudraAssessment = () => {
           fingerAnalysis: [],
           commonMistakes: ["Time up - no submission received"],
           points: 0,
-          predictedMudra: null
+          predictedMudra: null,
         });
       } else {
         await predictMudra();
@@ -277,10 +300,7 @@ const MudraAssessment = () => {
     let addedPoints = 0;
     if (currentMudra && !assessmentResult) {
       addedPoints = 0;
-      setMudrasAttempted((prev) => [
-        ...prev,
-        currentMudra.name_sanskrit,
-      ]);
+      setMudrasAttempted((prev) => [...prev, currentMudra.name_sanskrit]);
       setShowAnalysis(true);
     }
 
@@ -355,7 +375,9 @@ const MudraAssessment = () => {
                 <div className="flex items-center gap-3 mb-4">
                   <Camera className="text-amber-600" size={24} />
                   <h2 className="text-xl font-bold text-amber-900">
-                    {showAnalysis && annotatedImage ? "Analysis Result" : "Camera Preview"}
+                    {showAnalysis && annotatedImage
+                      ? "Analysis Result"
+                      : "Camera Preview"}
                   </h2>
                 </div>
 
@@ -373,12 +395,19 @@ const MudraAssessment = () => {
                     // Show annotated image after analysis
                     <div className="h-full flex flex-col items-center justify-center">
                       <div className="text-center mb-4">
-                        <ImageIcon className="mx-auto mb-2 text-green-600" size={32} />
-                        <p className="text-green-600 font-semibold">Analysis Complete</p>
-                        <p className="text-amber-600 text-sm">Hand landmarks detected and analyzed</p>
+                        <ImageIcon
+                          className="mx-auto mb-2 text-green-600"
+                          size={32}
+                        />
+                        <p className="text-green-600 font-semibold">
+                          Analysis Complete
+                        </p>
+                        <p className="text-amber-600 text-sm">
+                          Hand landmarks detected and analyzed
+                        </p>
                       </div>
-                      <img 
-                        src={annotatedImage} 
+                      <img
+                        src={annotatedImage}
                         alt="Annotated hand with landmarks"
                         className="w-full max-w-md rounded-lg shadow-lg border-2 border-green-300"
                       />
@@ -390,12 +419,19 @@ const MudraAssessment = () => {
                     // Show captured image before analysis
                     <div className="h-full flex flex-col items-center justify-center">
                       <div className="text-center mb-4">
-                        <ImageIcon className="mx-auto mb-2 text-blue-600" size={32} />
-                        <p className="text-blue-600 font-semibold">Image Captured</p>
-                        <p className="text-amber-600 text-sm">Processing analysis...</p>
+                        <ImageIcon
+                          className="mx-auto mb-2 text-blue-600"
+                          size={32}
+                        />
+                        <p className="text-blue-600 font-semibold">
+                          Image Captured
+                        </p>
+                        <p className="text-amber-600 text-sm">
+                          Processing analysis...
+                        </p>
                       </div>
-                      <img 
-                        src={capturedImage} 
+                      <img
+                        src={capturedImage}
                         alt="Captured hand"
                         className="w-full max-w-md rounded-lg shadow-lg border-2 border-blue-300"
                       />
@@ -412,7 +448,8 @@ const MudraAssessment = () => {
                       />
                       <div className="mt-4 text-center">
                         <p className="text-amber-600 text-sm">
-                          Position your hand and click Submit to capture and analyze
+                          Position your hand and click Submit to capture and
+                          analyze
                         </p>
                       </div>
                     </div>
@@ -438,13 +475,17 @@ const MudraAssessment = () => {
                         </div>
                       </div>
                     )}
-                    
+
                     {/* Mudra Prediction Display */}
                     {currentMudraPrediction && (
                       <div className="rounded-lg bg-blue-50 p-3 border border-blue-200 mb-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-blue-800 font-semibold">AI Detection:</span>
-                          <span className="text-blue-600">{currentMudraPrediction}</span>
+                          <span className="text-blue-800 font-semibold">
+                            AI Detection:
+                          </span>
+                          <span className="text-blue-600">
+                            {currentMudraPrediction}
+                          </span>
                         </div>
                       </div>
                     )}
@@ -556,11 +597,13 @@ const MudraAssessment = () => {
                     {showAnalysis && assessmentResult && (
                       <div className="space-y-3">
                         <div className="grid grid-cols-2 gap-2">
-                          <div className={`rounded-lg p-2 text-white text-center ${
-                            assessmentResult.accuracy >= 70 
-                              ? 'bg-gradient-to-br from-green-500 to-emerald-600' 
-                              : 'bg-gradient-to-br from-amber-500 to-orange-500'
-                          }`}>
+                          <div
+                            className={`rounded-lg p-2 text-white text-center ${
+                              assessmentResult.accuracy >= 70
+                                ? "bg-gradient-to-br from-green-500 to-emerald-600"
+                                : "bg-gradient-to-br from-amber-500 to-orange-500"
+                            }`}
+                          >
                             <div className="text-md font-bold">
                               {assessmentResult.accuracy}%
                             </div>
@@ -575,36 +618,54 @@ const MudraAssessment = () => {
                             <div className="text-blue-100 text-xs">Points</div>
                           </div>
                         </div>
-{/* Show common mistakes even if no fingers */}
-    <div className="rounded-lg bg-amber-50 p-3 border border-amber-200">
-  <h4 className="font-semibold text-amber-900 text-lg mb-2">Analysis Notes</h4>
-  {assessmentResult.commonMistakes.map((mistake, idx) => (
-    <div key={idx} className="text-lg font-bold text-amber-700">
-      {mistake}
-    </div>
-  ))}
-</div>
+                        {/* Show common mistakes even if no fingers */}
+                        <div className="rounded-lg bg-amber-50 p-3 border border-amber-200">
+                          <h4 className="font-semibold text-amber-900 text-lg mb-2">
+                            Analysis Notes
+                          </h4>
+                          {assessmentResult.commonMistakes.map(
+                            (mistake, idx) => (
+                              <div
+                                key={idx}
+                                className="text-lg font-bold text-amber-700"
+                              >
+                                {mistake}
+                              </div>
+                            )
+                          )}
+                        </div>
 
                         {/* Mudra Match Status */}
                         {assessmentResult.predictedMudra && (
-                          <div className={`rounded-lg p-3 border ${
-                            assessmentResult.predictedMudra.matchesTarget 
-                              ? 'bg-green-50 border-green-200' 
-                              : 'bg-amber-50 border-amber-200'
-                          }`}>
+                          <div
+                            className={`rounded-lg p-3 border ${
+                              assessmentResult.predictedMudra.matchesTarget
+                                ? "bg-green-50 border-green-200"
+                                : "bg-amber-50 border-amber-200"
+                            }`}
+                          >
                             <div className="flex justify-between items-center text-sm">
-                              <span className="font-semibold">Mudra Match:</span>
-                              <span className={
-                                assessmentResult.predictedMudra.matchesTarget 
-                                  ? 'text-green-600 font-bold' 
-                                  : 'text-amber-600'
-                              }>
-                                {assessmentResult.predictedMudra.matchesTarget ? '✓ Correct' : '✗ Different'}
+                              <span className="font-semibold">
+                                Mudra Match:
+                              </span>
+                              <span
+                                className={
+                                  assessmentResult.predictedMudra.matchesTarget
+                                    ? "text-green-600 font-bold"
+                                    : "text-amber-600"
+                                }
+                              >
+                                {assessmentResult.predictedMudra.matchesTarget
+                                  ? "✓ Correct"
+                                  : "✗ Different"}
                               </span>
                             </div>
                             <div className="text-xs text-gray-600 mt-1">
-                              Detected: {assessmentResult.predictedMudra.name} 
-                              ({Math.round(assessmentResult.predictedMudra.confidence)}%)
+                              Detected: {assessmentResult.predictedMudra.name}(
+                              {Math.round(
+                                assessmentResult.predictedMudra.confidence
+                              )}
+                              %)
                             </div>
                           </div>
                         )}

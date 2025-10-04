@@ -23,9 +23,16 @@ const Navbar = ({ showAuthButtons }) => {
           <Link to="/detect" className="hover:text-[#5C261A]">Detect</Link>
           <Link to="/library" className="hover:text-[#5C261A]">Library</Link>
           <Link to="/ai-assistant" className="hover:text-[#5C261A]">Assistant</Link>
-          <Link to="/assessment" className="hover:text-[#5C261A]">Assessment</Link>
-          <Link to="/progress" className="hover:text-[#5C261A]">Progress</Link>
-          <Link to="/groups" className="hover:text-[#5C261A]">Group</Link>
+          <Link to="/about" className="hover:text-[#5C261A]">About</Link>
+          <Link to="/contact" className="hover:text-[#5C261A]">Contact</Link>
+          
+          {isSignedIn && user && (
+            <>
+              <Link to="/assessment" className="hover:text-[#5C261A]">Assessment</Link>
+              <Link to="/progress" className="hover:text-[#5C261A]">Progress</Link>
+              <Link to="/groups" className="hover:text-[#5C261A]">Group</Link>
+            </>
+          )}
 
           {isSignedIn && user ? (
             <UserButton
@@ -41,12 +48,6 @@ const Navbar = ({ showAuthButtons }) => {
                 >
                   Sign In
                 </Link>
-                {/* <Link
-                  to="/sign-up"
-                  className="px-4 py-2 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white rounded-2xl font-semibold transition-all duration-300"
-                >
-                  Sign Up
-                </Link> */}
               </>
             )
           )}
@@ -72,15 +73,24 @@ const Navbar = ({ showAuthButtons }) => {
           <Link to="/detect" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Detect</Link>
           <Link to="/library" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Library</Link>
           <Link to="/ai-assistant" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Assistant</Link>
-          <Link to="/assessment" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Assessment</Link>
-          <Link to="/progress" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Progress</Link>
-          <Link to="/groups" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Group</Link>
+          <Link to="/about" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">About</Link>
+          <Link to="/contact" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Contact</Link>
+          
+          {isSignedIn && user && (
+            <>
+              <Link to="/assessment" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Assessment</Link>
+              <Link to="/progress" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Progress</Link>
+              <Link to="/groups" onClick={() => setOpen(false)} className="block text-[#8C3B26] hover:text-[#5C261A]">Group</Link>
+            </>
+          )}
 
           {isSignedIn && user ? (
-            <UserButton
-              afterSignOutUrl="/"
-              appearance={{ userProfile: { elements: { userButtonAvatar: "w-10 h-10 rounded-full" } } }}
-            />
+            <div className="pt-2">
+              <UserButton
+                afterSignOutUrl="/"
+                appearance={{ userProfile: { elements: { userButtonAvatar: "w-10 h-10 rounded-full" } } }}
+              />
+            </div>
           ) : (
             showAuthButtons && (
               <>
@@ -91,13 +101,6 @@ const Navbar = ({ showAuthButtons }) => {
                 >
                   Sign In
                 </Link>
-                {/* <Link
-                  to="/sign-up"
-                  onClick={() => setOpen(false)}
-                  className="block px-4 py-2 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white rounded-2xl font-semibold transition-all duration-300"
-                >
-                  Sign Up
-                </Link> */}
               </>
             )
           )}

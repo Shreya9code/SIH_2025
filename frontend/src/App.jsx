@@ -14,8 +14,10 @@ import sideImage from "./assets/image.png";
 import GroupLearning from "./pages/GroupLearning.jsx";
 import ProgressAnalytics from "./pages/ProgressAnalytics.jsx";
 import MudraAssessment from "./pages/MudraAssessment.jsx";
+import AboutUs from "./pages/AboutUs.jsx";
+import ContactUs from "./pages/ContactUs.jsx";
 
-// Layout wrapper ensures Navbar, Footer, and AIChatWidget on every page
+// Layout wrapper for pages with Navbar, Footer, and AIChatWidget
 const Layout = ({ children }) => {
   return (
     <div className="flex flex-col min-h-screen">
@@ -27,31 +29,56 @@ const Layout = ({ children }) => {
   );
 };
 
+// Layout without Navbar/Footer for auth pages
+const AuthLayout = ({ children }) => {
+  return (
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-1">{children}</main>
+    </div>
+  );
+};
+
+// Layout for iframe pages (no Navbar/Footer)
+const IFrameLayout = ({ children }) => {
+  return (
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-1">{children}</main>
+    </div>
+  );
+};
+
 const AppWrapper = () => {
   return (
     <Routes>
       {/* Public landing page */}
       <Route path="/" element={<Layout><Home /></Layout>} />
 
-      {/* Public pages */}
+      {/* Public pages with layout */}
       <Route path="/detect" element={<Layout><MudraDetection /></Layout>} />
       <Route path="/library" element={<Layout><DigitalLibrary /></Layout>} />
-      {/*<Route path="/assistant" element={<Layout><AIChatWidget /></Layout>} />*/}
-<Route path="/ai-assistant" element={
-  <Layout>
-    <iframe 
-      src="http://localhost:8501/" 
-      style={{ width: "100%", height: "100vh", border: "none" }} 
-    />
-  </Layout>
-} />
+      <Route path="/about" element={<Layout><AboutUs /></Layout>} />
+      <Route path="/contact" element={<Layout><ContactUs /></Layout>} />
+      
+      {/* AI Assistant iframe page */}
+      <Route 
+        path="/ai-assistant" 
+        element={
+          <IFrameLayout>
+            <iframe 
+              src="http://localhost:8501/" 
+              style={{ width: "100%", height: "100vh", border: "none" }} 
+              title="AI Assistant"
+            />
+          </IFrameLayout>
+        } 
+      />
 
       {/* Protected routes */}
       <Route
         path="/groups"
         element={
           <SignedIn>
-            <Layout><GroupLearning currentUser={null} /></Layout>
+            <Layout><GroupLearning /></Layout>
           </SignedIn>
         }
       />
@@ -59,7 +86,7 @@ const AppWrapper = () => {
         path="/progress"
         element={
           <SignedIn>
-            <Layout><ProgressAnalytics currentUser={null} /></Layout>
+            <Layout><ProgressAnalytics /></Layout>
           </SignedIn>
         }
       />
@@ -67,16 +94,24 @@ const AppWrapper = () => {
         path="/assessment"
         element={
           <SignedIn>
-            <Layout><MudraAssessment currentUser={null} /></Layout>
+            <Layout><MudraAssessment /></Layout>
+          </SignedIn>
+        }
+      />
+      <Route
+        path="/dashboard"
+        element={
+          <SignedIn>
+            <Layout><Dashboard /></Layout>
           </SignedIn>
         }
       />
 
-      {/* Clerk Sign In */}
+      {/* Auth pages with special layout */}
       <Route
         path="/sign-in/*"
         element={
-          <Layout>
+          <AuthLayout>
             <div className="flex min-h-screen w-full">
               <div className="flex-1 flex justify-center items-center bg-black">
                 <div className="w-full max-w-md px-8 py-10">
@@ -102,15 +137,14 @@ const AppWrapper = () => {
                 />
               </div>
             </div>
-          </Layout>
+          </AuthLayout>
         }
       />
 
-      {/* Clerk Sign Up */}
       <Route
         path="/sign-up/*"
         element={
-          <Layout>
+          <AuthLayout>
             <div className="flex min-h-screen h-screen w-full">
               <div className="flex-1 flex items-center justify-center">
                 <div className="w-full" style={{ maxWidth: 420 }}>
@@ -136,27 +170,29 @@ const AppWrapper = () => {
                 />
               </div>
             </div>
-          </Layout>
+          </AuthLayout>
         }
       />
 
-      {/* Protected Dashboard */}
-      <Route
-        path="/dashboard"
-        element={
-          <SignedIn>
-            <Layout><Dashboard /></Layout>
-          </SignedIn>
-        }
-      />
-
-      {/* Redirect unknown routes for signed-out users */}
+      {/* Catch-all route for signed-out users */}
       <Route
         path="*"
         element={
-          <SignedOut>
-            <RedirectToSignIn />
-          </SignedOut>
+          <>
+            <SignedIn>
+              <Layout>
+                <div className="flex items-center justify-center min-h-screen">
+                  <div className="text-center">
+                    <h1 className="text-4xl font-bold text-gray-900 mb-4">404 - Page Not Found</h1>
+                    <p className="text-gray-600">The page you're looking for doesn't exist.</p>
+                  </div>
+                </div>
+              </Layout>
+            </SignedIn>
+            <SignedOut>
+              <RedirectToSignIn />
+            </SignedOut>
+          </>
         }
       />
     </Routes>
