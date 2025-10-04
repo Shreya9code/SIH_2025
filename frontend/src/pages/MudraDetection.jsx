@@ -173,24 +173,25 @@ const MudraDetection = () => {
                 </button>
 
                 {showDropdown && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-amber-200 rounded-lg shadow-lg z-10">
+                  <div className="absolute top-full left-0 right-0 mt-1 rounded-xl shadow-lg z-10">
                     <button
                       onClick={() => flipMode("upload")}
-                      className="w-full flex items-center space-x-2 px-4 py-3 text-left hover:bg-amber-50 transition-colors text-sm"
+                      className="w-full flex items-center space-x-2 px-4 py-3 text-left text-white bg-amber-500 hover:bg-amber-600 rounded-t-xl transition-colors text-sm"
                     >
-                      <Upload size={16} className="text-amber-600" />
+                      <Upload size={16} />
                       <span>Upload Image</span>
                     </button>
                     <button
                       onClick={() => flipMode("camera")}
-                      className="w-full flex items-center space-x-2 px-4 py-3 text-left hover:bg-amber-50 transition-colors text-sm border-t border-amber-100"
+                      className="w-full flex items-center space-x-2 px-4 py-3 text-left text-white bg-amber-500 hover:bg-amber-600 rounded-b-xl border-t border-amber-400 transition-colors text-sm"
                     >
-                      <Camera size={16} className="text-amber-600" />
+                      <Camera size={16} />
                       <span>Camera Capture</span>
                     </button>
                   </div>
                 )}
               </div>
+
 
               {/* Preview Area */}
               <div className="mb-4 p-2 border border-amber-200 rounded-lg bg-amber-50">
@@ -280,16 +281,16 @@ const MudraDetection = () => {
               {/* Detection Result - Mudra Name & Accuracy */}
               {detectionResult && detectionResult.rawAccuracy >= 80 && (
                 <div className="text-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200 mb-4">
-              <h3 className="text-xl font-bold text-[#8B4513] mb-1">
-                {detectionResult.mudraName}
-              </h3>
-              <div className="inline-flex items-center space-x-1 bg-white px-3 py-1 rounded-full border border-green-300">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="font-semibold text-green-700">
-                  {detectionResult.accuracy} Accuracy
-                </span>
-              </div>
-            </div>
+                  <h3 className="text-xl font-bold text-[#8B4513] mb-1">
+                    {detectionResult.mudraName}
+                  </h3>
+                  <div className="inline-flex items-center space-x-1 bg-white px-3 py-1 rounded-full border border-green-300">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="font-semibold text-green-700">
+                      {detectionResult.accuracy} Accuracy
+                    </span>
+                  </div>
+                </div>
               )}
             </div>
 
@@ -334,7 +335,7 @@ const MudraDetection = () => {
                         Low Confidence Detection
                       </h3>
                       <p className="text-rose-700 text-lg mb-4">
-                        We couldn't confidently identify the mudra from your image. 
+                        We couldn't confidently identify the mudra from your image.
                         This could be due to:
                       </p>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -355,7 +356,7 @@ const MudraDetection = () => {
                           </ul>
                         </div>
                       </div>
-                      
+
                       <button
                         onClick={navigateToLibrary}
                         className="flex items-center justify-center space-x-2 px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg hover:from-amber-600 hover:to-amber-700 transition-all font-semibold text-lg mx-auto"

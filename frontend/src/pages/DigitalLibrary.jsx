@@ -196,7 +196,7 @@ const DigitalLibrary = () => {
                 >
                   {/* Image */}
                   {/* <div className="h-48 bg-amber-100 flex items-center justify-center"> */}
-                  <div className="h-48 bg-white flex items-center justify-center">
+                  <div className="h-48 bg-amber-50 flex items-center justify-center">
                     {renderMudraImage(mudra)}
                   </div>
 

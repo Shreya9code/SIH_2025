@@ -46,7 +46,10 @@ if 'expert_mode' not in st.session_state:
     st.session_state.expert_mode = False
 
 # Header
-st.markdown('<div class="main-header">🪷 Mudra AI Assistant</div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="main-header" style="color: white;">🪷 Mudra AI Assistant</div>',
+    unsafe_allow_html=True
+)
 
 # Sidebar with mudra information and controls
 with st.sidebar:
@@ -166,7 +169,7 @@ if user_input:
 # Footer with mudra information
 st.markdown("---")
 st.markdown("""
-<div class="mudra-info">
+<div class="mudra-info" style="color: #8B4513;">
     <strong>Did you know?</strong> There are 28 single-hand mudras (Asamyukta Hastas) and 
     24 combined-hand mudras (Samyukta Hastas) in Bharatanatyam. Each mudra can represent 
     various objects, gods, relationships, and actions when used in different contexts.
