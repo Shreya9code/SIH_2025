@@ -29,27 +29,39 @@ const MudraAssessment = () => {
         return remainingMudras[randomIndex];
     };
 
+    // Capture a frame from the video
+    const captureFrame = () => {
+        if (!videoRef.current) return null;
+        const canvas = document.createElement("canvas");
+        canvas.width = videoRef.current.videoWidth;
+        canvas.height = videoRef.current.videoHeight;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+        console.log("Captured frame size:", canvas.width, canvas.height);
+        return canvas.toDataURL("image/jpeg");
+    };
+
+    // Start the assessment
     const startAssessment = async () => {
-        if ((mudrasAttempted?.length || 0) === 0) {
-            setScore(0);
-        }
+        if ((mudrasAttempted?.length || 0) === 0) setScore(0);
+
         const randomMudra = getRandomMudra();
         setCurrentMudra(randomMudra);
         setIsAssessing(true);
         setAssessmentResult(null);
         setShowAnalysis(false);
         setTimeLeft(30);
-        if (!sessionStartRef.current) {
-            sessionStartRef.current = Date.now();
-        }
+
+        if (!sessionStartRef.current) sessionStartRef.current = Date.now();
 
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } });
             streamRef.current = stream;
             videoRef.current.srcObject = stream;
+            console.log("Camera stream started");
         } catch (error) {
-            console.error('Camera access error:', error);
-            alert('Unable to access camera.');
+            console.error("Camera access error:", error);
+            alert("Unable to access camera.");
             return;
         }
 
@@ -64,42 +76,106 @@ const MudraAssessment = () => {
         }, 1000);
     };
 
-    const simulateMLAssessment = (mudra) => {
-        const accuracy = Math.floor(Math.random() * 40) + 60;
-        const isCorrect = accuracy >= 80;
-        const fingerAnalysis = [
-            { finger: 'Thumb', correct: Math.random() > 0.3, confidence: Math.random() * 30 + 70 },
-            { finger: 'Index', correct: Math.random() > 0.2, confidence: Math.random() * 30 + 70 },
-            { finger: 'Middle', correct: Math.random() > 0.4, confidence: Math.random() * 30 + 70 },
-            { finger: 'Ring', correct: Math.random() > 0.5, confidence: Math.random() * 30 + 70 },
-            { finger: 'Little', correct: Math.random() > 0.3, confidence: Math.random() * 30 + 70 }
-        ];
-        const commonMistakes = fingerAnalysis.filter(f => !f.correct)
-            .map(f => `${f.finger} position`);
+    // Predict Mudra using backend
+    const predictMudra = async () => {
+        const dataUrl = captureFrame();
+        if (!dataUrl) return;
+console.log("Data URL:", dataUrl.split(",")[0]); // Log only the prefix for brevity
+        try {
+            const res = await fetch(dataUrl);
+            console.log("response from fetch:", res);
+            const blob = await res.blob();
+            const formData = new FormData();
+            formData.append("file", blob, "hand.jpg");
+console.log("FormData: ",formData)
+            const response = await axios.post("http://localhost:8000/hand_analysis", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+console.log("Response from ML backend:", response);
+            const data = response.data;
+console.log("ML Prediction Data:", data);
+            // Take first hand if multiple hands detected
+            const fingerData = data.finger_confidence?.hand_1
+                ? Object.entries(data.finger_confidence.hand_1).map(([finger, confidence]) => ({
+                    finger,
+                    correct: confidence >= 50, // threshold for correctness
+                    confidence
+                }))
+                : [];
 
-        return { accuracy, isCorrect, fingerAnalysis, commonMistakes, points: isCorrect ? Math.floor(accuracy / 10) : 0 };
+            const points = fingerData.filter(f => f.correct).length;
+
+            setAssessmentResult({
+                accuracy: fingerData.length > 0
+                    ? Math.round(fingerData.reduce((sum, f) => sum + f.confidence, 0) / fingerData.length)
+                    : 0,
+                isCorrect: points >= 3, // threshold for full mudra correctness
+                fingerAnalysis: fingerData,
+                commonMistakes: fingerData.filter(f => !f.correct).map(f => f.finger),
+                points
+            });
+
+            setScore(prev => prev + points);
+            console.log("Assessment Result:", {
+                accuracy: fingerData.length > 0
+                    ? Math.round(fingerData.reduce((sum, f) => sum + f.confidence, 0) / fingerData.length)
+                    : 0,
+                isCorrect: points >= 3,
+                fingerAnalysis: fingerData,
+                commonMistakes: fingerData.filter(f => !f.correct).map(f => f.finger),
+                points
+            });
+        } catch (err) {
+            console.error("Hand analysis error:", err);
+            setAssessmentResult({
+                accuracy: 0,
+                isCorrect: false,
+                fingerAnalysis: [],
+                commonMistakes: ["Error in prediction"],
+                points: 0,
+            });
+        }
     };
 
-    const endMudra = (timedOut = false) => {
+    // End a single mudra attempt
+    const endMudra = async (timedOut = false) => {
         if (timerRef.current) clearInterval(timerRef.current);
         if (streamRef.current) streamRef.current.getTracks().forEach(track => track.stop());
 
         if (currentMudra && !assessmentResult) {
             if (timedOut) {
-                const result = { accuracy: 0, isCorrect: false, fingerAnalysis: [], commonMistakes: ['Time up'], points: 0 };
-                setAssessmentResult(result);
-                setScore(prev => prev + 0);
+                setAssessmentResult({
+                    accuracy: 0,
+                    isCorrect: false,
+                    fingerAnalysis: [],
+                    commonMistakes: ["Time up"],
+                    points: 0
+                });
             } else {
-                const result = simulateMLAssessment(currentMudra);
-                setAssessmentResult(result);
-                setScore(prev => prev + result.points);
+                await predictMudra();
             }
             setMudrasAttempted(prev => [...prev, currentMudra.name_sanskrit]);
             setShowAnalysis(true);
         }
+
         setIsAssessing(false);
     };
 
+    /*const simulateMLAssessment = (mudra) => {
+            const accuracy = Math.floor(Math.random() * 40) + 60;
+            const isCorrect = accuracy >= 80;
+            const fingerAnalysis = [
+                { finger: 'Thumb', correct: Math.random() > 0.3, confidence: Math.random() * 30 + 70 },
+                { finger: 'Index', correct: Math.random() > 0.2, confidence: Math.random() * 30 + 70 },
+                { finger: 'Middle', correct: Math.random() > 0.4, confidence: Math.random() * 30 + 70 },
+                { finger: 'Ring', correct: Math.random() > 0.5, confidence: Math.random() * 30 + 70 },
+                { finger: 'Little', correct: Math.random() > 0.3, confidence: Math.random() * 30 + 70 }
+            ];
+            const commonMistakes = fingerAnalysis.filter(f => !f.correct)
+                .map(f => `${f.finger} position`);
+    
+            return { accuracy, isCorrect, fingerAnalysis, commonMistakes, points: isCorrect ? Math.floor(accuracy / 10) : 0 };
+        };*/
     const nextMudra = async () => {
         if (mudrasAttempted.length >= TOTAL_MUDRAS) {
             await endAssessment();
@@ -188,10 +264,10 @@ const MudraAssessment = () => {
                                             </div>
                                         </div>
                                     ) : (
-                                        <video 
-                                            ref={videoRef} 
-                                            autoPlay 
-                                            playsInline 
+                                        <video
+                                            ref={videoRef}
+                                            autoPlay
+                                            playsInline
                                             className="w-full h-full rounded-lg object-cover shadow-lg max-h-96"
                                         />
                                     )}
@@ -207,7 +283,7 @@ const MudraAssessment = () => {
                                                     <span className="font-semibold">Time Left: {timeLeft}s</span>
                                                 </div>
                                                 <div className="w-full bg-amber-200 rounded-full h-2">
-                                                    <div 
+                                                    <div
                                                         className="bg-white h-2 rounded-full transition-all duration-1000"
                                                         style={{ width: `${(timeLeft / 30) * 100}%` }}
                                                     ></div>
@@ -215,9 +291,9 @@ const MudraAssessment = () => {
                                             </div>
                                         )}
                                         <p className="text-amber-600 text-sm text-center">
-                                            {isAssessing 
-                                                ? "Perform the mudra shown in the camera" 
-                                                : showAnalysis 
+                                            {isAssessing
+                                                ? "Perform the mudra shown in the camera"
+                                                : showAnalysis
                                                     ? "Analysis complete - ready for next mudra"
                                                     : "Ready to submit your mudra"
                                             }
@@ -237,7 +313,7 @@ const MudraAssessment = () => {
                                             <Award className="text-amber-600" size={24} />
                                             <h2 className="text-xl font-bold text-amber-900">Ready to Begin</h2>
                                         </div>
-                                        
+
                                         {/* Quick Stats */}
                                         <div className="grid grid-cols-2 gap-3 mb-4">
                                             <div className="rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 p-3 text-white text-center">
