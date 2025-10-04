@@ -1,6 +1,6 @@
 import React, { useRef, useCallback, useState } from "react";
 import { Link } from "react-router-dom";
-import { Camera, Book, Trophy, Users, ArrowRight, Star, PlayCircle, Sparkles, HelpCircle, Video, Search, Zap, Lock, School, MessageCircle, BarChart, Sparkle } from "lucide-react";
+import { Camera, Book, Trophy, Users, ArrowRight, Star, PlayCircle, Sparkles, HelpCircle, Video, Search, Zap, Lock, School, MessageCircle, BarChart, Sparkle, ChartBar, ChartColumnBig } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import Navbar from "../components/Navbar.jsx";
 import background from "../assets/background.png";
@@ -113,6 +113,17 @@ const Home = () => {
       output: "Personalized feedback with improvement suggestions and progress tracking"
     },
     {
+      icon: ChartColumnBig,
+      title: "Progress Analytics",
+      questions: ["How can I track my performance?", "See detailed session insights?"],
+      process: [
+        "Collect points from each Mudra Assessment session",
+        "Generate personalized progress reports",
+        "Visualize performance with bar charts and graphs"
+      ],
+      output: "Individualized progress analytics showing session-wise scores and visual charts"
+    },
+    {
       icon: School,
       title: "Group Management",
       questions: ["How can I teach students online?", "Track group progress?"],
@@ -122,19 +133,10 @@ const Home = () => {
         "Generate group progress reports and analytics"
       ],
       output: "Complete teaching platform with progress tracking and management tools"
-    },
-    {
-      icon: MessageCircle,
-      title: "Group Chat",
-      questions: ["How to communicate with students?", "Share learning materials?"],
-      process: [
-        "Real-time group messaging system",
-        "Share videos, images, and resources",
-        "Collaborative learning environment"
-      ],
-      output: "Seamless communication and resource sharing within learning groups"
     }
   ];
+
+
 
   const scrollToFeatures = useCallback(() => {
     featuresRef.current?.scrollIntoView({
@@ -212,7 +214,7 @@ const Home = () => {
 
           {/* Subheading */}
           <div className="relative inline-block mb-8">
-            <h2 className="text-2xl md:text-4xl font-light text-white mb-4 tracking-wide">
+            <h2 className="text-2xl md:text-4xl font-light mb-4 tracking-wide" style={{ color: 'white' }}>
               Where Tradition Meets
               <span className="block font-semibold bg-gradient-to-r from-amber-200 to-orange-200 bg-clip-text text-transparent">
                 AI Innovation
@@ -220,6 +222,7 @@ const Home = () => {
             </h2>
             <div className="absolute -bottom-2 left-1/4 w-1/2 h-1 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full"></div>
           </div>
+
 
           {/* Description */}
           <p className="text-xl md:text-2xl text-amber-100 max-w-3xl mx-auto mb-12 leading-relaxed font-light">
@@ -287,13 +290,13 @@ const Home = () => {
               <Star className="fill-current" size={16} />
               <span>POWERFUL FEATURES</span>
             </div>
-            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+            <h2 className="text-xl md:text-6xl font-bold text-gray-900 mb-6">
               Discover Our{" "}
               <span className="bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
                 Complete Toolkit
               </span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-base text-gray-600 max-w-2xl mx-auto leading-relaxed">
               From AI-powered mudra detection to comprehensive learning tools,
               NrityaLens offers everything you need for your Bharatanatyam journey.
             </p>
@@ -347,7 +350,7 @@ const Home = () => {
           </div>
 
           {/* Features CTA */}
-          <div className="text-center mt-16">
+          {/* <div className="text-center mt-16">
             <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-3xl p-8 border border-amber-200">
               <h3 className="text-3xl font-bold text-gray-900 mb-4">
                 Start with Free Features Today!
@@ -373,7 +376,7 @@ const Home = () => {
                 </button>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </section>
 
@@ -389,13 +392,13 @@ const Home = () => {
               <HelpCircle className="fill-current" size={16} />
               <span>HOW IT WORKS</span>
             </div>
-            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+            <h2 className="text-xl md:text-6xl font-bold text-gray-900 mb-6">
               Your Questions{" "}
               <span className="bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
                 Answered
               </span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-base text-gray-600 max-w-2xl mx-auto leading-relaxed">
               Discover how NrityaLens combines ancient Bharatanatyam traditions with modern AI technology
               to enhance your learning experience.
             </p>
@@ -495,7 +498,7 @@ const Home = () => {
           </div>
 
           {/* CTA Section */}
-          <div className="text-center mt-16">
+          {/* <div className="text-center mt-16">
             {activeTab === 'free' ? (
               <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-3xl p-8 border border-amber-200">
                 <h3 className="text-3xl font-bold text-gray-900 mb-4">
@@ -529,7 +532,8 @@ const Home = () => {
                 </Link>
               </div>
             )}
-          </div>
+          </div> */}
+
         </div>
       </section>
 
@@ -579,12 +583,14 @@ const Home = () => {
           <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
             <Link
               to="/detect"
-              className="px-12 py-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-2xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+              className="px-12 py-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 rounded-2xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+              style={{ color: 'white' }}
             >
               Try Mudra Detection
             </Link>
+
             <Link
-              to="/register"
+              to="/sign-in"
               className="px-12 py-4 border-2 border-amber-300 hover:border-amber-500 text-amber-700 hover:text-amber-900 rounded-2xl font-semibold text-lg backdrop-blur-sm bg-white/50 hover:bg-white transition-all duration-300 transform hover:-translate-y-1"
             >
               Unlock Premium
