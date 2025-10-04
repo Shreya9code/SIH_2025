@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Camera, Target, Clock, Award, AlertCircle, CheckCircle, X } from 'lucide-react';
+import { Camera, Target, Clock, Award, Sparkles, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import mudraData from '../data/mudra.json';
 import axios from 'axios';
@@ -8,7 +8,7 @@ import { useUser } from "@clerk/clerk-react";
 const TOTAL_MUDRAS = 10;
 
 const MudraAssessment = () => {
-    const { user } = useUser(); // Get logged-in user
+    const { user } = useUser();
     const navigate = useNavigate();
     const [currentMudra, setCurrentMudra] = useState(null);
     const [isAssessing, setIsAssessing] = useState(false);
@@ -30,7 +30,6 @@ const MudraAssessment = () => {
     };
 
     const startAssessment = async () => {
-        // Starting a fresh session: reset score if no mudras attempted yet
         if ((mudrasAttempted?.length || 0) === 0) {
             setScore(0);
         }
@@ -73,12 +72,10 @@ const MudraAssessment = () => {
             { finger: 'Index', correct: Math.random() > 0.2, confidence: Math.random() * 30 + 70 },
             { finger: 'Middle', correct: Math.random() > 0.4, confidence: Math.random() * 30 + 70 },
             { finger: 'Ring', correct: Math.random() > 0.5, confidence: Math.random() * 30 + 70 },
-            { finger: 'Little', correct: Math.random() > 0.3, confidence: Math.random() * 30 + 70 },
-            { finger: 'Palm', correct: Math.random() > 0.6, confidence: Math.random() * 30 + 70 },
-            { finger: 'Wrist', correct: Math.random() > 0.4, confidence: Math.random() * 30 + 70 }
+            { finger: 'Little', correct: Math.random() > 0.3, confidence: Math.random() * 30 + 70 }
         ];
         const commonMistakes = fingerAnalysis.filter(f => !f.correct)
-            .map(f => `${f.finger} incorrect (${Math.round(f.confidence)}% confidence)`);
+            .map(f => `${f.finger} position`);
 
         return { accuracy, isCorrect, fingerAnalysis, commonMistakes, points: isCorrect ? Math.floor(accuracy / 10) : 0 };
     };
@@ -111,8 +108,6 @@ const MudraAssessment = () => {
         await startAssessment();
     };
 
-    // In MudraAssessment.jsx
-
     const endAssessment = async () => {
         if (timerRef.current) clearInterval(timerRef.current);
         if (streamRef.current) streamRef.current.getTracks().forEach(track => track.stop());
@@ -127,7 +122,6 @@ const MudraAssessment = () => {
             setShowAnalysis(true);
         }
 
-        // Save session as a record instead of overwriting total points
         if (user?.id) {
             try {
                 const finalScore = Number(score) + Number(addedPoints || 0);
@@ -138,13 +132,11 @@ const MudraAssessment = () => {
                     durationSec,
                     startedAt: sessionStartRef.current ? new Date(sessionStartRef.current).toISOString() : undefined,
                 });
-                console.log("Session saved to DB:", finalScore);
             } catch (err) {
                 console.error("Error saving points:", err);
             }
         }
 
-        // ✅ Reset for fresh start
         setCurrentMudra(null);
         setIsAssessing(false);
         setAssessmentResult(null);
@@ -155,7 +147,6 @@ const MudraAssessment = () => {
         setScore(0);
     };
 
-
     useEffect(() => {
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);
@@ -164,138 +155,206 @@ const MudraAssessment = () => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-[#FFF9E6] pt-16">
-            <div className="max-w-6xl mx-auto px-4 py-8">
-                <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-[#8B4513] mb-3">Mudra Assessment</h1>
-                    <p className="text-lg text-[#8C3B26] max-w-2xl mx-auto">
-                        Test your mudra knowledge with real-time camera assessment and get instant feedback
-                    </p>
+        <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 pt-20 px-4 pb-8">
+            <div className="max-w-7xl mx-auto">
+                {/* Header Section */}
+                <div className="text-center mb-6">
+                    <div className="rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 p-6 shadow-2xl border border-amber-300">
+                        <Sparkles size={36} className="mx-auto mb-3 text-yellow-300" />
+                        <h1 className="text-3xl font-bold text-white mb-2">Mudra Assessment</h1>
+                        <p className="text-amber-100">
+                            Test your mudra knowledge with real-time camera assessment
+                        </p>
+                    </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Left Box */}
-                    <div className="bg-white rounded-2xl shadow-lg border border-[#FFD34E]/30 p-6 flex flex-col justify-between">
-                        {!currentMudra && (
-                            <>
-                                <div className="mb-6 flex items-center space-x-3">
-                                    <Award className="w-6 h-6 text-[#D94F3D]" />
-                                    <h2 className="text-2xl font-bold text-[#8B4513]">Total Points: {score}</h2>
+                {/* Main Container - Compact Design */}
+                <div className="rounded-2xl bg-white shadow-2xl border border-amber-200">
+                    <div className="grid grid-cols-1 xl:grid-cols-3 h-full">
+                        {/* Left Side - Camera (Larger) */}
+                        <div className="xl:col-span-2 p-6 border-r border-amber-200">
+                            <div className="h-full flex flex-col">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <Camera className="text-amber-600" size={24} />
+                                    <h2 className="text-xl font-bold text-amber-900">Live Camera Feed</h2>
                                 </div>
-                                <button
-                                    onClick={startAssessment}
-                                    className="px-6 py-4 bg-gradient-to-r from-[#D94F3D] to-[#8B0000] text-white rounded-xl font-semibold text-lg hover:from-[#B33C2D] hover:to-[#660000] transition-all duration-300 shadow-lg hover:shadow-xl"
-                                >
-                                    Start New Assessment
-                                </button>
-                            </>
-                        )}
 
-                        {currentMudra && (
-                            <>
-                                <div>
-                                    <h2 className="text-xl font-semibold text-[#8B4513] mb-1">Mudra {mudrasAttempted.length}/{TOTAL_MUDRAS}</h2>
-                                    <h3 className="text-2xl font-bold text-[#8B4513]">{currentMudra.name_sanskrit}</h3>
-                                    <p className="text-lg text-[#8C3B26] font-sanskrit">hint: {currentMudra.type}</p>
-                                </div>
-                                <div className="mt-2 flex items-center justify-between">
-                                    <div>
-                                        <p className="text-[#8C3B26] font-semibold">Current Points: {assessmentResult?.points || 0}</p>
-                                        <p className="text-[#8C3B26] font-semibold">Total Points: {score}</p>
-                                    </div>
-                                    {isAssessing && (
-                                        <p className="text-[#8C3B26] font-semibold">Time Left: {timeLeft}s</p>
+                                <div className="flex-1 rounded-xl bg-gradient-to-br from-amber-100 to-orange-100 p-4 border border-amber-300">
+                                    {!currentMudra ? (
+                                        <div className="h-full flex items-center justify-center text-center text-amber-600">
+                                            <div>
+                                                <Camera size={48} className="mx-auto mb-3 opacity-50" />
+                                                <p className="font-semibold">Camera will activate when assessment starts</p>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <video 
+                                            ref={videoRef} 
+                                            autoPlay 
+                                            playsInline 
+                                            className="w-full h-full rounded-lg object-cover shadow-lg max-h-96"
+                                        />
                                     )}
                                 </div>
 
-                                {showAnalysis && assessmentResult && (
-                                    <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="bg-[#FFF9E6] rounded-xl p-4 border border-[#FFD34E]/50">
-                                            <h4 className="font-semibold text-[#8B4513] mb-2">Finger Analysis</h4>
-                                            {assessmentResult.fingerAnalysis.map((f, idx) => (
-                                                <div key={idx} className="flex justify-between text-[#8C3B26] mb-1">
-                                                    <span>{f.finger}</span>
-                                                    <span>{f.correct ? '✅' : '❌'} {Math.round(f.confidence)}%</span>
+                                {/* Status & Timer */}
+                                {currentMudra && (
+                                    <div className="mt-4">
+                                        {isAssessing && (
+                                            <div className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 p-3 text-white text-center mb-3">
+                                                <div className="flex items-center justify-center gap-2 mb-2">
+                                                    <Clock size={18} />
+                                                    <span className="font-semibold">Time Left: {timeLeft}s</span>
                                                 </div>
-                                            ))}
-                                        </div>
-
-                                        <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
-                                            <h4 className="font-semibold text-amber-800 mb-2">Areas for Improvement</h4>
-                                            {assessmentResult.commonMistakes.length > 0 ? (
-                                                <ul className="list-disc list-inside text-amber-700">
-                                                    {assessmentResult.commonMistakes.map((m, idx) => <li key={idx}>{m}</li>)}
-                                                </ul>
-                                            ) : <p className="text-amber-700">No major mistakes!</p>}
-                                        </div>
+                                                <div className="w-full bg-amber-200 rounded-full h-2">
+                                                    <div 
+                                                        className="bg-white h-2 rounded-full transition-all duration-1000"
+                                                        style={{ width: `${(timeLeft / 30) * 100}%` }}
+                                                    ></div>
+                                                </div>
+                                            </div>
+                                        )}
+                                        <p className="text-amber-600 text-sm text-center">
+                                            {isAssessing 
+                                                ? "Perform the mudra shown in the camera" 
+                                                : showAnalysis 
+                                                    ? "Analysis complete - ready for next mudra"
+                                                    : "Ready to submit your mudra"
+                                            }
+                                        </p>
                                     </div>
                                 )}
-
-
-                            </>
-                        )}
-                    </div>
-
-                    {/* Right Box */}
-                    <div>
-                        {!currentMudra && (
-                            <div className="bg-white rounded-2xl shadow-lg border border-[#FFD34E]/30 p-6">
-                                <h3 className="text-xl font-semibold text-[#8B4513] mb-4">Assessment Instructions</h3>
-                                <ul className="list-disc list-inside space-y-2 text-[#8C3B26]">
-                                    <li>Click "Start New Assessment" to begin</li>
-                                    <li>Perform the displayed mudra in front of your camera</li>
-                                    <li>Hold the position steady for accurate assessment</li>
-                                    <li>Get instant feedback and earn points based on accuracy</li>
-                                    <li>You will be assessed on 10 mudras per session</li>
-                                </ul>
-
-                                {/* Start Button (appears after reset too) */}
-                                <button
-                                    onClick={startAssessment}
-                                    className="mt-6 w-full px-6 py-4 bg-gradient-to-r from-[#D94F3D] to-[#8B0000] text-white rounded-xl font-semibold text-lg hover:from-[#B33C2D] hover:to-[#660000] transition-all duration-300 shadow-lg hover:shadow-xl"
-                                >
-                                    Start New Assessment
-                                </button>
                             </div>
-                        )}
+                        </div>
 
-                        {currentMudra && (
-                            <div className="bg-white rounded-2xl shadow-lg border border-[#FFD34E]/30 p-6">
-                                <h3 className="text-xl font-semibold text-[#8B4513] mb-4">Live Camera</h3>
-                                <video ref={videoRef} autoPlay playsInline className="w-full h-80 rounded-lg object-cover" />
+                        {/* Right Side - Compact Controls & Info */}
+                        <div className="p-6">
+                            {!currentMudra ? (
+                                /* Welcome State */
+                                <div className="h-full flex flex-col">
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <Award className="text-amber-600" size={24} />
+                                            <h2 className="text-xl font-bold text-amber-900">Ready to Begin</h2>
+                                        </div>
+                                        
+                                        {/* Quick Stats */}
+                                        <div className="grid grid-cols-2 gap-3 mb-4">
+                                            <div className="rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 p-3 text-white text-center">
+                                                <div className="text-lg font-bold">{score}</div>
+                                                <div className="text-amber-100 text-xs">Points</div>
+                                            </div>
+                                            <div className="rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 p-3 text-white text-center">
+                                                <div className="text-lg font-bold">{TOTAL_MUDRAS}</div>
+                                                <div className="text-green-100 text-xs">Mudras</div>
+                                            </div>
+                                        </div>
 
-                                {/* Buttons under camera */}
-                                <div className="mt-4 flex flex-col space-y-3">
-                                    <div className="flex space-x-3">
+                                        {/* Quick Instructions */}
+                                        <div className="space-y-2 mb-4">
+                                            <div className="flex items-center gap-2 p-2 rounded-lg bg-amber-50">
+                                                <div className="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs font-bold">1</div>
+                                                <span className="text-amber-700 text-sm">Start assessment</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 p-2 rounded-lg bg-amber-50">
+                                                <div className="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs font-bold">2</div>
+                                                <span className="text-amber-700 text-sm">Perform mudras</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 p-2 rounded-lg bg-amber-50">
+                                                <div className="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs font-bold">3</div>
+                                                <span className="text-amber-700 text-sm">Get feedback</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        onClick={startAssessment}
+                                        className="w-full rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 text-white font-bold hover:from-amber-600 hover:to-orange-600 transition-all duration-300 shadow-lg flex items-center justify-center gap-2"
+                                    >
+                                        <Camera size={18} />
+                                        Start Assessment
+                                    </button>
+                                </div>
+                            ) : (
+                                /* Assessment State */
+                                <div className="h-full flex flex-col">
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <Target className="text-amber-600" size={24} />
+                                            <h2 className="text-xl font-bold text-amber-900">Assessment</h2>
+                                        </div>
+
+                                        {/* Current Mudra & Progress */}
+                                        <div className="rounded-xl bg-amber-50 p-3 border border-amber-200 mb-3">
+                                            <h3 className="text-lg font-bold text-amber-900 mb-1">{currentMudra.name_sanskrit}</h3>
+                                            <p className="text-amber-600 text-sm">Type: {currentMudra.type}</p>
+                                            <div className="flex justify-between items-center mt-2 text-sm text-amber-700">
+                                                <span>Progress: {mudrasAttempted.length}/{TOTAL_MUDRAS}</span>
+                                                <span>Points: {score}</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Analysis Results - Compact */}
+                                        {showAnalysis && assessmentResult && (
+                                            <div className="space-y-3">
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div className="rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 p-2 text-white text-center">
+                                                        <div className="text-md font-bold">{assessmentResult.accuracy}%</div>
+                                                        <div className="text-green-100 text-xs">Accuracy</div>
+                                                    </div>
+                                                    <div className="rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 p-2 text-white text-center">
+                                                        <div className="text-md font-bold">+{assessmentResult.points}</div>
+                                                        <div className="text-amber-100 text-xs">Points</div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="rounded-lg bg-amber-50 p-3 border border-amber-200">
+                                                    <h4 className="font-semibold text-amber-900 text-sm mb-2">Quick Analysis</h4>
+                                                    <div className="space-y-1">
+                                                        {assessmentResult.fingerAnalysis.slice(0, 3).map((f, idx) => (
+                                                            <div key={idx} className="flex justify-between items-center text-xs text-amber-700">
+                                                                <span>{f.finger}</span>
+                                                                <span className={f.correct ? 'text-green-600' : 'text-red-500'}>
+                                                                    {f.correct ? '✓' : '✗'} {Math.round(f.confidence)}%
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Compact Action Buttons */}
+                                    <div className="flex space-x-2 pt-3 border-t border-amber-200">
                                         {!showAnalysis && (
                                             <button
                                                 onClick={() => endMudra(false)}
-                                                className="flex-1 px-6 py-3 bg-amber-600 text-white rounded-xl font-semibold hover:bg-amber-700"
+                                                className="flex-1 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 px-3 py-2 text-white text-sm font-semibold hover:from-amber-600 hover:to-orange-600 transition-all"
                                             >
-                                                End Mudra
+                                                Submit
                                             </button>
                                         )}
                                         {showAnalysis && mudrasAttempted.length < TOTAL_MUDRAS && (
                                             <button
                                                 onClick={nextMudra}
-                                                className="flex-1 px-6 py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700"
+                                                className="flex-1 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 px-3 py-2 text-white text-sm font-semibold hover:from-green-600 hover:to-emerald-700 transition-all flex items-center justify-center gap-1"
                                             >
-                                                Next Mudra
+                                                <TrendingUp size={14} />
+                                                Next
                                             </button>
                                         )}
                                         <button
                                             onClick={endAssessment}
-                                            className="flex-1 px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700"
+                                            className="flex-1 rounded-lg bg-gradient-to-r from-rose-500 to-red-600 px-3 py-2 text-white text-sm font-semibold hover:from-rose-600 hover:to-red-700 transition-all"
                                         >
-                                            End Assessment
+                                            End
                                         </button>
                                     </div>
                                 </div>
-
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
-
                 </div>
             </div>
         </div>
