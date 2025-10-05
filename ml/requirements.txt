@@ -62,4 +62,4 @@ tensorflow==2.17.1; sys_platform == "win32"
 tensorflow==2.20.0; sys_platform != "win32"
 numpy==1.26.4
 opencv-python-headless==4.12.0.88
-mediapipe=0.10.21
+mediapipe==0.10.21
