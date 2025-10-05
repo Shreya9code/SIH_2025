@@ -1,5 +1,5 @@
 // App.jsx
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
@@ -9,12 +9,19 @@ import AIChatWidget from "./components/AIChatWidget.jsx";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/footer.jsx";
 import { HelmetProvider } from "react-helmet-async";
-import { SignIn, SignUp, SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
+import {
+  SignIn,
+  SignUp,
+  SignedIn,
+  SignedOut,
+  RedirectToSignIn,
+} from "@clerk/clerk-react";
 import sideImage from "./assets/image.png";
 import GroupLearning from "./pages/GroupLearning.jsx";
 import ProgressAnalytics from "./pages/ProgressAnalytics.jsx";
 import MudraAssessment from "./pages/MudraAssessment.jsx";
 import AboutUs from "./pages/AboutUs.jsx";
+import { Navigate } from "react-router-dom";
 
 // Layout wrapper for pages with Navbar, Footer, and AIChatWidget
 const Layout = ({ children }) => {
@@ -45,34 +52,77 @@ const IFrameLayout = ({ children }) => {
     </div>
   );
 };
+function AutoRedirect() {
+  useEffect(() => {
+    window.location.href = "https://nrityalens-ai-2025.streamlit.app/";
+  }, []);
 
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <h2 className="text-2xl font-bold mb-4">Opening AI Assistant...</h2>
+      <p className="text-gray-600">Redirecting you, please wait...</p>
+    </div>
+  );
+}
 const AppWrapper = () => {
   return (
     <Routes>
       {/* Public landing page */}
-      <Route path="/" element={<Layout><Home /></Layout>} />
+      <Route
+        path="/"
+        element={
+          <Layout>
+            <Home />
+          </Layout>
+        }
+      />
 
       {/* Public pages with layout */}
-      <Route path="/detect" element={<Layout><MudraDetection /></Layout>} />
-      <Route path="/library" element={<Layout><DigitalLibrary /></Layout>} />
-      <Route path="/about" element={<Layout><AboutUs /></Layout>} />
+      <Route
+        path="/detect"
+        element={
+          <Layout>
+            <MudraDetection />
+          </Layout>
+        }
+      />
+      <Route
+        path="/library"
+        element={
+          <Layout>
+            <DigitalLibrary />
+          </Layout>
+        }
+      />
+      <Route
+        path="/about"
+        element={
+          <Layout>
+            <AboutUs />
+          </Layout>
+        }
+      />
 
       {/* AI Assistant iframe page */}
-      <Route path="/ai-assistant" element={
-        <Layout>
-          <iframe
-            src="http://localhost:8501/"
-            style={{ width: "100%", height: "100vh", border: "none" }}
-          />
-        </Layout>
-      } />
+      {/* AI Assistant link page */}
+
+      <Route
+        path="/ai-assistant"
+        element={
+          <Layout>
+            <AutoRedirect />
+          </Layout>
+        }
+      />
 
       {/* Protected routes */}
       <Route
         path="/groups"
         element={
           <SignedIn>
-            <Layout><GroupLearning /></Layout>
+            <Layout>
+              <GroupLearning />
+            </Layout>
           </SignedIn>
         }
       />
@@ -80,7 +130,9 @@ const AppWrapper = () => {
         path="/progress"
         element={
           <SignedIn>
-            <Layout><ProgressAnalytics /></Layout>
+            <Layout>
+              <ProgressAnalytics />
+            </Layout>
           </SignedIn>
         }
       />
@@ -88,7 +140,9 @@ const AppWrapper = () => {
         path="/assessment"
         element={
           <SignedIn>
-            <Layout><MudraAssessment /></Layout>
+            <Layout>
+              <MudraAssessment />
+            </Layout>
           </SignedIn>
         }
       />
@@ -96,7 +150,9 @@ const AppWrapper = () => {
         path="/dashboard"
         element={
           <SignedIn>
-            <Layout><Dashboard /></Layout>
+            <Layout>
+              <Dashboard />
+            </Layout>
           </SignedIn>
         }
       />
@@ -177,8 +233,12 @@ const AppWrapper = () => {
               <Layout>
                 <div className="flex items-center justify-center min-h-screen">
                   <div className="text-center">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">404 - Page Not Found</h1>
-                    <p className="text-gray-600">The page you're looking for doesn't exist.</p>
+                    <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                      404 - Page Not Found
+                    </h1>
+                    <p className="text-gray-600">
+                      The page you're looking for doesn't exist.
+                    </p>
                   </div>
                 </div>
               </Layout>
