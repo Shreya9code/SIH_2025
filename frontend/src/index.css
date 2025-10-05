@@ -7,15 +7,13 @@
 body {
   font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
-  background-color: #2C1A00; /* dark brown background - always dark */
-  color: #8B4513; /* brown text - changed from yellow to brown */
   margin: 0;
+  background-color: #fff7df
 }
 
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
-  color: #8B4513; /* brown text for headings - changed from yellow */
 }
 
 /* Links */
@@ -41,56 +39,7 @@ button {
   /* background-color: #D94F3D; 
   color: #FFF9E6;  */
 }
-/* button:hover {
-  background-color: #8B0000; 
-  border-color: #FFC107; 
-  color: #FFF9E6;
-}  */
 
-/* Form elements */
-input, textarea, select {
-  background-color: #3D2A12; /* dark brown background */
-  color: #8B4513; /* brown text - changed from yellow */
-  border: 1px solid #D94F3D; /* red border */
-  border-radius: 0.5rem;
-  padding: 0.5em 1em;
-}
-
-input:focus, textarea:focus, select:focus {
-  outline: none;
-  border-color: #FFC107; /* yellow focus border */
-  box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2); /* yellow glow */
-}
-
-/* Cards and containers */
-.card, .container, .box {
-  background-color: #3D2A12; /* dark brown */
-  color: #8B4513; /* brown text - changed from yellow */
-  border: 1px solid #D94F3D; /* red border */
-}
-
-/* Remove all light mode specific styles and media queries since we want always dark */
-@media (prefers-color-scheme: light) {
-  /* Empty - we don't want light mode */
-}
-
-@media (prefers-color-scheme: dark) {
-  /* Keep dark mode styles as default */
-  body {
-    background-color: #2C1A00;
-    color: #8B4513; /* changed from yellow to brown */
-  }
-  a {
-    color: #D94F3D; /* changed from yellow to red */
-  }
-  a:hover {
-    color: #8B0000; /* changed from yellow to dark red */
-  }
-  button {
-    background-color: #D94F3D;
-    color: #FFF9E6;
-  }
-}
 
 @keyframes icon-move {
   0% { left: -10%; }
@@ -98,77 +47,4 @@ input:focus, textarea:focus, select:focus {
   50% { left: 110%; transform: translateX(-100%) rotate(180deg); }
   75% { left: 50%; transform: translateX(-50%) rotate(360deg); }
   100% { left: -10%; }
-}
-
-.animate-icon-move {
-  animation: icon-move 24s linear infinite;
-}
-
-/* Additional utility classes for consistent dark theme */
-.bg-dark-brown {
-  background-color: #2C1A00;
-}
-
-.bg-dark-card {
-  background-color: #3D2A12;
-}
-
-.text-brown {
-  color: #8B4513;
-}
-
-.text-light-brown {
-  color: #A0522D; /* slightly lighter brown */
-}
-
-.bg-red-button {
-  background-color: #D94F3D;
-}
-
-.border-red {
-  border-color: #D94F3D;
-}
-
-.border-yellow {
-  border-color: #FFC107;
-}
-
-/* Preserve light theme for Digital Library form elements */
-.library input,
-.library select,
-.library textarea {
-  background-color: #FFF9E6 !important;
-  color: #8B4513 !important;
-  border-color: #FFD34E !important;
-}
-
-.library input:focus,
-.library select:focus,
-.library textarea:focus {
-  border-color: #D94F3D !important;
-  box-shadow: 0 0 0 2px rgba(217, 79, 61, 0.2) !important;
-}
-
-.library input::placeholder {
-  color: #8C3B26 !important;
-  opacity: 0.6 !important;
-}
-
-/* Form elements - but exclude specific classes */
-input:not(.amber-input), 
-textarea:not(.amber-input), 
-select:not(.amber-input) {
-  background-color: #3D2A12; /* dark brown background */
-  color: #8B4513; /* brown text - changed from yellow */
-  border: 1px solid #D94F3D; /* red border */
-  border-radius: 0.5rem;
-  padding: 0.5em 1em;
-}
-
-input:not(.amber-input):focus, 
-textarea:not(.amber-input):focus, 
-select:not(.amber-input):focus {
-  outline: none;
-  border-color: #FFC107; /* yellow focus border */
-  box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2); /* yellow glow */
 }

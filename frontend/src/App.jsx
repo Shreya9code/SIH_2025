@@ -14,14 +14,12 @@ import {
   SignUp,
   SignedIn,
   SignedOut,
-  RedirectToSignIn,
 } from "@clerk/clerk-react";
 import sideImage from "./assets/image.png";
 import GroupLearning from "./pages/GroupLearning.jsx";
 import ProgressAnalytics from "./pages/ProgressAnalytics.jsx";
 import MudraAssessment from "./pages/MudraAssessment.jsx";
 import AboutUs from "./pages/AboutUs.jsx";
-import { Navigate } from "react-router-dom";
 
 // Layout wrapper for pages with Navbar, Footer, and AIChatWidget
 const Layout = ({ children }) => {
@@ -44,14 +42,7 @@ const AuthLayout = ({ children }) => {
   );
 };
 
-// Layout for iframe pages (no Navbar/Footer)
-const IFrameLayout = ({ children }) => {
-  return (
-    <div className="flex flex-col min-h-screen">
-      <main className="flex-1">{children}</main>
-    </div>
-  );
-};
+// Auto redirect page example
 function AutoRedirect() {
   useEffect(() => {
     window.location.href = "https://nrityalens-ai-2025.streamlit.app/";
@@ -59,11 +50,47 @@ function AutoRedirect() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
-      <h2 className="text-2xl font-bold mb-4">Opening AI Assistant...</h2>
-      <p className="text-gray-600">Redirecting you, please wait...</p>
+      <h2 className="text-2xl font-bold mb-4" style={{ color: "#000!important" }}>
+        Opening AI Assistant...
+      </h2>
+      <p className="text-gray-600" style={{ color: "#000!important" }}>
+        Redirecting you, please wait...
+      </p>
     </div>
   );
 }
+
+// ProtectedRoute wrapper
+const ProtectedRoute = ({ children }) => (
+  <>
+    <SignedIn>{children}</SignedIn>
+    <SignedOut>
+      <AuthLayout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-4" style={{ color: "#000!important" }}>
+              Login Required
+            </h2>
+            <p className="mb-4" style={{ color: "#000!important" }}>
+              You must be signed in to access this page.
+            </p>
+            <button
+              onClick={() => (window.location.href = "/sign-in")}
+              style={{
+                backgroundColor: "#8C3B26!important",
+                color: "#fff!important",
+              }}
+              className="px-4 py-2 rounded"
+            >
+              Go to Sign In
+            </button>
+          </div>
+        </div>
+      </AuthLayout>
+    </SignedOut>
+  </>
+);
+
 const AppWrapper = () => {
   return (
     <Routes>
@@ -77,7 +104,7 @@ const AppWrapper = () => {
         }
       />
 
-      {/* Public pages with layout */}
+      {/* Public pages */}
       <Route
         path="/detect"
         element={
@@ -104,8 +131,6 @@ const AppWrapper = () => {
       />
 
       {/* AI Assistant iframe page */}
-      {/* AI Assistant link page */}
-
       <Route
         path="/ai-assistant"
         element={
@@ -119,45 +144,45 @@ const AppWrapper = () => {
       <Route
         path="/groups"
         element={
-          <SignedIn>
+          <ProtectedRoute>
             <Layout>
               <GroupLearning />
             </Layout>
-          </SignedIn>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/progress"
         element={
-          <SignedIn>
+          <ProtectedRoute>
             <Layout>
               <ProgressAnalytics />
             </Layout>
-          </SignedIn>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/assessment"
         element={
-          <SignedIn>
+          <ProtectedRoute>
             <Layout>
               <MudraAssessment />
             </Layout>
-          </SignedIn>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/dashboard"
         element={
-          <SignedIn>
+          <ProtectedRoute>
             <Layout>
               <Dashboard />
             </Layout>
-          </SignedIn>
+          </ProtectedRoute>
         }
       />
 
-      {/* Auth pages with special layout */}
+      {/* Auth pages */}
       <Route
         path="/sign-in/*"
         element={
@@ -172,7 +197,8 @@ const AppWrapper = () => {
                     signUpUrl="/sign-up"
                     appearance={{
                       elements: {
-                        formButtonPrimary: "bg-[#8C3B26] hover:bg-[#5C261A]",
+                        formButtonPrimary:
+                          "bg-[#8C3B26!important] hover:bg-[#5C261A!important] text-white!important",
                       },
                     }}
                   />
@@ -205,7 +231,8 @@ const AppWrapper = () => {
                     signInUrl="/sign-in"
                     appearance={{
                       elements: {
-                        formButtonPrimary: "bg-[#8C3B26] hover:bg-[#5C261A]",
+                        formButtonPrimary:
+                          "bg-[#8C3B26!important] hover:bg-[#5C261A!important] text-white!important",
                       },
                     }}
                   />
@@ -224,29 +251,22 @@ const AppWrapper = () => {
         }
       />
 
-      {/* Catch-all route for signed-out users */}
+      {/* Catch-all route */}
       <Route
         path="*"
         element={
-          <>
-            <SignedIn>
-              <Layout>
-                <div className="flex items-center justify-center min-h-screen">
-                  <div className="text-center">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                      404 - Page Not Found
-                    </h1>
-                    <p className="text-gray-600">
-                      The page you're looking for doesn't exist.
-                    </p>
-                  </div>
-                </div>
-              </Layout>
-            </SignedIn>
-            <SignedOut>
-              <RedirectToSignIn />
-            </SignedOut>
-          </>
+          <Layout>
+            <div className="flex items-center justify-center min-h-screen">
+              <div className="text-center">
+                <h1 className="text-4xl font-bold text-gray-900 mb-4" style={{ color: "#000!important" }}>
+                  404 - Page Not Found
+                </h1>
+                <p className="text-gray-600" style={{ color: "#000!important" }}>
+                  The page you're looking for doesn't exist.
+                </p>
+              </div>
+            </div>
+          </Layout>
         }
       />
     </Routes>
