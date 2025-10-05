@@ -129,7 +129,7 @@ const MudraAssessment = () => {
 
       console.log("📤 Sending request to backend...");
       const response = await axios.post(
-        "http://localhost:8000/hand_analysis",
+        "https://nrityalens-ml.onrender.com/hand_analysis",
         formData,
         {
           params: {
@@ -368,8 +368,8 @@ const MudraAssessment = () => {
           <div className="rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 p-6 shadow-2xl border border-amber-300">
             <Sparkles size={36} className="mx-auto mb-3 text-yellow-300" />
             <h1 className="text-3xl font-bold mb-2 !text-white">
-  Mudra Assessment
-</h1>
+              Mudra Assessment
+            </h1>
 
             <p className="text-amber-100">
               Test your mudra knowledge with single image capture assessment
@@ -610,8 +610,8 @@ const MudraAssessment = () => {
                         <div className="grid grid-cols-2 gap-2">
                           <div
                             className={`rounded-lg p-2 text-white text-center ${assessmentResult.accuracy >= 70
-                                ? "bg-gradient-to-br from-green-500 to-emerald-600"
-                                : "bg-gradient-to-br from-amber-500 to-orange-500"
+                              ? "bg-gradient-to-br from-green-500 to-emerald-600"
+                              : "bg-gradient-to-br from-amber-500 to-orange-500"
                               }`}
                           >
                             <div className="text-md font-bold">
@@ -649,8 +649,8 @@ const MudraAssessment = () => {
                         {assessmentResult.predictedMudra && (
                           <div
                             className={`rounded-lg p-3 border ${assessmentResult.predictedMudra.matchesTarget
-                                ? "bg-green-50 border-green-200"
-                                : "bg-amber-50 border-amber-200"
+                              ? "bg-green-50 border-green-200"
+                              : "bg-amber-50 border-amber-200"
                               }`}
                           >
                             <div className="flex justify-between items-center text-sm">
