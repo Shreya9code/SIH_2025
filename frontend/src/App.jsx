@@ -76,14 +76,11 @@ const ProtectedRoute = ({ children }) => (
             </p>
             <button
               onClick={() => (window.location.href = "/sign-in")}
-              style={{
-                backgroundColor: "#8C3B26!important",
-                color: "#fff!important",
-              }}
-              className="px-4 py-2 rounded"
+              className="px-4 py-2 rounded border-2 border-brown-700 text-white bg-[#8C3B26] hover:bg-[#a14f3b] hover:border-brown-800 transition-colors duration-200"
             >
               Go to Sign In
             </button>
+
           </div>
         </div>
       </AuthLayout>
