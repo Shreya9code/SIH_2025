@@ -13,7 +13,7 @@ const ProgressAnalytics = () => {
     const load = async () => {
       if (!user?.id) return;
       try {
-        const { data } = await axios.get(`http://localhost:5000/api/users/${user.id}/sessions`);
+        const { data } = await axios.get(`https://nrityalens-backend.onrender.com/api/users/${user.id}/sessions`);
         const sess = Array.isArray(data?.sessions) ? data.sessions : [];
         setSessions(sess);
 

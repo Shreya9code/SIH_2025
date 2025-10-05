@@ -147,7 +147,7 @@ if 'expert_mode' not in st.session_state:
     st.session_state.expert_mode = False
 
 # Header
-st.markdown('<div class="main-header">🪷 Mudra AI Assistant</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-header">🪷 NrityaLens AI Assistant</div>', unsafe_allow_html=True)
 
 # Sidebar
 with st.sidebar:
@@ -235,7 +235,7 @@ if not st.session_state.message_history:
         border: 1px solid rgba(255, 213, 79, 0.2);
     '>
         <div style='font-size: 4rem; margin-bottom: 1rem;'>🪷</div>
-        <h3 style='color: #8D6E63;'>Welcome to Mudra AI</h3>
+        <h3 style='color: #8D6E63;'>Welcome to NrityaLens AI</h3>
         <p>Try these sample questions!</p>
         <p> "Explain the Pataka mudra",
             "What are the uses of Tripataka in Bharatanatyam?",

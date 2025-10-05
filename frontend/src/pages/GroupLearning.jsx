@@ -48,7 +48,7 @@ function GroupLearning({ currentUser }) {
       const clerkId = user?.id || currentUser?._id;
       if (!clerkId) return;
       try {
-        const { data } = await axios.get(`http://localhost:5000/api/groups`, { params: { clerkId } });
+        const { data } = await axios.get(`https://nrityalens-backend.onrender.com/api/groups`, { params: { clerkId } });
         setGroups(data.groups || []);
       } catch (e) {
         console.error('Failed to load groups', e);
@@ -75,7 +75,7 @@ function GroupLearning({ currentUser }) {
     const loadChat = async () => {
       if (!activeGroup?._id) return;
       try {
-        const { data } = await axios.get(`http://localhost:5000/api/groups/${activeGroup._id}/chat`);
+        const { data } = await axios.get(`https://nrityalens-backend.onrender.com/api/groups/${activeGroup._id}/chat`);
         setGroupChat(data.chats || []);
         setProgressReport(null);
         setSelectedMemberReport(null);
@@ -91,7 +91,7 @@ function GroupLearning({ currentUser }) {
     const adminClerkId = user?.id || currentUser?._id;
     if (!adminClerkId || !groupName) return;
     try {
-      const { data } = await axios.post(`http://localhost:5000/api/groups`, { name: groupName, adminClerkId });
+      const { data } = await axios.post(`https://nrityalens-backend.onrender.com/api/groups`, { name: groupName, adminClerkId });
       setGroups([data.group, ...groups]);
       setShareCode(data.group.inviteCode);
       const origin = window.location.origin;
@@ -110,7 +110,7 @@ function GroupLearning({ currentUser }) {
     const clerkId = user?.id || currentUser?._id;
     if (!inviteCode || !clerkId) return;
     try {
-      const { data } = await axios.post(`http://localhost:5000/api/groups/join`, { inviteCode, clerkId });
+      const { data } = await axios.post(`https://nrityalens-backend.onrender.com/api/groups/join`, { inviteCode, clerkId });
       const exists = groups.find(g => g._id === data.group._id);
       setGroups(exists ? groups.map(g => g._id === data.group._id ? data.group : g) : [data.group, ...groups]);
       setInviteCode("");
@@ -126,7 +126,7 @@ function GroupLearning({ currentUser }) {
     if (!chatText || !activeGroup?._id) return;
     const clerkId = user?.id || currentUser?._id;
     try {
-      await axios.post(`http://localhost:5000/api/groups/${activeGroup._id}/chat`, { clerkId, message: chatText });
+      await axios.post(`https://nrityalens-backend.onrender.com/api/groups/${activeGroup._id}/chat`, { clerkId, message: chatText });
       setGroupChat([...groupChat, { clerkId, name: user?.fullName || currentUser?.name || 'You', message: chatText, createdAt: new Date().toISOString() }]);
       setChatText("");
     } catch (e) {
@@ -139,8 +139,8 @@ function GroupLearning({ currentUser }) {
     try {
       const safeId = encodeURIComponent(member.clerkId);
       const [detailRes, sessionsRes] = await Promise.all([
-        axios.get(`http://localhost:5000/api/groups/${activeGroup._id}/member-progress`, { params: { clerkId: member.clerkId } }),
-        axios.get(`http://localhost:5000/api/users/${safeId}/sessions`)
+        axios.get(`https://nrityalens-backend.onrender.com/api/groups/${activeGroup._id}/member-progress`, { params: { clerkId: member.clerkId } }),
+        axios.get(`https://nrityalens-backend.onrender.com/api/users/${safeId}/sessions`)
       ]);
       setSelectedMemberReport({ ...detailRes.data, member });
       const sess = Array.isArray(sessionsRes?.data?.sessions) ? sessionsRes.data.sessions : [];

@@ -321,7 +321,7 @@ const MudraAssessment = () => {
           ? Math.round((Date.now() - sessionStartRef.current) / 1000)
           : 0;
         await axios.post(
-          `http://localhost:5000/api/users/${user.id}/sessions`,
+          `https://nrityalens-backend.onrender.com/api/users/${user.id}/sessions`,
           {
             points: finalScore,
             mudrasAttempted:
