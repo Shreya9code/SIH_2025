@@ -7,7 +7,7 @@ import MudraDetection from "./pages/MudraDetection.jsx";
 import DigitalLibrary from "./pages/DigitalLibrary.jsx";
 import AIChatWidget from "./components/AIChatWidget.jsx";
 import Navbar from "./components/Navbar.jsx";
-import Footer from "./components/footer.jsx";
+import Footer from "./components/Footer.jsx";
 import { HelmetProvider } from "react-helmet-async";
 import {
   SignIn,
