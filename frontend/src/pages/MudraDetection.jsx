@@ -97,7 +97,7 @@ const MudraDetection = () => {
     try {
       const formData = new FormData();
       formData.append("file", selectedFile);
-      const res = await axios.post("https://nrityalens-ml.onrender.com/predict", formData, {
+      const res = await axios.post("http://localhost:8000/predict", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       const topPrediction = res.data.predictions[0];
@@ -105,7 +105,7 @@ const MudraDetection = () => {
       const accuracy = topPrediction.probability * 100;
 
       const detailsResponse = await axios.get(
-        "https://nrityalens-ml.onrender.com/mudra_info",
+        "http://localhost:8000/mudra_info",
         {
           params: { mudra_name: predictedMudra },
         }

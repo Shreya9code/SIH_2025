@@ -129,7 +129,7 @@ const MudraAssessment = () => {
 
       console.log("📤 Sending request to backend...");
       const response = await axios.post(
-        "https://nrityalens-ml.onrender.com/hand_analysis",
+        "http://localhost:8000/hand_analysis",
         formData,
         {
           params: {
