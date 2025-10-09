@@ -8,6 +8,7 @@
 ## Overview
 **NrityaLens** is an AI-powered platform designed to preserve, educate, and assist learners of **Bharatanatyam**, one of India’s classical dance forms.  
 It leverages **React + Vite, Node.js, Tailwind CSS, and Python (for ML models)** to deliver an immersive learning experience.
+It uses a **TensorFlow MobileNetV3 model** to compare input images with 52 mudra classes and shows the one with the highest probability.  
 
 NrityaLens serves both casual users and dedicated learners. Free users can explore and learn about Mudras, while registered learners gain access to advanced tools like Mudra assessment, group learning, and progress analytics.
 
@@ -75,3 +76,12 @@ streamlit run .\streamlit_frontend.py
 cd ml
 pip install -r requirements.txt
 uvicorn app:app --reload
+
+## ML Model Deployment
+Our ML model requires more memory and CPU than free hosting allows, so it cannot be deployed on free services.
+You can run it locally by:
+1. Replacing all occurrences of:
+   https://nrityalens-ml.onrender.com
+   with
+   http://localhost:8000
+2. Running the `/ml` folder on your terminal following the previous steps.
