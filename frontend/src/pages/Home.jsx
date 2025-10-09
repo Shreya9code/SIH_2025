@@ -1,16 +1,18 @@
 import React, { useRef, useCallback, useState } from "react";
 import { Link } from "react-router-dom";
-import { Camera, Book, Trophy, Users, ArrowRight, Star, PlayCircle, Sparkles, HelpCircle, Video, Search, Zap, Lock, School, MessageCircle, BarChart, Sparkle, ChartBar, ChartColumnBig } from "lucide-react";
+import { Camera, Book, Trophy, Users, ArrowRight, Star, PlayCircle, Sparkles, HelpCircle, Video, Search, Zap, Lock, School, MessageCircle, BarChart, Sparkle, ChartBar, ChartColumnBig, X } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import Navbar from "../components/Navbar.jsx";
 import background from "../assets/background.png";
-import icon from "../assets/icon.png";
+import demoVideo from "../assets/final_demo.mp4"; // ✅ keep this import
 
 const Home = () => {
   const featuresRef = useRef(null);
   const qnaRef = useRef(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState('free');
+  const [showVideo, setShowVideo] = useState(false);
+
 
   const features = [
     {
@@ -241,13 +243,46 @@ const Home = () => {
               <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
             </button>
 
-            <button
-  onClick={scrollToQnA}
-  className="group px-12 py-4 border-2 border-amber-300 hover:border-amber-200 !text-white hover:!text-white rounded-2xl font-semibold text-lg backdrop-blur-sm bg-white/10 hover:bg-amber-500/20 transition-all duration-300 transform hover:-translate-y-1 flex items-center space-x-3"
+            {/* Watch Demo button */}
+<button
+  onClick={() => setShowVideo(true)}
+  className="group px-12 py-4 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white rounded-2xl font-semibold text-lg shadow-2xl hover:shadow-rose-500/25 transition-all duration-300 transform hover:-translate-y-1 flex items-center space-x-3"
 >
-  <HelpCircle size={24} className="!text-white" />
-  <span className="!text-white">Learn How It Works</span>
+  <Video size={24} className="group-hover:scale-110 transition-transform" />
+  <span>Watch Demo</span>
 </button>
+
+{/* Popup video modal */}
+{showVideo && demoVideo && (
+  <div
+    className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50"
+    onClick={() => setShowVideo(false)} // click on overlay closes modal
+  >
+    <div
+      className="relative w-[90%] max-w-3xl bg-black rounded-2xl shadow-xl"
+      onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside video
+    >
+      {/* Close button */}
+      <button
+        onClick={() => setShowVideo(false)}
+        className="absolute top-2 right-2 text-white hover:text-amber-300 text-2xl font-bold"
+      >
+        ×
+      </button>
+
+      {/* Video */}
+      <video
+        src={demoVideo}
+        controls
+        autoPlay
+        className="rounded-2xl w-full"
+      />
+    </div>
+  </div>
+)}
+
+
+
 
           </div>
 
@@ -406,41 +441,39 @@ const Home = () => {
           </div>
 
           {/* Tab Navigation */}
-<div className="flex justify-center mb-12">
-  <div className="bg-amber-100 rounded-2xl p-2 flex space-x-2">
-    
-    {/* Free Tab */}
-    <button
-      onClick={() => setActiveTab('free')}
-      className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 ${
-        activeTab === 'free'
-          ? 'bg-gradient-to-r from-amber-500 to-orange-500 !text-white shadow-lg'
-          : '!text-amber-700 hover:!text-white hover:bg-gradient-to-r hover:from-amber-400 hover:to-orange-400'
-      }`}
-    >
-      <div className="flex items-center space-x-2">
-        <Zap size={20} className={activeTab === 'free' ? '!text-white' : '!text-amber-700 group-hover:!text-white'} />
-        <span>Free Features</span>
-      </div>
-    </button>
+          <div className="flex justify-center mb-12">
+            <div className="bg-amber-100 rounded-2xl p-2 flex space-x-2">
 
-    {/* Premium Tab */}
-    <button
-      onClick={() => setActiveTab('premium')}
-      className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 ${
-        activeTab === 'premium'
-          ? 'bg-gradient-to-r from-red-500 to-rose-500 !text-white shadow-lg'
-          : '!text-amber-700 hover:!text-white hover:bg-gradient-to-r hover:from-red-400 hover:to-rose-400'
-      }`}
-    >
-      <div className="flex items-center space-x-2">
-        <Lock size={20} className={activeTab === 'premium' ? '!text-white' : '!text-amber-700 group-hover:!text-white'} />
-        <span>Premium Features</span>
-      </div>
-    </button>
+              {/* Free Tab */}
+              <button
+                onClick={() => setActiveTab('free')}
+                className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === 'free'
+                  ? 'bg-gradient-to-r from-amber-500 to-orange-500 !text-white shadow-lg'
+                  : '!text-amber-700 hover:!text-white hover:bg-gradient-to-r hover:from-amber-400 hover:to-orange-400'
+                  }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <Zap size={20} className={activeTab === 'free' ? '!text-white' : '!text-amber-700 group-hover:!text-white'} />
+                  <span>Free Features</span>
+                </div>
+              </button>
 
-  </div>
-</div>
+              {/* Premium Tab */}
+              <button
+                onClick={() => setActiveTab('premium')}
+                className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === 'premium'
+                  ? 'bg-gradient-to-r from-red-500 to-rose-500 !text-white shadow-lg'
+                  : '!text-amber-700 hover:!text-white hover:bg-gradient-to-r hover:from-red-400 hover:to-rose-400'
+                  }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <Lock size={20} className={activeTab === 'premium' ? '!text-white' : '!text-amber-700 group-hover:!text-white'} />
+                  <span>Premium Features</span>
+                </div>
+              </button>
+
+            </div>
+          </div>
 
 
           {/* Features Grid */}
