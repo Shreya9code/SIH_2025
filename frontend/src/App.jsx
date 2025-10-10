@@ -225,7 +225,7 @@ const AppWrapper = () => {
                     routing="path"
                     path="/sign-up"
                     redirectUrl="/"
-                    signInUrl="/sign-up"
+                    signInUrl="/sign-in"
                     appearance={{
                       elements: {
                         formButtonPrimary:
