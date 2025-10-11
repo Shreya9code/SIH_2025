@@ -36,7 +36,7 @@ function Dashboard() {
 
         // Check if user already exists in DB
         const checkResponse = await axios.post(
-          "http://localhost:5000/api/users/check",
+          "https://nrityalens-backend.onrender.com/api/users/check",
           { email }
         );
 
@@ -44,7 +44,7 @@ function Dashboard() {
           setDbStatus("Creating new user in database...");
           // Store user in MongoDB
           const registerResponse = await axios.post(
-            "http://localhost:5000/api/users/register",
+            "https://nrityalens-backend.onrender.com/api/users/register",
             {
               clerkId,
               name: username,
