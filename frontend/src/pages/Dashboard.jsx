@@ -20,9 +20,8 @@ function Dashboard() {
     }
 
     const saveUserToDB = async () => {
-      hasRunRef.current = true;
-
-      try {
+  hasRunRef.current = true;
+  try {
         const email = user.primaryEmailAddress?.emailAddress;
         const username = user.username || `${user.firstName} ${user.lastName}`;
         const clerkId = user.id;
@@ -37,37 +36,42 @@ function Dashboard() {
 
         // Check if user already exists in DB
         const checkResponse = await axios.post(
-          "https://nrityalens-backend.onrender.com/api/users/check",
+          "http://localhost:5000/api/users/check",
           { email }
         );
 
         if (!checkResponse.data.exists) {
           setDbStatus("Creating new user in database...");
-
           // Store user in MongoDB
-          await axios.post("https://nrityalens-backend.onrender.com/api/users/register", {
-            clerkId,
-            name: username,
-            email,
-            password: "clerk_placeholder",
-            role: "user",
-          });
+          const registerResponse = await axios.post(
+            "http://localhost:5000/api/users/register",
+            {
+              clerkId,
+              name: username,
+              email,
+              password: "clerk_placeholder",
+              role: "user",
+            }
+          );
+          // Save JWT to localStorage for future authenticated requests
+          const token = registerResponse.data.token;
+          if (token) localStorage.setItem("token", token);
 
-          setDbStatus("User successfully saved to database!");
-        } else {
+    setDbStatus("User successfully saved!");
+  } else {
           setDbStatus("User already exists in database");
-        }
-      } catch (err) {
-        // Handle duplicate key errors gracefully
-        if (err.response?.data?.error?.includes("duplicate key error")) {
-          setDbStatus("User already exists in database");
-        } else {
-          setDbStatus(`Error: ${err.response?.data?.message || err.message}`);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
+
+          // Optional: store existing user token if returned by backend
+          if (checkResponse.data.token) {
+            localStorage.setItem("token", checkResponse.data.token);
+          }
+        }}catch (err) {
+    setDbStatus(`Error: ${err.response?.data?.message || err.message}`);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
     if (user) {
       saveUserToDB();
@@ -76,6 +80,14 @@ function Dashboard() {
     }
   }, [user, isSignedIn, navigate]);
 
+useEffect(() => {
+    if (dbStatus.includes("successfully")) {
+      const timer = setTimeout(() => {
+        navigate("/"); // redirect to home
+      }, 2000); 
+      return () => clearTimeout(timer);
+    }
+  }, [dbStatus, navigate]);
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">

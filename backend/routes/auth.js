@@ -1,19 +1,20 @@
-// auth.js
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import { Clerk } from '@clerk/clerk-sdk-node';
+import User from '../models/User.js';
+
 const router = express.Router();
 
-// Check if user exists
+// Initialize Clerk with your secret key
+//const clerk = new Clerk({ apiKey: process.env.CLERK_SECRET_KEY });
+
+// Check if user exists in DB
 router.post('/check', async (req, res) => {
   try {
     console.log("🔍 /check endpoint hit");
     const { email } = req.body;
-    console.log("📧 Email received:", email);
 
-    if (!email) {
-      return res.status(400).json({ message: 'Email is required' });
-    }
+    if (!email) return res.status(400).json({ message: 'Email is required' });
 
     const user = await User.findOne({ email });
     console.log("📊 User exists:", !!user);
@@ -25,71 +26,47 @@ router.post('/check', async (req, res) => {
   }
 });
 
-// Register user
+// Register user (with Clerk verification)
 router.post('/register', async (req, res) => {
   try {
     console.log("🔍 /register endpoint hit");
-    console.log("📦 Request body:", req.body);
-
     const { clerkId, name, email, password, role } = req.body;
-
-    // Validate required fields
-    if (!clerkId || !email) {
-      return res.status(400).json({
-        message: 'clerkId and email are required',
-        received: { clerkId, email }
-      });
+console.log("📋 Request body:", req.body);
+    if ( !email||!clerkId ) {
+      return res.status(400).json({ message: 'clerkId and email are required' });
     }
 
-    console.log("📝 Registering user:", { clerkId, name, email });
+    // Verify user exists in Clerk
+    /*const clerkUser = await clerk.users.getUser(clerkId).catch(() => null);
+    console.log("👤 Clerk user fetched:", !!clerkUser);
+    if (!clerkUser) {
+      return res.status(400).json({ message: 'Invalid Clerk ID' });
+    }*/
 
-    // Check if user exists by email OR clerkId
-    const existingUser = await User.findOne({
-      $or: [{ email }, { clerkId }]
-    });
-
+    // Check if user exists in MongoDB
+    const existingUser = await User.findOne({ $or: [{ email }, { clerkId }] });
     if (existingUser) {
-      console.log("⚠️ User already exists");
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({ message: 'User already exists', user: existingUser });
     }
 
-    const user = await User.create({
-      clerkId,
-      name,
-      email,
-      password,
-      role
-    });
+    // Create user in MongoDB
+    const user = await User.create({ clerkId, name, email, password, role });
 
     console.log("✅ User created in DB:", user._id);
-    console.log("📄 User document:", user);
 
-    const token = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '7d' }
-    );
+    // Create JWT for your own backend auth if needed
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'your-secret-key', { expiresIn: '7d' });
 
-    res.status(201).json({
-      success: true,
-      message: 'User registered successfully',
-      token,
-      user
-    });
+    res.status(201).json({ success: true, message: 'User registered successfully', token, user });
   } catch (err) {
     console.error("❌ Error registering user:", err);
-    res.status(500).json({
-      message: 'Server error',
-      error: err.message,
-      stack: err.stack
-    });
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
 
 // Test endpoint
 router.get('/test', (req, res) => {
-  console.log("✅ Test endpoint hit");
   res.json({ message: "Backend API is working!" });
 });
 
-module.exports = router;
+export default router;

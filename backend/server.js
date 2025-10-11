@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import { User, Mudra } from "./models/index.js";
 import pointsRouter from './routes/points.js';
 import groupsRouter from './routes/groups.js';
+import usersRouter from './routes/auth.js'
 
 dotenv.config();
 
@@ -24,9 +25,10 @@ app.use((req, res, next) => {
 });
 
 // Mount points router
+app.use('/api/users', usersRouter);   // auth.js (register, check)
 app.use('/api/users', pointsRouter);
 app.use('/api/groups', groupsRouter);
-
+/*
 // Check if user exists
 app.post("/api/users/check", async (req, res) => {
   try {
@@ -95,7 +97,7 @@ app.post("/api/users/register", async (req, res) => {
       error: err.message
     });
   }
-});
+});*/
 
 // Test endpoint
 app.get("/api/test", (req, res) => {

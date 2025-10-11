@@ -224,7 +224,7 @@ const AppWrapper = () => {
                   <SignUp
                     routing="path"
                     path="/sign-up"
-                    redirectUrl="/"
+                    redirectUrl="/dashboard"
                     signInUrl="/sign-in"
                     appearance={{
                       elements: {
